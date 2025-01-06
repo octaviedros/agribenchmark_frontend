@@ -7,7 +7,7 @@ const NetworkSelection = () => {
   const router = useRouter();
 
   const handleSectorClick = (sector: string) => {
-    router.push(`/${sector.toLowerCase().replace(/ /g, '-')}`);
+    router.push(`dashboard/${sector.toLowerCase().replace(/ /g, '-')}`);
   };
 
   const sectors = [
