@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 const FarmListPage = () => {
   const farms = [
     "DE23_200_6300",
-    "DE23_500_15k"
+    "DE23_500_15k",
+    "DE24_200_6300",
   ];
 
   return (

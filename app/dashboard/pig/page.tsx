@@ -1,27 +1,32 @@
+'use client'
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const AgriPigNetwork = () => {
   const cards = [
     {
       title: "Result",
-      description: "Calculate results for existing farm or apply a benchmark.",
+      description: "Calculate results for existing farm or apply a benchmark",
       imageUrl: "/images/results-icon.png",
-      imageAlt: "Results illustration"
+      imageAlt: "Results illustration",
+      path: "/dashboard/pig/results"
     },
     {
       title: "List of existing farms",
-      description: "Select an existing farm to perform an update or to carry out a scenario.",
+      description: "Select an existing farm to perform an update or to carry out a scenario",
       imageUrl: "/images/farms-icon.png",
-      imageAlt: "Farm list illustration"
+      imageAlt: "Farm list illustration",
+      path: "/dashboard/pig/listedfarms"
     },
     {
       title: "New Farm",
-      description: "Create a new farm.",
+      description: "Create a new farm",
       imageUrl: "/images/new-farm-icon.png",
-      imageAlt: "New farm illustration"
+      imageAlt: "New farm illustration",
+      path: "/dashboard/pig/newfarm"
     }
   ];
 
@@ -39,8 +44,8 @@ const AgriPigNetwork = () => {
                 <Image
                   src={card.imageUrl}
                   alt={card.imageAlt}
-                  width={160}
-                  height={160}
+                  width={120}
+                  height={120}
                   className="rounded object-cover"
                 />
               </div>
@@ -48,9 +53,11 @@ const AgriPigNetwork = () => {
               <div className="flex flex-col justify-center">
                 <h2 className="text-xl font-semibold mb-4">{card.title}</h2>
                 <p className="text-gray-600 mb-6">{card.description}</p>
-                <Button className="w-fit">
-                  Proceed
-                </Button>
+                <Link href={card.path}>
+                  <Button className="w-fit">
+                    Proceed
+                  </Button>
+                </Link>
               </div>
             </div>
           </Card>
