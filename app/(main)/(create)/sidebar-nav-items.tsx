@@ -1,11 +1,11 @@
 type SidebarNavItem = {
   title: string;
-  href: string;
+  url: string;
 }[]
 
 export const sidebarNavItems: SidebarNavItem = [
   {
-    title: "Overall company data",
-    href: "/create",
+    title: "Overall farm data",
+    url: "/create",
   },
 ]

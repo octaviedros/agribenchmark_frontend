@@ -92,3 +92,8 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* hack to remove the sidebar toggle button which we don't use (???)*/
+#agribenchmark-page-content-sidebar > button[title="Toggle Sidebar"]{
+  display: none;
+}
