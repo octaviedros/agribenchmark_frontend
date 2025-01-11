@@ -3,11 +3,13 @@
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
+import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
 
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -26,52 +28,148 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+const countries = [
+  { label: "Austria", value: "austria" },
+  { label: "Albania", value: "albania" },
+  { label: "Andorra", value: "andorra" },
+  { label: "Belarus", value: "belarus" },
+  { label: "Belgium", value: "belgium" },
+  { label: "Bosnia and Herzegovina", value: "bosnia" },
+  { label: "Bulgaria", value: "bulgaria" },
+  { label: "Croatia", value: "croatia" },
+  { label: "Czech Republic", value: "czech" },
+  { label: "Denmark", value: "denmark" },
+  { label: "Estonia", value: "estonia" },
+  { label: "Finland", value: "finland" },
+  { label: "France", value: "france" },
+  { label: "Germany", value: "germany" },
+  { label: "Greece", value: "greece" },
+  { label: "Hungary", value: "hungary" },
+  { label: "Iceland", value: "iceland" },
+  { label: "Ireland", value: "ireland" },
+  { label: "Italy", value: "italy" },
+  { label: "Latvia", value: "latvia" },
+  { label: "Liechtenstein", value: "liechtenstein" },
+  { label: "Lithuania", value: "lithuania" },
+  { label: "Luxembourg", value: "luxembourg" },
+  { label: "Malta", value: "malta" },
+  { label: "Moldova", value: "moldova" },
+  { label: "Monaco", value: "monaco" },
+  { label: "Montenegro", value: "montenegro" },
+  { label: "Netherlands", value: "netherlands" },
+  { label: "North Macedonia", value: "macedonia" },
+  { label: "Norway", value: "norway" },
+  { label: "Poland", value: "poland" },
+  { label: "Portugal", value: "portugal" },
+  { label: "Romania", value: "romania" },
+  { label: "Russia", value: "russia" },
+  { label: "San Marino", value: "sanmarino" },
+  { label: "Serbia", value: "serbia" },
+  { label: "Slovakia", value: "slovakia" },
+  { label: "Slovenia", value: "slovenia" },
+  { label: "Spain", value: "spain" },
+  { label: "Sweden", value: "sweden" },
+  { label: "Switzerland", value: "switzerland" },
+  { label: "Ukraine", value: "ukraine" },
+  { label: "United Kingdom", value: "uk" },
+  { label: "Vatican City", value: "vatican" }
+ 
+] as const
+
+const currencies = [
+  { label: "Australian Dollar (AUD)", value: "aud" },
+  { label: "Brazilian Real (BRL)", value: "brl" },
+  { label: "British Pound (GBP)", value: "gbp" },
+  { label: "Canadian Dollar (CAD)", value: "cad" },
+  { label: "Chinese Yuan (CNY)", value: "cny" },
+  { label: "Euro (EUR)", value: "eur" },
+  { label: "Hong Kong Dollar (HKD)", value: "hkd" },
+  { label: "Indian Rupee (INR)", value: "inr" },
+  { label: "Indonesian Rupiah (IDR)", value: "idr" },
+  { label: "Japanese Yen (JPY)", value: "jpy" },
+  { label: "Mexican Peso (MXN)", value: "mxn" },
+  { label: "New Zealand Dollar (NZD)", value: "nzd" },
+  { label: "Norwegian Krone (NOK)", value: "nok" },
+  { label: "Russian Ruble (RUB)", value: "rub" },
+  { label: "Saudi Riyal (SAR)", value: "sar" },
+  { label: "Singapore Dollar (SGD)", value: "sgd" },
+  { label: "South African Rand (ZAR)", value: "zar" },
+  { label: "South Korean Won (KRW)", value: "krw" },
+  { label: "Swiss Franc (CHF)", value: "chf" },
+  { label: "US Dollar (USD)", value: "usd" }
+] as const
+
+const enterprises = [
+  {
+    id: "cashcrop",
+    label: "Cash Crop",
+  },
+  {
+    id: "pigfinishing",
+    label: "Pig Finishing",
+  },
+  {
+    id: "sows",
+    label: "Sows",
+  },
+] as const
 
 const profileFormSchema = z.object({
-  username: z
+  countries: z.string({
+    required_error: "Please select a Country.",
+  }),
+  region: z
     .string()
     .min(2, {
-      message: "Username must be at least 2 characters.",
+      message: "Region must be at least 2 characters.",
     })
     .max(30, {
-      message: "Username must not be longer than 30 characters.",
+      message: "Region must not be longer than 30 characters.",
     }),
-  email: z
-    .string({
-      required_error: "Please select an email to display.",
+    currencies: z.string({
+      required_error: "Please select your Currency.",
+    }),
+    legalstatus: z
+    .string()
+    .min(2, {
+      message: "Legal status must be at least 2 characters.",
+    }),
+    referenceyear: z
+    .string()
+    .min(2, {
+      message: "Reference year must be at least 2 characters.",
     })
-    .email(),
-  bio: z.string().max(160).min(4),
-  urls: z
-    .array(
-      z.object({
-        value: z.string().url({ message: "Please enter a valid URL." }),
-      })
-    )
-    .optional(),
+    .max(4, {
+      message: "Reference year must not be longer than 30 characters.",
+    }),
+    enterprises: z.array(z.string()).refine((value) => value.some((item) => item), {
+      message: "You have to select at least one item.",
+    }),
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-// This can come from your database or API.
-const defaultValues: Partial<ProfileFormValues> = {
-  bio: "I own a computer.",
-  urls: [
-    { value: "https://shadcn.com" },
-    { value: "http://twitter.com/shadcn" },
-  ],
-}
 
 export function ProfileForm() {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: {
+      enterprises: [],},
     mode: "onChange",
-  })
-
-  const { fields, append } = useFieldArray({
-    name: "urls",
-    control: form.control,
   })
 
   function onSubmit(data: ProfileFormValues) {
@@ -88,102 +186,220 @@ export function ProfileForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
+      <FormField
           control={form.control}
-          name="username"
+          name="countries"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input placeholder="shadcn" {...field} />
-              </FormControl>
-              <FormDescription>
-                This is your public display name. It can be your real name or a
-                pseudonym. You can only change this once every 30 days.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                You can manage verified email addresses in your{" "}
-                <Link href="/examples/forms">email settings</Link>.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="bio"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Bio</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Tell us a little bit about yourself"
-                  className="resize-none"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                You can <span>@mention</span> other users and organizations to
-                link to them.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div>
-          {fields.map((field, index) => (
-            <FormField
-              control={form.control}
-              key={field.id}
-              name={`urls.${index}.value`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={cn(index !== 0 && "sr-only")}>
-                    URLs
-                  </FormLabel>
-                  <FormDescription className={cn(index !== 0 && "sr-only")}>
-                    Add links to your website, blog, or social media profiles.
-                  </FormDescription>
+            <FormItem className="flex flex-col">
+              <FormLabel>Country</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
                   <FormControl>
-                    <Input {...field} />
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-[200px] justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? countries.find(
+                            (countries) => countries.value === field.value
+                          )?.label
+                        : "Select Country"}
+                      <ChevronsUpDown className="opacity-50" />
+                    </Button>
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-2"
-            onClick={() => append({ value: "" })}
-          >
-            Add URL
-          </Button>
-        </div>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput
+                      placeholder="Search countries..."
+                      className="h-9"
+                    />
+                    <CommandList>
+                      <CommandEmpty>Country not found.</CommandEmpty>
+                      <CommandGroup>
+                        {countries.map((countries) => (
+                          <CommandItem
+                            value={countries.label}
+                            key={countries.value}
+                            onSelect={() => {
+                              form.setValue("countries", countries.value)
+                            }}
+                          >
+                            {countries.label}
+                            <Check
+                              className={cn(
+                                "ml-auto",
+                                countries.value === field.value
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="region"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>In which Region is your farm located?</FormLabel>
+              <FormControl>
+                <Input placeholder="Region" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+             <FormField
+          control={form.control}
+          name="currencies"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Currency</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-[200px] justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? currencies.find(
+                            (currency) => currency.value === field.value
+                          )?.label
+                        : "Select Currency"}
+                      <ChevronsUpDown className="opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput
+                      placeholder="Search currencies..."
+                      className="h-9"
+                    />
+                    <CommandList>
+                      <CommandEmpty>Currency not found.</CommandEmpty>
+                      <CommandGroup>
+                        {currencies.map((currency) => (
+                          <CommandItem
+                            value={currency.label}
+                            key={currency.value}
+                            onSelect={() => {
+                              form.setValue("currencies", currency.value)
+                            }}
+                          >
+                            {currency.label}
+                            <Check
+                              className={cn(
+                                "ml-auto",
+                                currency.value === field.value
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="legalstatus"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>What is the legal status of your farm?</FormLabel>
+              <FormControl>
+                <Input placeholder="Legal status" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="referenceyear"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>What is the Reference year of the following Data for this farm?</FormLabel>
+              <FormControl>
+                <Input placeholder="Reference year" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="enterprises"
+          render={() => (
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-base">Enterprise</FormLabel>
+                <FormDescription>
+                  Please select the enterprises that are present on your farm.
+                </FormDescription>
+              </div>
+              {enterprises.map((item) => (
+                <FormField
+                  key={item.id}
+                  control={form.control}
+                  name="enterprises"
+                  render={({ field }) => {
+                    return (
+                      <FormItem
+                        key={item.id}
+                        className="flex flex-row items-start space-x-3 space-y-0"
+                      >
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value?.includes(item.id)}
+                            onCheckedChange={(checked) => {
+                              return checked
+                                ? field.onChange([...field.value, item.id])
+                                : field.onChange(
+                                    field.value?.filter(
+                                      (value) => value !== item.id
+                                    )
+                                  )
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">
+                          {item.label}
+                        </FormLabel>
+                      </FormItem>
+                    )
+                  }}
+                />
+              ))}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
         <Button type="submit">Update profile</Button>
       </form>
     </Form>
