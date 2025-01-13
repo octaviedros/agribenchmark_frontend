@@ -43,27 +43,30 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-const permanentwages = [''];
-const permanentcostTypes = ['Labor Force', 'Working hours (per Person per year)', 'Annual Wage per Person'];
-
-const casualwages = [''];
-const casualcostTypes = ['Labor Force', 'Working hours per Person per year', 'Wage per hour per Person'];
-
-const familywages = [''];
-const familycostTypes = ['Labor Force', 'Working hours per Person per year', 'Opportuniy Costs per Person'];
-
 const wagesFormSchema = z.object({
-    
+  permanentwages: z
+  .string({
+    required_error: "Please select an option.",
   })
-  
+})
+ 
   type WagesFormValues = z.infer<typeof wagesFormSchema>
   
   export function WagesFarmPage() {
     const form = useForm<WagesFormValues>({
       resolver: zodResolver(wagesFormSchema),
       defaultValues: { },  
-    }) 
-  
+    })
+ 
+    const permanentwages = [''];
+    const permanentcostTypes = ['Labor Force', 'Working hours (per Person per year)', 'Annual Wage per Person'];
+
+    const casualwages = [''];
+    const casualcostTypes = ['Labor Force', 'Working hours per Person per year', 'Wage per hour per Person'];
+
+    const familywages = [''];
+    const familycostTypes = ['Labor Force', 'Working hours per Person per year', 'Opportuniy Costs per Person'];
+
     function onSubmit(data: WagesFormValues) {
       toast({
         title: "You submitted the following values:",
@@ -87,9 +90,9 @@ const wagesFormSchema = z.object({
          <table className="w-full my-4">
                    <thead>
                      <tr>
-                       <th className="font-medium">Permanent Worker</th>
+                       <th className="font-medium min-w-[200px]">Permanent Worker</th>
                        {permanentcostTypes.map((permanentcostTypes) => (
-                         <th key={permanentcostTypes} className="p-1 font-medium">
+                         <th key={permanentcostTypes} className="p-1 font-medium min-w-[120px]">
                            {permanentcostTypes}
                          </th>
                          ))}
@@ -99,7 +102,28 @@ const wagesFormSchema = z.object({
                        {permanentwages.map((permanentwages) => (
                          <tr key={permanentwages}>
                            <td className="p-2 ">{permanentwages}
-                             <Input type="text" name={`${permanentwages}-name`} className="w-full"/>
+                           <FormField
+                              control={form.control}
+                              name="permanentwages"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger> <SelectValue placeholder="Select Group" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="group1:manager">Group 1: Manager</SelectItem>
+                                      <SelectItem value="group2:executivestaff">Group 2: Executive Staff</SelectItem>
+                                      <SelectItem value="group3:tractor">Group 3: Tractor</SelectItem>
+                                      <SelectItem value="group4:pigman">Group 4: Pigman</SelectItem>
+                                      <SelectItem value="group5:other">Group 5: Other</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                            </td>
                            {permanentcostTypes.map((permanentcostType) => (
                              <td key={permanentcostType} className="p-2">
@@ -166,9 +190,7 @@ const wagesFormSchema = z.object({
                           ))}
                         </tbody>
                       </table>
-                      <Button type="button">Add Row</Button>
-        
-        
+                      <Button type="button">Add Row</Button> 
       </form>
       <Button type="submit">Submit</Button>
     </Form>
@@ -176,4 +198,4 @@ const wagesFormSchema = z.object({
   )
 }
 
-export default WagesFarmPage 
+export default WagesFarmPage

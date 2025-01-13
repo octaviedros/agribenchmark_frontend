@@ -91,7 +91,7 @@ type AcreageFormValues = z.infer<typeof acreageFormSchema>
               <td className="p-2">{land}</td>
               {landTypes.map((landType) => (
                 <td key={landType}>
-                  <Input type="number" name={`${land}-${landType}`} className="w-full m-1"/>
+                  <Input type="number" name={`${land}-${landType}`} className="w-full m-2"/>
                 </td>
               ))}
             </tr>

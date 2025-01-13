@@ -69,17 +69,17 @@ export const allSidebarNavItems: SidebarNavItems = {
         url: "/edit/pig/mineral-balance",
       },
       {
-        title: "2.5 Prices for feed and dry matter content",
+        title: "2.5 Prices for Feed and Dry Matter Content",
         url: "/edit/pig/feed-prices",
       }
     ],
   },
   {
-    title: "10 Data for the sow enterprise",
+    title: "10 Data for the Sow Enterprise",
     url: "",
     items: [
       {
-        title: "10.1 Livestock and performance data",
+        title: "10.1 Livestock and Performance Data",
         url: "/edit/pig/data-sow-enterprise",
       },
       {
@@ -95,17 +95,17 @@ export const allSidebarNavItems: SidebarNavItems = {
         url: "/edit/pig/sow-feeding",
       },
       {
-        title: "10.5 Feed rations",
+        title: "10.5 Feed Rations",
         url: "/edit/pig/sow-feed-rations",
       }
     ],
   },
   {
-    title: "11 Data for the pig finishing enterprise",
+    title: "11 Data for the Pig Finishing Enterprise",
     url: "",
     items: [
       {
-        title: "11.1 Livestock and performance data",
+        title: "11.1 Livestock and Performance data",
         url: "/edit/pig/data-pig-finishing",
       },
       {
@@ -117,18 +117,24 @@ export const allSidebarNavItems: SidebarNavItems = {
         url: "/edit/pig/finishing-costs",
       },
       {
-        title: "11.4 Feeding(per fattening period)",
+        title: "11.4 Feeding",
         url: "/edit/pig/finishing-feeding",
       },
       {
-        title: "11.5 Feed rations",
+        title: "11.5 Feed Rations",
         url: "/edit/pig/finishing-feed-rations",
       }
     ],
   },
   {
-    title: "12 Labor allocation sow and pig finishing enterprise",
-    url: "/edit/pig/labor-allocation",
+    title: "12 Labor Allocation Sow and Pig Finishing Enterprise",
+    url: "",
+    items: [
+      {
+        title: "12.1 Labor Allocation",
+        url: "/edit/pig/labor-allocation",
+      }
+    ],
   }
   ]
 }

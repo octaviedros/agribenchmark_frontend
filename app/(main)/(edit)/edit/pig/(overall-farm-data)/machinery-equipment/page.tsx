@@ -43,8 +43,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-const machines = [''];
-const costTypes = ['Purchase Year', 'Purchase Price', 'Utilization Period', 'Replacement Value', 'Enterprise Codes'];
+
 
 const machineryFormSchema = z.object({
     depreciation: z.string({
@@ -61,6 +60,9 @@ const machineryFormSchema = z.object({
       defaultValues: {
         depreciation: "", bookvalue: "", },  
     }) 
+
+    const machines = [''];
+    const costTypes = ['Purchase Year', 'Purchase Price', 'Utilization Period', 'Replacement Value', 'Enterprise Codes'];
 
     function onSubmit(data: MachineryFormValues) {
       toast({
