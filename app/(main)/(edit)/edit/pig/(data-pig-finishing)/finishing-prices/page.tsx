@@ -44,6 +44,22 @@ import {
 } from "@/components/ui/popover"
 
 const finishingpriceFormSchema = z.object({
+  buying_f_castpiglets: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  buying_piglets_for_finishing: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  selling_finishing_pigs_gi_ba: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  selling_finishing_pigs_em_ic: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
 })
 
 type FinishingPriceFormValues = z.infer<typeof finishingpriceFormSchema>
@@ -81,54 +97,67 @@ function onSubmit(data: FinishingPriceFormValues) {
       <Separator />
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 w-full">
-      <table className="my-4">
-        <thead>
-          <tr>
-            <th className="font-semibold text-base text-left">Buying</th>
-            {finishingbuyingTypes.map((finishingbuyingType) => (
-              <th key={finishingbuyingType} className="p-1 font-medium w-60">
-                {finishingbuyingType}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {finishingbuying.map((finishingbuying) => (
-            <tr key={finishingbuying}>
-              <td className="text-s mr-1">{finishingbuying}</td>
-              {finishingbuyingTypes.map((finishingbuyingType) => (
-                <td key={finishingbuyingType} className="">
-                  <Input className="ml-24 w-half" type="number" name={`${finishingbuying}-${finishingbuyingType}`}/>
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        </table>
-        <table className="my-4">
-        <thead>
-          <tr>
-            <th className="font-semibold text-base text-left">Selling</th>
-            {finishingsellingTypes.map((finishingsellingType) => (
-              <th key={finishingsellingType} className="p-1 font-medium">
-                {finishingsellingType}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {finishingselling.map((finishingselling) => (
-            <tr key={finishingselling}>
-              <td className="text-s mr-1">{finishingselling}</td>
-              {finishingsellingTypes.map((finishingsellingType) => (
-                <td key={finishingsellingType} className="">
-                  <Input className="ms-8 w-60" type="number" name={`${finishingselling}-${finishingsellingType}`}/>
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        </table>
+        <div><h3 className="space-y- mt-4 text-lg font-medium">Buying</h3>
+        <FormField
+            control={form.control}
+            name="buying_f_castpiglets"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Female & Castrate Piglets</FormLabel>
+                <FormDescription>per kg LW</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="buying_piglets_for_finishing"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Boars Piglets for Finishing</FormLabel>
+                <FormDescription>per kg LW</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div><h3 className="space-y- mt-6 text-lg font-medium">Selling</h3>
+          <FormField
+            control={form.control}
+            name="selling_finishing_pigs_gi_ba"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Finishing Pigs (Female & Castrates)</FormLabel>
+                <FormDescription>per kg CW</FormDescription>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="selling_finishing_pigs_em_ic"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Finishing Pigs (Boars)</FormLabel>
+                <FormDescription>per kg CW</FormDescription>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+     
       <Button className="mt-4"  type="submit">Submit</Button>
       </form>
     </Form>

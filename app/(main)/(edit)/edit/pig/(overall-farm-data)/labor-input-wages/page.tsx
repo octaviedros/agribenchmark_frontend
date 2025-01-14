@@ -47,7 +47,17 @@ const wagesFormSchema = z.object({
   permanentwages: z
   .string({
     required_error: "Please select an option.",
-  })
+  }),
+  permanentcostTypes: z
+  .string({
+    required_error: "Please select an option.",
+  }),
+  workerrows: z.array(
+    z.object({
+      value: z.string(),
+    })
+  )
+  .optional(),
 })
  
   type WagesFormValues = z.infer<typeof wagesFormSchema>
@@ -67,6 +77,11 @@ const wagesFormSchema = z.object({
     const familywages = [''];
     const familycostTypes = ['Labor Force', 'Working hours per Person per year', 'Opportuniy Costs per Person'];
 
+    const { fields, append, remove } = useFieldArray({
+      control: form.control,
+      name: "workerrows",
+    })
+
     function onSubmit(data: WagesFormValues) {
       toast({
         title: "You submitted the following values:",
@@ -81,12 +96,13 @@ const wagesFormSchema = z.object({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">What does your labor force look like?</h3>
+        <h3 className="text-lg font-medium">Labor Input and Wages</h3>
       </div>
       <Separator />
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <h3></h3>
+        <div>
          <table className="w-full my-4">
                    <thead>
                      <tr>
@@ -135,6 +151,7 @@ const wagesFormSchema = z.object({
                      </tbody>
                    </table> 
                    <Button type="button">Add Row</Button>
+                   </div>
                    
                    <table className="w-full my-4">
                     <thead>
@@ -191,6 +208,7 @@ const wagesFormSchema = z.object({
                         </tbody>
                       </table>
                       <Button type="button">Add Row</Button> 
+                      
       </form>
       <Button type="submit">Submit</Button>
     </Form>

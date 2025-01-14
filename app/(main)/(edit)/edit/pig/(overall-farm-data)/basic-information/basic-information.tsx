@@ -140,7 +140,7 @@ const profileFormSchema = z.object({
     .max(30, {
       message: "Region must not be longer than 30 characters.",
     }),
-    currencies: z.string({
+    currency: z.string({
       required_error: "Please select your Currency.",
     }),
     legalstatus: z
@@ -264,7 +264,7 @@ export function ProfileForm() {
         />
              <FormField
           control={form.control}
-          name="currencies"
+          name="currency"
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Currency</FormLabel>
@@ -302,7 +302,7 @@ export function ProfileForm() {
                             value={currency.label}
                             key={currency.value}
                             onSelect={() => {
-                              form.setValue("currencies", currency.value)
+                              form.setValue("currency", currency.value)
                             }}
                           >
                             {currency.label}

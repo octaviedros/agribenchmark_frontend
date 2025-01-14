@@ -5,7 +5,7 @@ import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
-import { z } from "zod"
+import { number, z } from "zod"
 
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
@@ -44,6 +44,38 @@ import {
 } from "@/components/ui/popover"
 
 const sowpriceFormSchema = z.object({
+  buying_gilts: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  buying_boars: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  selling_sow: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  selling_boar: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  selling_weaning_piglet: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  selling_rearing_piglet: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  proportion_weanded_pigs_sold: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  no_weanded_pigs_sold: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
 })
 
 type SowPriceFormValues = z.infer<typeof sowpriceFormSchema>
@@ -80,55 +112,109 @@ function onSubmit(data: SowPriceFormValues) {
       </div>
       <Separator />
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 w-full">
-      <table className="my-4">
-        <thead>
-          <tr>
-            <th className="font-semibold text-base text-left">Buying</th>
-            {sowbuyingTypes.map((sowbuyingType) => (
-              <th key={sowbuyingType} className="p-1 font-medium">
-                {sowbuyingType}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {sowbuying.map((sowbuying) => (
-            <tr key={sowbuying}>
-              <td className="text-s mr-1">{sowbuying}</td>
-              {sowbuyingTypes.map((sowbuyingType) => (
-                <td key={sowbuyingType} className="">
-                  <Input className="ms-52 w-3/5" type="number" name={`${sowbuying}-${sowbuyingType}`}/>
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        </table>
-        <table className="my-4">
-        <thead>
-          <tr>
-            <th className="font-semibold text-base text-left">Selling</th>
-            {sowsellingTypes.map((sowsellingType) => (
-              <th key={sowsellingType} className="p-1 font-medium">
-                {sowsellingType}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {sowselling.map((sowselling) => (
-            <tr key={sowselling}>
-              <td className="text-s mr-1">{sowselling}</td>
-              {sowsellingTypes.map((sowsellingType) => (
-                <td key={sowsellingType} className="">
-                  <Input className="ms-8 w-60" type="number" name={`${sowselling}-${sowsellingType}`}/>
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        </table>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 w-full">
+      <div>
+        <h3 className="text-lg font-medium">Buying</h3></div>
+      <FormField
+            control={form.control}
+            name="buying_gilts"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Buying Guilt Price</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="buying_boars"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Buying Boar Price</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div>
+        <h3 className="text-lg font-medium">Selling</h3></div>
+          <FormField
+            control={form.control}
+            name="selling_sow"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Selling Sow Price</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="selling_boar"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Selling Boar Price</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="selling_weaning_piglet"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Selling Weaning Piglet Price</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="selling_rearing_piglet"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Selling Rearing Piglet Price</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="proportion_weanded_pigs_sold"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Proportion of weaned Pigs sold</FormLabel>
+                <FormDescription>Percentage</FormDescription>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
       <Button className="mt-4"  type="submit">Submit</Button>
       </form>
     </Form>

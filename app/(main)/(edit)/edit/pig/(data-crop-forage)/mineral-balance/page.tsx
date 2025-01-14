@@ -47,6 +47,12 @@ const minerals = [''];
 const mineralTypes = ['Nitrogen','Phosphorus','Potash','Calcium','Other'];
 
 const mineralbalanceFormSchema = z.object({
+  fertilizer_type: z.string(),
+  fertilizer_name: z.string(),
+  fertilizer_name_custom: z.string(),
+  amount: z.string(),
+  amount_unit: z.string(),
+  n_content_per_unit: z.string(),
   })
   
   type MineralBalanceValues = z.infer<typeof mineralbalanceFormSchema>
@@ -72,7 +78,7 @@ const mineralbalanceFormSchema = z.object({
   return (
     <div className="space-y-6 min">
       <div>
-        <h3 className="text-lg font-medium">Variable Costs of Crop and Forage Production</h3>
+        <h3 className="text-lg font-medium">Mineral Balance and Fertilizer Input</h3>
       </div>
       <Separator />
 

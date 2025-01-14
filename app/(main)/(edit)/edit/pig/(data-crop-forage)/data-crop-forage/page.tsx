@@ -47,6 +47,31 @@ const lands = ['Own Land', 'Rented Land', 'Rent Price for existing contracts', '
 const landTypes = ['Cropland', 'Grassland', 'Other incl. wood']
 
 const acreageFormSchema = z.object({
+  own_land: z.object({
+    cropland: z.string(),
+    grassland: z.string(),
+    other: z.string(),
+  }),
+  rented_land: z.object({
+    cropland: z.string(),
+    grassland: z.string(),
+    other: z.string(),
+  }),
+  rent_existing_contracts: z.object({
+    cropland: z.string(),
+    grassland: z.string(),
+    other: z.string(),
+  }),
+  rent_new_contracts: z.object({
+    cropland: z.string(),
+    grassland: z.string(),
+    other: z.string(),
+  }),
+  market_value: z.object({
+    cropland: z.string(),
+    grassland: z.string(),
+    other: z.string(),
+  }),
   })
   
 type AcreageFormValues = z.infer<typeof acreageFormSchema>
@@ -71,7 +96,10 @@ type AcreageFormValues = z.infer<typeof acreageFormSchema>
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">What does your labor force look like?</h3>
+        <h3 className="text-lg font-medium">Data on Crop and Forage Production</h3>
+        <p className="text-sm text-muted-foreground">
+          Available Acreage and Prices
+        </p>
       </div>
       <Separator />
       <Form {...form}>
@@ -79,7 +107,7 @@ type AcreageFormValues = z.infer<typeof acreageFormSchema>
       <table className="w-full my-2">
         <thead>
           <tr>
-            <th className="font-medium">Available Acreage and Prices</th>
+            <th className="font-medium"></th>
             {landTypes.map((landType) => (
               <th key={landType} className="p-1 font-medium" >{landType}</th>
             ))}

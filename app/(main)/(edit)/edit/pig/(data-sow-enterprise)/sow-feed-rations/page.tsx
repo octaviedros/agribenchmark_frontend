@@ -44,6 +44,26 @@ import {
 } from "@/components/ui/popover"
 
 const sowfeedrationFormSchema = z.object({
+  production: z
+  .string({
+    required_error: "Please select a production system.",
+  }),
+  feed_sources: z
+  .string({
+    required_error: "Please select a production rhythm.",
+  }),
+  feed_type: z
+  .string({
+    required_error: "Please enter Livestock data.",
+  }),
+  feed_share: z
+  .string({
+    required_error: "Please enter Livestock data.",
+  }),
+  total_amount_feed_used: z
+  .string({
+    required_error: "Please enter Livestock data.",
+  }),
 })
  
   type SowFeedRationFormValues = z.infer<typeof sowfeedrationFormSchema>
@@ -74,7 +94,7 @@ const sowfeedrationFormSchema = z.object({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">How are your feed rations proportioned?</h3>
+        <h3 className="text-lg font-medium">Feed Rations Sow Enterprise</h3>
       </div>
       <Separator />
       <Form {...form}>

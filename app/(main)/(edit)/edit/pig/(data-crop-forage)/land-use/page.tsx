@@ -47,6 +47,41 @@ const landuses = [''];
 const landuseTypes = ['Acreage (ha)','Net yield (t/ha)','Dry matter (0,0x)', 'Price (per tonne)', 'CAP dir. payments (per ha)', 'Other dir. payments (per ha)', 'Enterprise codes'];
 
 const landuseFormSchema = z.object({
+  acreage: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+  net_yield: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+  dry_matter: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+  price: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+  cap_dir_paym: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+  other_dir_paym: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+  enterprise_code: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
   })
   
   type LandUseFormValues = z.infer<typeof landuseFormSchema>
@@ -55,7 +90,7 @@ const landuseFormSchema = z.object({
     const form = useForm<LandUseFormValues>({
       resolver: zodResolver(landuseFormSchema),
       defaultValues: {
-        depreciation: "", bookvalue: "", },  
+         },  
     }) 
 
     function onSubmit(data: LandUseFormValues) {

@@ -42,8 +42,61 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { tr } from "@faker-js/faker"
 
 const finishingcostFormSchema = z.object({
+  veterinary_medicine_supplies: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  disinfection: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  energy: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  water: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  manure_cost: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  transport_cost: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  specialised_pig_advisor: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  animal_disease_levy: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  carcass_disposal: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  maintenance: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  feed_mixing_preparation: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  insurance: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  cleaning: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
 })
 
   type FinishingCostFormValues = z.infer<typeof finishingcostFormSchema>
@@ -79,52 +132,193 @@ const finishingcostFormSchema = z.object({
       </div>
       <Separator />
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-      <table>
-        <thead>
-          <tr>
-            <th className="text-left">Variable Costs</th>
-            {varcostTypes.map((varcostType) => (
-              <th key={varcostType}>{varcostType}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {varcosts.map((varcost) => (
-            <tr key={varcost}>
-              <td>{varcost}</td>
-              {varcostTypes.map((varcostType) => (
-                <td key={varcostType}>
-                  <Input className="ml-6" type="number" name={`${varcost}-${varcostType}`} />
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <table>
-        <thead>
-          <tr>
-            <th className="text-left">Fixed Costs</th>
-            {fixedcostTypes.map((fixedcostType) => (
-              <th key={fixedcostType}>{fixedcostType}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {fixedcost.map((fixedcost) => (
-            <tr key={fixedcost}>
-              <td>{fixedcost}</td>
-              {fixedcostTypes.map((fixedcostType) => (
-                <td key={fixedcostType}>
-                  <Input className="ml-16 w-10/12" type="number" name={`${fixedcost}-${fixedcostType}`} />
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+          <h3 className="text-lg font-medium">Variable Costs</h3></div>
+          <FormField
+            control={form.control}
+            name="veterinary_medicine_supplies"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Veterinary Medicine & Supplies</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="disinfection"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Disinfection</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="energy"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Energy</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="water"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Water</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="manure_cost"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Manure Costs</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="transport_cost"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Transport Costs</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="specialised_pig_advisor"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Specialised Pig Advisors</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="animal_disease_levy"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Animal Disease Levy</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="carcass_disposal"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Carcass Disposal</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="maintenance"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Maintenance</FormLabel>
+                <FormDescription>Cost per head</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div>
+          <h3 className="text-lg font-medium">Fixed Costs</h3></div>
+          <FormField
+            control={form.control}
+            name="feed_mixing_preparation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Feed Mixing & Preparation</FormLabel>
+                <FormDescription>Cost per enterprise</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="insurance"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Insurance</FormLabel>
+                <FormDescription>Cost per enterprise</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="cleaning"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cleaning</FormLabel>
+                <FormDescription>Cost per enterprise</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
       </form>
       <Button type="submit">Submit</Button>
     </Form>

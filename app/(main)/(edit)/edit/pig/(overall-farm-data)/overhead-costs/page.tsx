@@ -44,17 +44,17 @@ import {
 } from "@/components/ui/popover"
 
 const overheadFormSchema = z.object({
-  landimprovements: z.string({
-      required_error: "Please enter your Costs forLand Improvements.",}),
-  maintenancemachinery: z.string({
+  land_improvements: z.string({
+      required_error: "Please enter your Costs for Land Improvements.",}),
+  maintenance_machinery: z.string({
       required_error: "Please enter your Costs for Maintenance Machinery.",}),
-  maintenancebuildings: z.string({
+  maintenance_buildings: z.string({
       required_error: "Please enter your Costs for Maintenance for your Buildings and Facilities.",}),
-  contractedlabor: z.string({
+  contracted_labor_machinery_association: z.string({
       required_error: "Please enter your Costs for Contracted Labor and Machinery Association",}),
-  dieselvehicle: z.string({
+  diesel_vehicles: z.string({
       required_error: "Please enter your Costs for Diesel for Vehicles.",}),
-  dieselheating: z.string({
+  diesel_heating_irrigation: z.string({
       required_error: "Please enter your Costs for Diesel for Heating.",}),
   gasoline: z.string({
       required_error: "Please enter your Costs for Gasoline.",}),
@@ -62,19 +62,19 @@ const overheadFormSchema = z.object({
       required_error: "Please enter your Costs for Gas.",}),
   electricity: z.string({
       required_error: "Please enter your Costs for Electricity.",}),
-  waterfresh: z.string({
+  water_fresh_waste_water_fees: z.string({
       required_error: "Please enter your Costs for Fresh Water.",}),
-  farminsurance: z.string({
+  farm_insurance: z.string({
       required_error: "Please enter your Costs for Farm Insurance.",}),
-  invalidityinsurance: z.string({
+  invalidity_insurance: z.string({
       required_error: "Please enter your Costs for Invalidity Insurance.",}),
-  taxesfees: z.string({
-      required_error: "Please enter your Taxes and Fees.",}),
-  advisoryservices: z.string({
+  taxes_fees: z.string({
+      required_error: "Please enter your Costs for Taxes and Fees.",}),
+  advisory_services_trainings: z.string({
       required_error: "Please enter your Costs for Advisory Services.",}),
   accounting: z.string({
       required_error: "Please enter your Costs for Accounting.",}),
-  office: z.string({
+  office_communication_subs: z.string({
       required_error: "Please enter your Costs for Office, Communication, Subscriptions and others",}),    
   })
   
@@ -85,6 +85,12 @@ const overheadFormSchema = z.object({
       resolver: zodResolver(overheadFormSchema),
       defaultValues: { },  
     }) 
+
+    const overheadcosts = ['Land Improvements', 'Maintenance Machinery', 'Maintenance Buildings', 'Contracted Labor and Machinery Association',
+                               'Diesel for Vehicles', 'Diesel for Heating', 'Gasoline', 'Gas', 'Electricity', 'Fresh Water', 'Farm Insurance', 
+                                'Invalidity Insurance', 'Taxes and Fees', 'Advisory Services', 'Accounting', 'Office, Communication, Subscriptions and others'];
+    const overheadcostsTypes = [''];
+    const unitTypes = ['Amount per year'];
   
     function onSubmit(data: OverheadFormValues) {
       toast({
@@ -97,260 +103,259 @@ const overheadFormSchema = z.object({
       })
     }
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium">What are your Overhead costs?</h3>
+    return (
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-medium">Overhead Costs</h3>
+        </div>
+        <Separator />
+        <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+        <FormField
+            control={form.control}
+            name="land_improvements"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Land Improvements</FormLabel>
+                <FormDescription> Amount per year</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="maintenance_machinery"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Maintenance Machinery</FormLabel>
+                <FormDescription> Amount per year</FormDescription>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="maintenance_buildings"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Maintenance Buildings and Facilities</FormLabel>
+                <FormDescription> Amount per year</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="contracted_labor_machinery_association"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Contracted Labor and Machinery Association</FormLabel>
+                <FormDescription> Amount per year</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                
+                <FormMessage />
+              </FormItem>
+            )} 
+          />
+          <FormField
+            control={form.control}
+            name="diesel_vehicles"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Diesel for Vehicles</FormLabel>
+                <FormDescription> Amount per year</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="diesel_heating_irrigation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Diesel for Heating</FormLabel>
+                <FormDescription> Amount per year</FormDescription>
+
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="gasoline"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gasoline</FormLabel>
+                <FormDescription> Amount per year</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="gas"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gas</FormLabel>
+                <FormDescription> Amount per year</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="electricity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Electricity</FormLabel>
+                <FormDescription> Amount per year</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                
+                <FormMessage />
+              </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="water_fresh_waste_water_fees"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Fresh Water</FormLabel>
+              <FormDescription> Amount per year</FormDescription>
+              <FormControl>
+                <Input {...field} /> 
+              </FormControl>
+              
+              <FormMessage />
+              </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="farm_insurance"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Farm Insurances</FormLabel>
+              <FormDescription> Amount per year</FormDescription>
+              <FormControl>
+                <Input {...field} /> 
+              </FormControl>
+              
+              <FormMessage />
+              </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="invalidity_insurance"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Invalidity Insurance</FormLabel>
+              <FormDescription> Amount per year</FormDescription>
+              <FormControl>
+                <Input {...field} /> 
+              </FormControl>
+
+              <FormMessage />
+              </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="taxes_fees"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Taxes and Fees</FormLabel>
+              <FormDescription> Amount per year</FormDescription>
+              <FormControl>
+                <Input {...field} /> 
+              </FormControl>
+              
+              <FormMessage />
+              </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="advisory_services_trainings"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Advisory Services/Trainings</FormLabel>
+              <FormDescription> Amount per year</FormDescription>
+              <FormControl>
+                <Input {...field} /> 
+              </FormControl>
+              
+              <FormMessage />
+              </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="accounting"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Accounting</FormLabel>
+              <FormDescription> Amount per year</FormDescription>
+              <FormControl>
+                <Input {...field} /> 
+              </FormControl>
+
+              <FormMessage />
+              </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="office_communication_subs"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Office, Communication, Subscriptions...</FormLabel>
+                <FormDescription> Amount per year</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button className="mt-4" type="submit">Submit</Button>
+        </form>
+      </Form>
       </div>
-      <Separator />
-      <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y">
-      <FormField
-          control={form.control}
-          name="landimprovements"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Overhead Costs</FormLabel>
-              <FormDescription>
-                    Land Improvements
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="maintenancemachinery"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Maintenance Machinery
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="maintenancebuildings"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Maintenance for your Buildings and Facilities
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="contractedlabor"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Contracted Labor and Machinery Association
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )} 
-        />
-        <FormField
-          control={form.control}
-          name="dieselvehicle"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Diesel for Vehicles
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="dieselheating"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Diesel for Heating
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="gasoline"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Gasoline
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="gas"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Gas
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="electricity"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Electricity
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="waterfresh"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Fresh Water
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="farminsurance"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Farm Insurance
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="invalidityinsurance"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Invalidity Insurance
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="taxesfees"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Taxes and Fees
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="advisoryservices"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Advisory Services
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="accounting"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Accounting
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="office"
-          render={({ field }) => (
-            <FormItem>
-              <FormDescription>
-                    Costs for Office, Communication, Subscriptions and others
-                </FormDescription>
-              <FormControl>
-                <Input {...field} /> 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />        
-        <Button className="mt-4" type="submit">Submit</Button>
-      </form>
-    </Form>
-    </div>
-  )
-}
+    )
+  }
+  
 
 export default OverheadFarmPage 

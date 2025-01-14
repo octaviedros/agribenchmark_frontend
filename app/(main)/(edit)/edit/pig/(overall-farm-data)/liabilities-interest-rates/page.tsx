@@ -44,26 +44,27 @@ import {
 } from "@/components/ui/popover"
 
 const liabilitiesFormSchema = z.object({
-    longterm: z.string({
-        required_error: "Please enter your Long-Term loans.",}),
-    mediumterm: z.string({
-        required_error: "Please enter your Medium-Term loans.",}),
-    shortterm: z.string({
-        required_error: "Please enter your Short-Term loans.",}),
-    circulatingcapital: z.string({
-        required_error: "Please enter your Circulating Capital.",}),
-    savings: z.string({
-        required_error: "Please enter your Savings.",}),
-    totallongterm: z.string({
-        required_error: "Please enter your Total Long-Term loans.",}),
-    totalmediumterm: z.string({
-        required_error: "Please enter your Total Medium-Term loans.",}),
-    totalshortterm: z.string({
-        required_error: "Please enter your Total Short-Term loans.",}),
-    percentagetotaldebt: z.string({
-        required_error: "Please enter your Percentage Debt of Total Assets.",}),
-
-  })
+  long_term_loans: z.string({
+    required_error: "Please enter your Long-Term loans.",}),
+  medium_term_loans: z.string({
+    required_error: "Please enter your Medium-Term loans.",}),
+  short_term_loans: z.string({
+    required_error: "Please enter your Short-Term loans.",}),
+  circulating_capital_overdraft: z.string({
+    required_error: "Please enter your Circulating Capital.",}),
+  savings: z.string({
+    required_error: "Please enter your Savings.",}),
+  total_liablilities: z.string({
+    required_error: "Please enter your Total Liabilities.",}),
+  total_long_term_loans: z.string({
+    required_error: "Please enter your Total Long-Term loans.",}),
+  total_medium_term_loans: z.string({
+    required_error: "Please enter your Total Medium-Term loans.",}),
+  total_short_term_loans: z.string({
+    required_error: "Please enter your Total Short-Term loans.",}),
+  perc_debt_total_assets: z.string({
+    required_error: "Please enter your Percentage Debt of Total Assets.",}),
+})
   
   type LiabilitiesFormValues = z.infer<typeof liabilitiesFormSchema>
   
@@ -95,7 +96,7 @@ const liabilitiesFormSchema = z.object({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y">
         <FormField
           control={form.control}
-          name="longterm"
+          name="long_term_loans"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Current Interest Rates</FormLabel>
@@ -111,7 +112,7 @@ const liabilitiesFormSchema = z.object({
         />
         <FormField
           control={form.control}
-          name="mediumterm"
+          name="medium_term_loans"
           render={({ field }) => (
             <FormItem>
               <FormDescription>
@@ -126,7 +127,7 @@ const liabilitiesFormSchema = z.object({
         />
         <FormField
           control={form.control}
-          name="shortterm"
+          name="short_term_loans"
           render={({ field }) => (
             <FormItem>
              <FormDescription>
@@ -141,7 +142,7 @@ const liabilitiesFormSchema = z.object({
         />
         <FormField
           control={form.control}
-          name="circulatingcapital"
+          name="circulating_capital_overdraft"
           render={({ field }) => (
             <FormItem>
               <FormDescription>
@@ -171,7 +172,7 @@ const liabilitiesFormSchema = z.object({
         />
         <FormField
           control={form.control}
-          name="totallongterm"
+          name="total_long_term_loans"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Total Liabilities</FormLabel>
@@ -187,7 +188,7 @@ const liabilitiesFormSchema = z.object({
         />
         <FormField
           control={form.control}
-          name="totalmediumterm"
+          name="total_medium_term_loans"
           render={({ field }) => (
             <FormItem>
               <FormDescription>
@@ -202,7 +203,7 @@ const liabilitiesFormSchema = z.object({
         />
         <FormField
           control={form.control}
-          name="totalshortterm"
+          name="total_short_term_loans"
           render={({ field }) => (
             <FormItem>
               <FormDescription>
@@ -217,7 +218,7 @@ const liabilitiesFormSchema = z.object({
         />
         <FormField
           control={form.control}
-          name="percentagetotaldebt"
+          name="perc_debt_total_assets"
           render={({ field }) => (
             <FormItem>
               <FormDescription>

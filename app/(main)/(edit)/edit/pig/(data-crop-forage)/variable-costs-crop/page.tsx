@@ -47,6 +47,14 @@ const varcostcrops = [''];
 const varcostcropTypes = ['Seeds', 'Fertilizer','Herbicide','Fungicide/Insecticide','Contract labor','Energy','Other'];
 
 const varcostcropFormSchema = z.object({
+  seeds: z.number(),
+  fertilizer: z.number(),
+  herbicide: z.number(),
+  fungicide: z.number(),
+  contract_labor: z.number(),
+  energy: z.number(),
+  other: z.number(),
+
   })
   
   type VarCostCropFormValues = z.infer<typeof varcostcropFormSchema>

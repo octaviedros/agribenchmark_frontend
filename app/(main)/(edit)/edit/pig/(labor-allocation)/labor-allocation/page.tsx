@@ -44,16 +44,16 @@ import {
 } from "@/components/ui/popover"
 
 const laborallocationFormSchema = z.object({
-    casualsow: z.number().min(2, {
+    casual_labor_sow: z.number().min(2, {
         message: "Please enter Casual Labor Allocation for Sow Entperise.",
     }),
-    familysow: z.number().min(2, {
+    family_labor_sow: z.number().min(2, {
         message: "Please enter Family Labor Allocation for Sow Entperise.",
     }),
-    casualfinishing: z.number().min(2, {
+    casual_labor_finishing: z.number().min(2, {
         message: "Please enter Casual Labor Allocation for Pig Finishing Entperise.",
     }),
-    familyfinishing: z.number().min(2, {
+    family_labor_finishing: z.number().min(2, {
         message: "Please enter Family Labor Allocation for Pig Finishing Entperise.",
     })
     })
@@ -87,7 +87,7 @@ const laborallocationFormSchema = z.object({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2"> 
       <FormField
           control={form.control}
-          name="casualsow"
+          name="casual_labor_sow"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Casual Labor Sow Enterprise</FormLabel>
@@ -100,7 +100,7 @@ const laborallocationFormSchema = z.object({
         />
         <FormField
           control={form.control}
-          name="familysow"
+          name="family_labor_sow"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Family Labor Sow Enterprise</FormLabel>
@@ -113,7 +113,7 @@ const laborallocationFormSchema = z.object({
         />
         <FormField
           control={form.control}
-          name="casualfinishing"
+          name="casual_labor_finishing"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Casual Labor Pig Finishing Enterprise</FormLabel>
@@ -126,7 +126,7 @@ const laborallocationFormSchema = z.object({
         />
         <FormField
           control={form.control}
-          name="familyfinishing"
+          name="family_labor_finishing"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Family Labor Pig Finishing Enterprise</FormLabel>

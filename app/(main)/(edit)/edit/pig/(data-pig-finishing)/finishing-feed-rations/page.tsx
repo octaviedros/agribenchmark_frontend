@@ -44,6 +44,30 @@ import {
 } from "@/components/ui/popover"
 
 const finishingfeedrationFormSchema = z.object({
+  self_produced_finishingfeed1: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  self_produced_finishingfeed2: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  self_produced_finishingfeed3: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  bought_finishingfeed1: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  bought_finishingfeed2: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  bought_finishingfeed3: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
 })
  
   type FinishingFeedRationFormValues = z.infer<typeof finishingfeedrationFormSchema>
@@ -74,14 +98,14 @@ const finishingfeedrationFormSchema = z.object({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">How are your feed rations proportioned?</h3>
+        <h3 className="text-lg font-medium">Feed Rations Pig Finishing Enterprise</h3>
       </div>
       <Separator />
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <h3></h3>
+      <h1>Self Produced Feed</h1>
          <table className="w-full my-4">
-                   <thead> <h1>Self Produced Feed</h1>
+                   <thead> 
                      <tr>
                        <th className="font-medium min-w-[200px]">Crop Name</th>
                        {finishingselfproducedTypes.map((finishingselfproducedTypes) => (
@@ -107,9 +131,9 @@ const finishingfeedrationFormSchema = z.object({
                      </tbody>
                    </table> 
                    <Button type="button">Add Row</Button>
-                   
+                   <h1>Bought Feed</h1>
                      <table className="w-full my-4">
-                     <thead> <h1>Bought Feed</h1>
+                     <thead>
                           <tr>
                              <th className="font-medium min-w-[200px]">Crop Name</th>
                              {finishingboughtfeedTypes.map((finishingboughtfeedTypes) => (

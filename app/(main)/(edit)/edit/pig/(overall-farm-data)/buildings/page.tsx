@@ -47,13 +47,23 @@ const buildings = [''];
 const costTypes = ['Purchase Year', 'Purchase Price', 'Utilization Period', 'Replacement Value', 'Enterprise Codes'];
 
 const buildingsFormSchema = z.object({
-  buildingdepreciation: z.string().min(2, {
+  sum_annual_depreciation: z.string().min(2, {
     message: "Depreciation must be at least 2 characters.",
   }),
-  buildingbookvalue: z.string().min(2, {
+  sum_book_values: z.string().min(2, {
     message: "Book Value must be at least 2 characters.",
   }),
-  })
+  building_name: z.array(
+    z.object({
+      name: z.string(),
+      purchase_year: z.string(),
+      purchase_price: z.string(),
+      utilization_period: z.string(),
+      replacement_value: z.string(),
+      enterprise_codes: z.string(),
+  }),
+
+)})
   
   type BuildingsFormValues = z.infer<typeof buildingsFormSchema>
   
@@ -61,7 +71,7 @@ const buildingsFormSchema = z.object({
     const form = useForm<BuildingsFormValues>({
       resolver: zodResolver(buildingsFormSchema),
       defaultValues: {
-        buildingdepreciation: "",
+        sum_annual_depreciation: "",
       },
   }) 
   
@@ -79,14 +89,14 @@ const buildingsFormSchema = z.object({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">What does your labor force look like?</h3>
+        <h3 className="text-lg font-medium">Buildings and Facilities</h3>
       </div>
       <Separator />
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="buildingdepreciation"
+          name="sum_annual_depreciation"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Annual Deprecation on Buildings & Facilities</FormLabel>
@@ -102,7 +112,7 @@ const buildingsFormSchema = z.object({
           /> 
         <FormField
           control={form.control}
-          name="buildingbookvalue"
+          name="sum_book_values"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Building & Facilities Book Values</FormLabel>

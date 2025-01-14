@@ -47,6 +47,37 @@ const feedprices = [''];
 const feedpriceTypes = ['Price per tonne', 'Dry Matter', 'MJ', 'Protein (%)', 'Feed Concentrate'];
 
 const feedpriceFormSchema = z.object({
+  feed_type: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+  price_per_tonne: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+  dry_matter_percent: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+  energy_mj: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+  protein: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+  concentrate: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+
   })
   
   type FeedPriceValues = z.infer<typeof feedpriceFormSchema>
@@ -72,7 +103,7 @@ const feedpriceFormSchema = z.object({
   return (
     <div className="space-y-6 min">
       <div>
-        <h3 className="text-lg font-medium">Variable Costs of Crop and Forage Production</h3>
+        <h3 className="text-lg font-medium">Prices for Feed and Dry Matter Content</h3>
       </div>
       <Separator />
 

@@ -44,6 +44,34 @@ import {
 } from "@/components/ui/popover"
 
 const finishingfeedingFormSchema = z.object({
+  proportion_finishingfeed_1: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  proportion_finishingfeed_2: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  proportion_finishingfeed_3: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  amount_finishingfeed_1: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  amount_finishingfeed_2: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  amount_finishingfeed_3: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
+  total_amount_feed: z
+  .number({
+    required_error: "Please enter a number.",
+  }),
 })
 
 type FinishingFeedingFormValues = z.infer<typeof finishingfeedingFormSchema>
@@ -80,55 +108,110 @@ function onSubmit(data: FinishingFeedingFormValues) {
       </div>
       <Separator />
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 w-full">
-      <table className="my-4">
-        <thead>
-          <tr>
-            <th className="font-semibold text-base text-left">Buying</th>
-            {finishingproportionTypes.map((finishingproportionType) => (
-              <th key={finishingproportionType} className="p-1 font-medium">
-                {finishingproportionType}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {finishingproportion.map((finishingproportion) => (
-            <tr key={finishingproportion}>
-              <td className="text-s mr-1">{finishingproportion}</td>
-              {finishingproportionTypes.map((finishingproportionType) => (
-                <td key={finishingproportionType} className="">
-                  <Input className="ms-44 w-56" type="number" name={`${finishingproportion}-${finishingproportionType}`}/>
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        </table>
-        <table className="my-4">
-        <thead>
-          <tr>
-            <th className="font-semibold text-base text-left">Selling</th>
-            {finishingamountTypes.map((finishingamountType) => (
-              <th key={finishingamountType} className="p-1 font-medium">
-                {finishingamountType}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {finishingamount.map((finishingamount) => (
-            <tr key={finishingamount}>
-              <td className="text-s mr-1">{finishingamount}</td>
-              {finishingamountTypes.map((finishingamountType) => (
-                <td key={finishingamountType} className="">
-                  <Input className="ml-16 w-56" type="number" name={`${finishingamount}-${finishingamountType}`}/>
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        </table>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y- w-full">
+      <div>
+      <h3 className="text-lg font-medium">Proportion of Finishing Period</h3></div>
+      <FormField
+            control={form.control}
+            name="proportion_finishingfeed_1"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Finishing Feed 1</FormLabel>
+                <FormDescription>%</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="proportion_finishingfeed_2"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Finishing Feed 2</FormLabel>
+                <FormDescription>%</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="proportion_finishingfeed_3"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Finishing Feed 3</FormLabel>
+                <FormDescription>%</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div>
+      <h3 className="space-y- mt-6 text-lg font-medium">Amount of Feed</h3>
+      <FormField
+            control={form.control}
+            name="amount_finishingfeed_1"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Finishing Feed 3</FormLabel>
+                <FormDescription>kg per year</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="amount_finishingfeed_2"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Finishing Feed 2</FormLabel>
+                <FormDescription>kg per year</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="amount_finishingfeed_3"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Finishing Feed 3</FormLabel>
+                <FormDescription>kg per year</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="total_amount_feed"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Total Amount of Feed</FormLabel>
+                <FormDescription>kg per year</FormDescription>
+                <FormControl>
+                  <Input {...field} /> 
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> </div>           
+
       <Button className="mt-4"  type="submit">Submit</Button>
       </form>
     </Form>

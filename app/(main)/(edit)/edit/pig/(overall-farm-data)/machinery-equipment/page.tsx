@@ -46,10 +46,20 @@ import {
 
 
 const machineryFormSchema = z.object({
-    depreciation: z.string({
+    sum_annual_depreciation: z.string({
         required_error: "Please enter your yearly machinery depreciation.",}),
-    bookvalue: z.string({
-            required_error: "Please enter your machinery Book Values.",}),       
+    sum_bookvalues: z.string({
+            required_error: "Please enter your machinery Book Values.",}),
+    tractors: z.array(
+        z.object({
+            name: z.string(),
+            purchase_year: z.string(),
+            purchase_price: z.string(),
+            utilization_period: z.string(),
+            replacement_value: z.string(),
+            enterprise_codes: z.string(),
+        })
+    )       
   })
   
   type MachineryFormValues = z.infer<typeof machineryFormSchema>
@@ -58,7 +68,7 @@ const machineryFormSchema = z.object({
     const form = useForm<MachineryFormValues>({
       resolver: zodResolver(machineryFormSchema),
       defaultValues: {
-        depreciation: "", bookvalue: "", },  
+        sum_annual_depreciation: "", sum_bookvalues: "", },  
     }) 
 
     const machines = [''];
@@ -86,7 +96,7 @@ const machineryFormSchema = z.object({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
         <FormField
           control={form.control}
-          name="depreciation"
+          name="sum_annual_depreciation"
           render={({ field }) => (
             <FormItem>
               <FormLabel>What is your annual Machinery Depreciation?</FormLabel>
@@ -102,7 +112,7 @@ const machineryFormSchema = z.object({
         />
        <FormField
           control={form.control}
-          name="bookvalue"
+          name="sum_bookvalues"
           render={({ field }) => (
             <FormItem>
               <FormLabel>What is your Machinery Book Values?</FormLabel>
