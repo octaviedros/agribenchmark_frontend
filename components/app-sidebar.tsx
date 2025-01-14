@@ -14,19 +14,6 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import {
-  PiggyBank,
-  Beef,
-  Drumstick,
-  Wheat,
-  Apple,
-  Fish,
-  PieChart,
-  House,
-  HousePlus,
-  TrendingUpDown,
-  RefreshCcw
-} from "lucide-react"
 import { navData } from "@/data/nav-data"
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {

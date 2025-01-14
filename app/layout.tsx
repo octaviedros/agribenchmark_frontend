@@ -1,7 +1,9 @@
+import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/components/theme-provider"
 import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
 import localFont from "next/font/local";
+import { LoginProvider } from "@/context/LoginContext";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -24,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body
         className={cn(
           "min-h-svh bg-background font-sans antialiased",
@@ -38,7 +40,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <LoginProvider>
+            <main>{children}</main>
+            <Toaster />
+          </LoginProvider>
         </ThemeProvider>
       </body>
     </html>

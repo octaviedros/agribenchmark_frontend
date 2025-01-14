@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTableViewOptions } from "@/components/data-table-view-options"
 
-import { priorities, statuses } from "../data/data"
+import { statuses } from "../data/data"
 import { DataTableFacetedFilter } from "@/components/data-table-faceted-filter"
-import { getFlagEmoji } from "@/lib/utils"
+import { flagmoji } from "@algoflows/flagmoji";
 
 interface DataTableToolbarProps<TData> {
   selected?: TData[]
@@ -25,7 +25,7 @@ export function DataTableToolbar<TData>({
   const uniqueCountries = table.getCoreRowModel().flatRows.map(row => row.getValue("countryCode")).reduce((acc: { label: string, value: string }[], countryCode) => {
     if (typeof countryCode === "string" && !acc.some(item => item.value === countryCode)) {
       acc.push({ 
-        label: getFlagEmoji(countryCode) + " " + countryCode, 
+        label: flagmoji.countryCode(countryCode) + " " + countryCode, 
         value: countryCode
       })
     }

@@ -9,7 +9,7 @@ import { labels, priorities, statuses } from "../data/data"
 import { Farm } from "../data/schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { DataTableRowActions } from "./data-table-row-actions"
-import { getFlagEmoji } from "@/lib/utils"
+import { flagmoji } from "@algoflows/flagmoji";
 
 export const columns: ColumnDef<Farm>[] = [
   {
@@ -111,7 +111,7 @@ export const columns: ColumnDef<Farm>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {getFlagEmoji(row.getValue("countryCode"))} {row.getValue("countryCode")}
+            {flagmoji.countryCode(row.getValue("countryCode"))?.emoji} {row.getValue("countryCode")}
           </span>
         </div>
       )

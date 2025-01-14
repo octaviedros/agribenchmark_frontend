@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import {
   BadgeCheck,
   Bell,
@@ -7,6 +8,7 @@ import {
   LogOut,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useLogin } from "@/context/LoginContext"
 
 import {
   Avatar,
@@ -40,9 +42,17 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const router = useRouter()
+  const login = useLogin()
+
+  const [isSSR, setIsSSR] = useState(true);
+
+  useEffect(() => {
+    setIsSSR(false);
+  }, []);
 
   const handleLogout = () => {
     // Perform any logout logic here
+    login.setEmail("")
     router.push("/")
   }
 
@@ -57,12 +67,13 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">{user.name.split(" ").map(w => w.slice(0,1)).join("")}</AvatarFallback>
+                {!isSSR && <AvatarFallback className="rounded-lg">{user.name.split(" ").map(w => w.slice(0, 1)).join("")}</AvatarFallback>}
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
-              </div>
+              {!isSSR && <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate text-xs">{user.email}</span>
+                </div>
+              }
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -73,7 +84,7 @@ export function NavUser({
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+              {!isSSR && <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
@@ -83,6 +94,7 @@ export function NavUser({
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
+              }
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

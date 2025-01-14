@@ -1,11 +1,12 @@
 "use client"
-
-import Link from "next/link"
+import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { v4 as uuidv4 } from "uuid"
 
-import { cn } from "@/lib/utils"
+import countries from "@/data/countries.json"
+import currencies from "@/data/currencies.json"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,48 +19,50 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+import { Combobox } from "@/components/ui/combobox"
+import { Checkbox } from "@/components/ui/checkbox"
+import { post } from "@/lib/api"
+
+const CountriesEnum = z.enum(countries.map((country) => country.alpha3) as [string, ...string[]])
+const CurrenciesEnum = z.enum(currencies.map((curr) => curr.code) as [string, ...string[]])
+
+// Match the format: "XX_YYYY_{UUID}"
+// Where XX = alpha2, YYYY = year, {UUID} = valid UUID
+const GeneralIdRegex = /^[A-Za-z]{2}_[0-9]{4}_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 const profileFormSchema = z.object({
-  username: z
+  scenario_id: z.string().uuid(),
+  scenario_name: z.string().min(3).max(50).optional(),
+  farm_id: z
     .string()
-    .min(2, {
-      message: "Username must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Username must not be longer than 30 characters.",
-    }),
-  email: z
-    .string({
-      required_error: "Please select an email to display.",
-    })
-    .email(),
-  bio: z.string().max(160).min(4),
-  urls: z
-    .array(
-      z.object({
-        value: z.string().url({ message: "Please enter a valid URL." }),
-      })
-    )
-    .optional(),
+    .regex(GeneralIdRegex, "Invalid format. Expected CC_YYYY_UUID.")
+    .default(""), // We'll generate/update it in code
+  farm_name: z.string().min(3).max(50).optional(),
+  username: z.string().min(3).max(25),
+  email: z.string().email(),
+  password: z.string().min(6),
+  land: CountriesEnum,
+  region: z.string().max(50),
+  currency: CurrenciesEnum,
+  year: z.number().int().nonnegative().min(1000).max(9999),
+  legal_status: z.string().optional(),
+  reference_year_data: z.number().int().positive().min(1000).max(9999).optional(),
+  cash_crop: z.boolean().optional(),
+  sows: z.boolean().optional(),
+  pig_finishing: z.boolean().optional(),
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-// This can come from your database or API.
 const defaultValues: Partial<ProfileFormValues> = {
-  bio: "I own a computer.",
-  urls: [
-    { value: "https://shadcn.com" },
-    { value: "http://twitter.com/shadcn" },
-  ],
+  // Provide your defaults as needed
+  scenario_id: uuidv4(),
+  scenario_name: "Baseline",
+  land: "DEU",
+  currency: "EUR",
+  year: new Date().getFullYear(),
+  reference_year_data: new Date().getFullYear(),
+  email: "",
 }
 
 export function ProfileForm() {
@@ -69,25 +72,88 @@ export function ProfileForm() {
     mode: "onChange",
   })
 
-  const { fields, append } = useFieldArray({
-    name: "urls",
-    control: form.control,
-  })
+  // Generate or update farm_id whenever land or year changes
+  const watchLand = form.watch("land")
+  const watchYear = form.watch("year")
 
-  function onSubmit(data: ProfileFormValues) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+  React.useEffect(() => {
+    // Whenever country or year changes, update farm_id automatically
+    const alpha2 =
+      countries.find((c) => c.alpha3 === watchLand)?.alpha2?.toUpperCase() || "DE"
+    const currentYear = watchYear || 2025
+    // Generate a new random UUID but preserve the user-modified part if desired
+    const newUuid = uuidv4()
+    const newGeneralId = `${alpha2}_${currentYear}_${newUuid}`
+    form.setValue("farm_id", newGeneralId)
+  }, [watchLand, watchYear, form, form.setValue])
+
+  async function onSubmit(data: ProfileFormValues) {
+    // send data to the server
+    try {
+      await post("/generalfarm/", data)
+      toast({
+        title: "Success",
+        description: "Farm data has been saved successfully.",
+      })  
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to save farm data. ${errorMessage}`,
+      })
+    }
   }
+
+  // Prepare combobox options for country selection
+  const countryOptions = countries.map((c) => ({
+    value: c.alpha3,
+    label: c.en,
+  }))
+
+  // Prepare combobox options for currency selection
+  const currencyOptions = currencies.map((cur) => ({
+    value: cur.code,
+    label: `${cur.name} (${cur.symbol})`,
+  }))
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit, errors => console.log(errors))} className="space-y-8">
+        {/** farm_id field */}
+        <FormField
+          control={form.control}
+          name="farm_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Farm ID</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormDescription>
+                Format: CC_YYYY_UUID. Automatically updates if country/year changes.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/** farm_name */}
+        <FormField
+          control={form.control}
+          name="farm_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Farm name</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g. John Does Farm" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/** username */}
         <FormField
           control={form.control}
           name="username"
@@ -95,96 +161,225 @@ export function ProfileForm() {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="e.g. farmer123" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name. It can be your real name or a
-                pseudonym. You can only change this once every 30 days.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {/** email */}
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                You can manage verified email addresses in your{" "}
-                <Link href="/examples/forms">email settings</Link>.
-              </FormDescription>
+              <FormControl>
+                <Input type="email" placeholder="email@example.com" {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {/** password */}
         <FormField
           control={form.control}
-          name="bio"
+          name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Bio</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="Tell us a little bit about yourself"
-                  className="resize-none"
-                  {...field}
-                />
+                <Input type="password" placeholder="********" {...field} />
               </FormControl>
-              <FormDescription>
-                You can <span>@mention</span> other users and organizations to
-                link to them.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div>
-          {fields.map((field, index) => (
-            <FormField
-              control={form.control}
-              key={field.id}
-              name={`urls.${index}.value`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={cn(index !== 0 && "sr-only")}>
-                    URLs
-                  </FormLabel>
-                  <FormDescription className={cn(index !== 0 && "sr-only")}>
-                    Add links to your website, blog, or social media profiles.
-                  </FormDescription>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-2"
-            onClick={() => append({ value: "" })}
-          >
-            Add URL
-          </Button>
+
+        {/** land (country) combobox */}
+        <FormField
+          control={form.control}
+          name="land"
+          render={({ field }) => {
+            const [countryValue, setCountryValue] = React.useState<string>(field.value || defaultValues.land as string)
+            React.useEffect(() => {
+              field.onChange(countryValue)
+            }, [countryValue, field])
+            return (
+              <FormItem>
+                <FormLabel>Country</FormLabel>
+                <br />
+                <FormControl>
+                  <Combobox
+                    valueState={[countryValue, setCountryValue]}
+                    options={countryOptions}
+                    selectText="Select country..."
+                    placeholder="Search countries..."
+                    noOptionText="No country found."
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )
+          }}
+        />
+
+        {/** currency combobox */}
+        <FormField
+          control={form.control}
+          name="currency"
+          render={({ field }) => {
+            const [currencyValue, setCurrencyValue] = React.useState<string>(field.value || defaultValues.currency as string)
+            React.useEffect(() => {
+              field.onChange(currencyValue)
+            }, [currencyValue, field])
+            React.useEffect(() => {
+              // Update currency automatically based on country if needed:
+              const countryObj = countries.find((c) => c.alpha3 === watchLand)
+              if (countryObj) {
+                const matchedCurrency = currencies.find((cur) => cur.code === countryObj.currency)
+                if (matchedCurrency) {
+                  setCurrencyValue(matchedCurrency.code)
+                }
+              }
+            }, [watchLand])
+            return (
+              <FormItem>
+                <FormLabel>Currency</FormLabel>
+                <br />
+                <FormControl>
+                  <Combobox
+                    valueState={[currencyValue, setCurrencyValue]}
+                    options={currencyOptions}
+                    selectText="Select currency..."
+                    placeholder="Search currencies..."
+                    noOptionText="No currency found."
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )
+          }}
+        />
+
+        {/** year */}
+        <FormField
+          control={form.control}
+          name="year"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Year</FormLabel>
+              <FormControl>
+          <Input
+            type="number"
+            placeholder="2025"
+            {...field}
+            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : "")}
+          />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/** region */}
+        <FormField
+          control={form.control}
+          name="region"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Region</FormLabel>
+              <FormControl>
+                <Input placeholder="Region/State" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/** legal_status */}
+        <FormField
+          control={form.control}
+          name="legal_status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Legal Status</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="e.g. LLC" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/** reference_year_data */}
+        <FormField
+          control={form.control}
+          name="reference_year_data"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Reference Year</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="2022" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/** Checkboxes for booleans */}
+        <div className="grid grid-cols-3 gap-4">
+          <FormLabel className="col-span-3">Farm branches</FormLabel>
+          <FormField
+            control={form.control}
+            name="cash_crop"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value || false}
+                    onCheckedChange={(checked) => field.onChange(!!checked)}
+                  />
+                </FormControl>
+                <FormLabel className="font-normal">Cash Crop</FormLabel>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="sows"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value || false}
+                    onCheckedChange={(checked) => field.onChange(!!checked)}
+                  />
+                </FormControl>
+                <FormLabel className="font-normal">Sows</FormLabel>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="pig_finishing"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value || false}
+                    onCheckedChange={(checked) => field.onChange(!!checked)}
+                  />
+                </FormControl>
+                <FormLabel className="font-normal">Pig Finishing</FormLabel>
+              </FormItem>
+            )}
+          />
         </div>
-        <Button type="submit">Update profile</Button>
+
+        <Button type="submit">Save</Button>
       </form>
     </Form>
   )

@@ -1,7 +1,8 @@
 "use client"
 
-import { useContext, useState, useEffect } from "react"
-import { NetworkContext } from "@/context/NetworkContext"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useLogin } from "@/context/LoginContext"
 import { AppSidebar } from "@/components/app-sidebar"
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes'
@@ -12,7 +13,6 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
@@ -29,9 +29,11 @@ export function LayoutContent({
   children: React.ReactNode, 
   userData: { user: { name: string, email: string, avatar: string } }
 }) {
+  const router = useRouter();
   const { theme } = useTheme()
-  const { activeNetwork } = useContext(NetworkContext)
-  const pathname = usePathname();
+  // const { activeNetwork } = useContext(NetworkContext)
+  const { email } = useLogin()
+  const pathname = usePathname()
   const paths = pathname
     .split('/')
     .filter(Boolean)
@@ -46,6 +48,14 @@ export function LayoutContent({
   useEffect(() => {
     setIsSSR(false);
   }, []);
+
+  if (email) {
+    userData.user.name = email;
+    userData.user.email = email;
+  } else {
+    // Redirect to login page
+    router.push('/'); 
+  }
 
   return (
     <>

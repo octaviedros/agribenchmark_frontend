@@ -4,6 +4,7 @@ import { z } from "zod"
 import { farmSchema } from "@/data/schema"
 import { DashboardClient } from "./DashboardClient"
 import type { Metadata } from "next";
+import { get } from "@/lib/api"
 
 export const metadata: Metadata = {
   title: "Dashboard | agribenchmark",
@@ -12,6 +13,8 @@ export const metadata: Metadata = {
 
 export default async function Dashboard() {
   // TODO: Fetch data from the database
+  const test = await get("/generalfarm/")
+  console.log(test)
   const data = await fs.readFile(path.join(process.cwd(), "data/farms.json"))
   const farms = JSON.parse(data.toString())
   const validatedFarms = z.array(farmSchema).parse(farms)

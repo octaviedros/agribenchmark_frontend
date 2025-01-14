@@ -37,7 +37,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
   const pathname = usePathname()
 
   return (
-    <Sidebar {...props} id="agribenchmark-page-content-sidebar" variant="floating" collapsible="none" side="right" className="bg-background w-full z-0">
+    <Sidebar {...props} id="agribenchmark-page-content-sidebar" variant="inset" collapsible="none" side="right" className="bg-background w-full z-0 sticky top-12 max-h-[calc(100vh-8rem)] overflow-y-auto">
       <SidebarContent className="gap-0">
         {/* We create a collapsible SidebarGroup for each parent. */}
         {items.map((item, i) => (

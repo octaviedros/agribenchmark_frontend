@@ -11,6 +11,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import {
+  Dialog,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { ProfileForm } from "./add-farm-dialog"
 
 export function NavProjects({
   projects,
@@ -26,16 +31,36 @@ export function NavProjects({
     <SidebarGroup>
       <SidebarGroupLabel>Actions</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ))}
+        {projects.map((item) => {
+          if (item.name === "Add Farm") {
+            return (
+              <Dialog key={item.name}>
+                <DialogTrigger>
+                  <SidebarMenuItem key={item.name}>
+                    <SidebarMenuButton asChild>
+                      <div>
+                        <item.icon />
+                        <span>{item.name}</span>
+                      </div>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </DialogTrigger>
+                <ProfileForm />
+              </Dialog>
+            )
+          } else {
+            return (
+              <SidebarMenuItem key={item.name}>
+                <SidebarMenuButton asChild>
+                  <a href={item.url}>
+                    <item.icon />
+                    <span>{item.name}</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )
+          }
+        })}
       </SidebarMenu>
     </SidebarGroup>
   )

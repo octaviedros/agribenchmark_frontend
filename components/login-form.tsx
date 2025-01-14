@@ -14,17 +14,26 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Spinner from "react-spinners/ClipLoader";
+import { useLogin } from "@/context/LoginContext";
+
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const loginContext = useLogin();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
+
+    // store email in context
+    console.log(email);
+    loginContext.setEmail(email);
 
     // Simulate async login verification
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -46,28 +55,36 @@ export function LoginForm({
           <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                />
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
               </div>
               <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
-                <Input id="password" type="password" required />
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+                <a
+                href="#"
+                className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                >
+                Forgot your password?
+                </a>
+              </div>
+              <Input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? <Spinner /> : "Login"}
+              {loading ? <Spinner /> : "Login"}
               </Button>
             </div>
           </form>
