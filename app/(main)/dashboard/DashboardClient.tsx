@@ -2,14 +2,23 @@
 
 import { useContext, useState } from "react"
 import { NetworkContext } from "@/context/NetworkContext"
+import { FarmsContext } from "@/context/FarmsContext"
 import Image from "next/image"
 import { DataTable } from "@/components/data-table"
 import { columns } from "@/components/columns"
+import { Farm } from "@/data/schema"
+interface DashboardClientProps {
+  initialFarms: Farm[]
+}
 
-export function DashboardClient({ farms }: { farms: any[] }) {
+export function DashboardClient({
+  initialFarms,
+}: DashboardClientProps) {
+  const { farms: allFarms } = useContext(FarmsContext)
   const { activeNetwork } = useContext(NetworkContext)
+  const farms = allFarms.length ? allFarms : initialFarms
   const filteredFarms = farms.filter(farm => 
-    farm.networks.includes(activeNetwork.value)
+    farm.networks?.includes(activeNetwork.value)
   )
   const [selectedFarms, setSelectedFarms] = useState<any[]>([])
 

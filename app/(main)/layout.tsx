@@ -1,4 +1,5 @@
 
+import { FarmsProvider } from "@/context/FarmsContext"
 import { NetworkProvider } from "@/context/NetworkContext"
 import { LayoutContent } from "./LayoutContent"
 
@@ -17,9 +18,11 @@ export default function DashboardLayout({
 }) {
   return (
     <NetworkProvider>
-      <LayoutContent userData={data}>
-        {children}
-      </LayoutContent>
+      <FarmsProvider>
+        <LayoutContent userData={data}>
+          {children}
+        </LayoutContent>
+      </FarmsProvider>
     </NetworkProvider>
   )
 }

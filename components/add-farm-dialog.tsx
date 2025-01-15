@@ -6,7 +6,12 @@ import { z } from "zod"
 import { v4 as uuidv4 } from "uuid"
 import { NetworkContext } from "@/context/NetworkContext"
 import { navData } from "@/data/nav-data"
+import { FarmsContext } from "@/context/FarmsContext"
 
+import {
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar"
 import countries from "@/data/countries.json"
 import currencies from "@/data/currencies.json"
 import { toast } from "@/hooks/use-toast"
@@ -24,6 +29,8 @@ import { Input } from "@/components/ui/input"
 import { Combobox } from "@/components/ui/combobox"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
+  Dialog,
+  DialogTrigger,
   DialogContent,
   DialogClose,
   DialogFooter,
@@ -32,20 +39,20 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { post } from "@/lib/api"
+import { getFarms } from "@/lib/utils"
 
 const CountriesEnum = z.enum(countries.map((country) => country.alpha3) as [string, ...string[]])
 const CurrenciesEnum = z.enum(currencies.map((curr) => curr.code) as [string, ...string[]])
 
 // Match the format: "XX_YYYY_{UUID}"
 // Where XX = alpha2, YYYY = year, {UUID} = valid UUID
-const GeneralIdRegex = /^[A-Za-z]{2}_[0-9]{4}_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 const profileFormSchema = z.object({
   scenario_id: z.string().uuid(),
   scenario_name: z.string().min(3).max(50).optional(),
   farm_id: z
     .string()
-    .regex(GeneralIdRegex, "Invalid format. Expected CC_YYYY_UUID.")
+    .min(3)
     .default(""), // We'll generate/update it in code
   farm_name: z.string().min(3).max(50).optional(),
   firstname: z.string().min(3).max(25),
@@ -72,8 +79,19 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-export function ProfileForm() {
+interface ProfileFormProps {
+  item: {
+    name: string
+    icon: React.ComponentType
+  }
+}
+
+export function ProfileForm({
+  item
+}: ProfileFormProps) {
+  const { farms, setFarms } = React.useContext(FarmsContext)
   const { activeNetwork } = React.useContext(NetworkContext)
+  const [open, setOpen] = React.useState(false);
 
   const defaultValues: Partial<ProfileFormValues> = {
     // Provide your defaults as needed
@@ -109,6 +127,15 @@ export function ProfileForm() {
   }, [watchLand, watchYear, form, form.setValue])
 
   async function onSubmit(data: ProfileFormValues) {
+    // Check if farm ID is already taken
+    const existing = farms.find((f) => f.farm_id === data.farm_id)
+    if (existing) {
+      form.setError("farm_id", {
+        type: "duplicate",
+        message: "Farm ID is already taken",
+      })
+      return
+    }
     // send data to the server
     try {
       await post("/generalfarm/", data)
@@ -116,8 +143,11 @@ export function ProfileForm() {
         title: "Success",
         description: "Farm data has been saved successfully.",
       })
+      // get the updated list of farms
+      const updatedFarms = await getFarms()
+      setFarms(updatedFarms)
       // close the dialog
-
+      setOpen(false)
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
       toast({
@@ -141,278 +171,240 @@ export function ProfileForm() {
   }))
 
   return (
-    <DialogContent className={"overflow-y-scroll max-h-[calc(100vh-4rem)]"}>
-      <DialogHeader>
-        <DialogTitle>Create a farm</DialogTitle>
-        <DialogDescription>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit, errors => console.log(errors))} className="space-y-8">
-              {/** farm_id field */}
-              <FormField
-                control={form.control}
-                name="farm_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Farm ID</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Format: CC_YYYY_UUID. Automatically updates if country/year changes.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/** firstname */}
-              <FormField
-                control={form.control}
-                name="firstname"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. John" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/** lastname */}
-              <FormField
-                control={form.control}
-                name="lastname"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/** farm_name */}
-              <FormField
-                control={form.control}
-                name="farm_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Farm name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. John Does Farm" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/** email */}
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="email@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/** land (country) combobox */}
-              <FormField
-                control={form.control}
-                name="land"
-                render={({ field }) => {
-                  const [countryValue, setCountryValue] = React.useState<string>(field.value || defaultValues.land as string)
-                  React.useEffect(() => {
-                    field.onChange(countryValue)
-                  }, [countryValue, field])
-                  return (
+    <Dialog key={item.name} open={open} onOpenChange={setOpen}>
+      <DialogTrigger>
+        <SidebarMenuItem key={item.name}>
+          <SidebarMenuButton asChild>
+            <div>
+              <item.icon />
+              <span>{item.name}</span>
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </DialogTrigger>
+      <DialogContent className={"overflow-y-scroll max-h-[calc(100vh-4rem)]"}>
+        <DialogHeader>
+          <DialogTitle>Create a farm</DialogTitle>
+          <DialogDescription>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit, errors => console.log(errors))} className="space-y-8">
+                {/** farm_id field */}
+                <FormField
+                  control={form.control}
+                  name="farm_id"
+                  render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Country</FormLabel>
-                      <br />
+                      <FormLabel>Farm ID</FormLabel>
                       <FormControl>
-                        <Combobox
-                          valueState={[countryValue, setCountryValue]}
-                          options={countryOptions}
-                          selectText="Select country..."
-                          placeholder="Search countries..."
-                          noOptionText="No country found."
-                        />
+                        <Input {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Format: CC_YYYY_UUID. Automatically updates if country/year changes.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/** firstname */}
+                <FormField
+                  control={form.control}
+                  name="firstname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. John" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )
-                }}
-              />
+                  )}
+                />
 
-              {/** currency combobox */}
-              <FormField
-                control={form.control}
-                name="currency"
-                render={({ field }) => {
-                  const [currencyValue, setCurrencyValue] = React.useState<string>(field.value || defaultValues.currency as string)
-                  React.useEffect(() => {
-                    field.onChange(currencyValue)
-                  }, [currencyValue, field])
-                  React.useEffect(() => {
-                    // Update currency automatically based on country if needed:
-                    const countryObj = countries.find((c) => c.alpha3 === watchLand)
-                    if (countryObj) {
-                      const matchedCurrency = currencies.find((cur) => cur.code === countryObj.currency)
-                      if (matchedCurrency) {
-                        setCurrencyValue(matchedCurrency.code)
+                {/** lastname */}
+                <FormField
+                  control={form.control}
+                  name="lastname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/** farm_name */}
+                <FormField
+                  control={form.control}
+                  name="farm_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Farm name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. John Does Farm" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/** email */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="email@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/** land (country) combobox */}
+                <FormField
+                  control={form.control}
+                  name="land"
+                  render={({ field }) => {
+                    const [countryValue, setCountryValue] = React.useState<string>(field.value || defaultValues.land as string)
+                    React.useEffect(() => {
+                      field.onChange(countryValue)
+                    }, [countryValue, field])
+                    return (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <br />
+                        <FormControl>
+                          <Combobox
+                            valueState={[countryValue, setCountryValue]}
+                            options={countryOptions}
+                            selectText="Select country..."
+                            placeholder="Search countries..."
+                            noOptionText="No country found."
+                            isDialog={true}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )
+                  }}
+                />
+
+                {/** currency combobox */}
+                <FormField
+                  control={form.control}
+                  name="currency"
+                  render={({ field }) => {
+                    const [currencyValue, setCurrencyValue] = React.useState<string>(field.value || defaultValues.currency as string)
+                    React.useEffect(() => {
+                      field.onChange(currencyValue)
+                    }, [currencyValue, field])
+                    React.useEffect(() => {
+                      // Update currency automatically based on country if needed:
+                      const countryObj = countries.find((c) => c.alpha3 === watchLand)
+                      if (countryObj) {
+                        const matchedCurrency = currencies.find((cur) => cur.code === countryObj.currency)
+                        if (matchedCurrency) {
+                          setCurrencyValue(matchedCurrency.code)
+                        }
                       }
-                    }
-                  }, [watchLand])
-                  return (
+                    }, [watchLand])
+                    return (
+                      <FormItem>
+                        <FormLabel>Currency</FormLabel>
+                        <br />
+                        <FormControl>
+                          <Combobox
+                            valueState={[currencyValue, setCurrencyValue]}
+                            options={currencyOptions}
+                            selectText="Select currency..."
+                            placeholder="Search currencies..."
+                            noOptionText="No currency found."
+                            isDialog={true}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )
+                  }}
+                />
+
+                {/** year */}
+                <FormField
+                  control={form.control}
+                  name="year"
+                  render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Currency</FormLabel>
-                      <br />
+                      <FormLabel>Year</FormLabel>
                       <FormControl>
-                        <Combobox
-                          valueState={[currencyValue, setCurrencyValue]}
-                          options={currencyOptions}
-                          selectText="Select currency..."
-                          placeholder="Search currencies..."
-                          noOptionText="No currency found."
+                        <Input
+                          type="number"
+                          placeholder="2025"
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : "")}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )
-                }}
-              />
+                  )}
+                />
 
-              {/** year */}
-              <FormField
-                control={form.control}
-                name="year"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Year</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="2025"
-                        {...field}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : "")}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/** region */}
-              <FormField
-                control={form.control}
-                name="region"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Region</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Region/State" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/** legal_status */}
-              <FormField
-                control={form.control}
-                name="legal_status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Legal Status</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. LLC" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/** reference_year_data */}
-              <FormField
-                control={form.control}
-                name="reference_year_data"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Reference Year</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="2022" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/** Checkboxes for booleans */}
-              <div className="grid grid-cols-3 gap-4">
-                <FormLabel className="col-span-3">Farm branches</FormLabel>
+                {/** region */}
                 <FormField
                   control={form.control}
-                  name="cash_crop"
+                  name="region"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                    <FormItem>
+                      <FormLabel>Region</FormLabel>
                       <FormControl>
-                        <Checkbox
-                          checked={field.value || false}
-                          onCheckedChange={(checked) => field.onChange(!!checked)}
-                        />
+                        <Input placeholder="Region/State" {...field} />
                       </FormControl>
-                      <FormLabel className="font-normal">Cash Crop</FormLabel>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                {/** legal_status */}
                 <FormField
                   control={form.control}
-                  name="sows"
+                  name="legal_status"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                    <FormItem>
+                      <FormLabel>Legal Status</FormLabel>
                       <FormControl>
-                        <Checkbox
-                          checked={field.value || false}
-                          onCheckedChange={(checked) => field.onChange(!!checked)}
-                        />
+                        <Input {...field} placeholder="e.g. LLC" />
                       </FormControl>
-                      <FormLabel className="font-normal">Sows</FormLabel>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                {/** reference_year_data */}
                 <FormField
                   control={form.control}
-                  name="pig_finishing"
+                  name="reference_year_data"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                    <FormItem>
+                      <FormLabel>Reference Year</FormLabel>
                       <FormControl>
-                        <Checkbox
-                          checked={field.value || false}
-                          onCheckedChange={(checked) => field.onChange(!!checked)}
-                        />
+                        <Input type="number" placeholder="2022" {...field} />
                       </FormControl>
-                      <FormLabel className="font-normal">Pig Finishing</FormLabel>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
-              {/** Network checkboxes */}
-              <div className="grid grid-cols-3 gap-4">
-                <FormLabel className="col-span-3">Networks</FormLabel>
-                {navData.networks.map((network) => (
+
+                {/** Checkboxes for booleans */}
+                <div className="grid grid-cols-3 gap-4">
+                  <FormLabel className="col-span-3">Farm branches</FormLabel>
                   <FormField
-                    key={network.value}
                     control={form.control}
-                    name={"network_" + network.value}
+                    name="cash_crop"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                         <FormControl>
@@ -421,22 +413,75 @@ export function ProfileForm() {
                             onCheckedChange={(checked) => field.onChange(!!checked)}
                           />
                         </FormControl>
-                        <FormLabel className="font-normal">{network.name}</FormLabel>
+                        <FormLabel className="font-normal">Cash Crop</FormLabel>
                       </FormItem>
                     )}
                   />
-                ))}
+                  <FormField
+                    control={form.control}
+                    name="sows"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value || false}
+                            onCheckedChange={(checked) => field.onChange(!!checked)}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">Sows</FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="pig_finishing"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value || false}
+                            onCheckedChange={(checked) => field.onChange(!!checked)}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">Pig Finishing</FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                {/** Network checkboxes */}
+                <div className="grid grid-cols-3 gap-4">
+                  <FormLabel className="col-span-3">Networks</FormLabel>
+                  {navData.networks.map((network) => (
+                    <FormField
+                      key={network.value}
+                      control={form.control}
+                      name={"network_" + network.value}
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value || false}
+                              onCheckedChange={(checked) => field.onChange(!!checked)}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-normal">{network.name}</FormLabel>
+                        </FormItem>
+                      )}
+                    />
+                  ))}
 
-              </div>
-              <DialogFooter className="sm:justify-start">
-                <DialogClose asChild>
+                </div>
+                <DialogFooter className="sm:justify-start">
                   <Button type="submit">Save</Button>
-                </DialogClose>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogDescription>
-      </DialogHeader>
-    </DialogContent>
+                  <DialogClose asChild>
+                    <Button variant="ghost" type="reset">Cancel</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
   )
 }

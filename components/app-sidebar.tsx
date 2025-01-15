@@ -3,8 +3,7 @@
 import * as React from "react"
 
 import { ModeToggle } from "./mode-toggle"
-// import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
+import { NavActions } from "@/components/nav-actions"
 import { NavUser } from "@/components/nav-user"
 import { NetworkSwitcher } from "@/components/network-switcher"
 import {
@@ -32,8 +31,7 @@ export function AppSidebar({
         <NetworkSwitcher networks={navData.networks} />
       </SidebarHeader>
       <SidebarContent>
-        {/* <NavMain items={navData.navMain} /> */}
-        <NavProjects projects={navData.navLinks} />
+        <NavActions actions={navData.actions} />
       </SidebarContent>
       <SidebarFooter>
         <ModeToggle />

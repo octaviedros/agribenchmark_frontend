@@ -6,12 +6,8 @@ import {
   Apple,
   Fish,
   PieChart,
-  House,
   HousePlus,
   TrendingUpDown,
-  RefreshCcw,
-  Plus,
-  Edit,
   Pencil
 } from "lucide-react"
 
@@ -54,30 +50,30 @@ export const navData = {
       plan: "Fish",
     },
   ],
-    navLinks: [
-      {
-        name: "Add Farm",
-        url: "/create/",
-        icon: HousePlus,
-        isActive: false,
-      },
-      {
-        name: "Edit Farm",
-        url: "/edit/pig/basic-information",
-        icon: Pencil,
-        isActive: false,
-      },
-      {
-        name: "Add Scenario",
-        url: "#",
-        icon: TrendingUpDown,
-        isActive: false,
-      },
-      {
-        name: "Results",
-        url: "#",
-        icon: PieChart,
-        isActive: false,
-      },
-    ]
+  actions: [
+    {
+      name: "Add Farm",
+      url: "/create/",
+      icon: HousePlus,
+      isActive: false,
+    },
+    {
+      name: "Edit Farm",
+      url: "/edit/pig/basic-information",
+      icon: Pencil,
+      isActive: false,
+    },
+    {
+      name: "Add Scenario",
+      url: "#",
+      icon: TrendingUpDown,
+      isActive: false,
+    },
+    {
+      name: "Results",
+      url: "#",
+      icon: PieChart,
+      isActive: false,
+    },
+  ]
 }

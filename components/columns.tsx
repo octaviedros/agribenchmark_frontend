@@ -1,11 +1,12 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
+import { Pencil } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 
-import { labels, priorities, statuses } from "../data/data"
+import { labels, priorities } from "../data/data"
 import { Farm } from "../data/schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { DataTableRowActions } from "./data-table-row-actions"
@@ -37,11 +38,11 @@ export const columns: ColumnDef<Farm>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
+    accessorKey: "farm_id",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Farm" />
     ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
+    cell: ({ row }) => <div className="w-[80px]">{row.getValue("farm_id")}</div>,
     enableSorting: false,
     enableHiding: false,
   },
@@ -54,12 +55,21 @@ export const columns: ColumnDef<Farm>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "scenario_name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Scenario" />
+    ),
+    cell: ({ row }) => <div className="w-[50px]">{row.getValue("scenario_name")}</div>,
+    enableHiding: false,
+  },
+  {
     accessorKey: "networks",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Networks" />
     ),
     cell: ({ row }) => {
-      const label = labels.filter((label) => row.original.networks.includes(label.value))
+      const networks = row.original.networks ?? []
+      const label = labels.filter((label) => networks.includes(label.value))
 
       return (
         <div className="flex space-x-2">
@@ -103,7 +113,7 @@ export const columns: ColumnDef<Farm>[] = [
     },
   },
   {
-    accessorKey: "countryCode",
+    accessorKey: "land",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Country" />
     ),
@@ -111,64 +121,10 @@ export const columns: ColumnDef<Farm>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {flagmoji.countryCode(row.getValue("countryCode"))?.emoji} {row.getValue("countryCode")}
+            {flagmoji.countryCode(row.getValue("land"))?.emoji} {row.getValue("land")}
           </span>
         </div>
       )
-    },
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
-    cell: ({ row }) => {
-      const status = statuses.find(
-        (status) => status.value === row.getValue("status")
-      )
-
-      if (!status) {
-        return null
-      }
-
-      return (
-        <div className="flex w-[100px] items-center">
-          {status.icon && (
-            <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-          )}
-          <span>{status.label}</span>
-        </div>
-      )
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
-  },
-  {
-    accessorKey: "priority",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Priority" />
-    ),
-    cell: ({ row }) => {
-      const priority = priorities.find(
-        (priority) => priority.value === row.getValue("priority")
-      )
-
-      if (!priority) {
-        return null
-      }
-
-      return (
-        <div className="flex items-center">
-          {priority.icon && (
-            <priority.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-          )}
-          <span>{priority.label}</span>
-        </div>
-      )
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
     },
   },
   {

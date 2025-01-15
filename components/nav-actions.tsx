@@ -17,10 +17,10 @@ import {
 } from "@/components/ui/dialog"
 import { ProfileForm } from "./add-farm-dialog"
 
-export function NavProjects({
-  projects,
+export function NavActions({
+  actions,
 }: {
-  projects: {
+  actions: {
     name: string
     url: string
     icon: LucideIcon
@@ -31,22 +31,10 @@ export function NavProjects({
     <SidebarGroup>
       <SidebarGroupLabel>Actions</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => {
+        {actions.map((item) => {
           if (item.name === "Add Farm") {
             return (
-              <Dialog key={item.name}>
-                <DialogTrigger>
-                  <SidebarMenuItem key={item.name}>
-                    <SidebarMenuButton asChild>
-                      <div>
-                        <item.icon />
-                        <span>{item.name}</span>
-                      </div>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </DialogTrigger>
-                <ProfileForm />
-              </Dialog>
+              <ProfileForm item={item} key={item.name} />
             )
           } else {
             return (

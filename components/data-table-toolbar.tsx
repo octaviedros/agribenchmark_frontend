@@ -6,8 +6,9 @@ import { X, Dumbbell, Copy, Trash } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTableViewOptions } from "@/components/data-table-view-options"
+import { DeleteFarm } from "@/components/delete-farm"
+import { farmSchema } from "../data/schema"
 
-import { statuses } from "../data/data"
 import { DataTableFacetedFilter } from "@/components/data-table-faceted-filter"
 import { flagmoji } from "@algoflows/flagmoji";
 
@@ -22,7 +23,7 @@ export function DataTableToolbar<TData>({
   const isFiltered = table.getState().columnFilters.length > 0
   const selected = table.getSelectedRowModel().rows.map((row) => row.original)
   // create an array of objects from the countryCodes, including the props label, value
-  const uniqueCountries = table.getCoreRowModel().flatRows.map(row => row.getValue("countryCode")).reduce((acc: { label: string, value: string }[], countryCode) => {
+  const uniqueCountries = table.getCoreRowModel().flatRows.map(row => row.getValue("land")).reduce((acc: { label: string, value: string }[], countryCode) => {
     if (typeof countryCode === "string" && !acc.some(item => item.value === countryCode)) {
       acc.push({ 
         label: flagmoji.countryCode(countryCode) + " " + countryCode, 
@@ -47,9 +48,9 @@ export function DataTableToolbar<TData>({
       <div className="flex flex-1 items-center space-x-2">
         <Input
           placeholder="Filter farms..."
-          value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("farm_id")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("id")?.setFilterValue(event.target.value)
+            table.getColumn("farm_id")?.setFilterValue(event.target.value)
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
@@ -60,18 +61,11 @@ export function DataTableToolbar<TData>({
             options={uniqueYears}
           />
         )}
-        {table.getColumn("countryCode") && (
+        {table.getColumn("land") && (
           <DataTableFacetedFilter
-            column={table.getColumn("countryCode")}
+            column={table.getColumn("land")}
             title="Country"
             options={uniqueCountries}
-          />
-        )}
-        {table.getColumn("status") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("status")}
-            title="Status"
-            options={statuses}
           />
         )}
         {/*table.getColumn("priority") && (
@@ -101,13 +95,15 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
         {selected.length > 0 && (
-          <Button
-            variant="secondary"
-            className="h-8 px-2 lg:px-3"
-          >
-            Delete
-            <Trash />
-          </Button>
+          <DeleteFarm farms={selected.map(f => farmSchema.parse(f))} >
+            <Button
+              variant="secondary"
+              className="h-8 px-2 lg:px-3"
+            >
+              Delete
+              <Trash />
+            </Button>
+          </DeleteFarm>
         )}
         {selected.length > 1 && (
           <Button

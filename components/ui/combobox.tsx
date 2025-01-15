@@ -25,18 +25,20 @@ export function Combobox({
   selectText = "Select option...",
   placeholder = "Search option...",
   noOptionText = "No option found.",
+  isDialog = false,
 }: {
   valueState: [string, React.Dispatch<React.SetStateAction<string>>]
   options: { value: string; label: string }[],
   selectText?: string,
   placeholder?: string,
   noOptionText?: string,
+  isDialog?: boolean,
 }) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = valueState
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={isDialog}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -60,6 +62,7 @@ export function Combobox({
                 <CommandItem
                   key={option.value}
                   value={option.value}
+                  keywords={[option.label, option.value]}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue)
                     setOpen(false)
