@@ -68,6 +68,13 @@ const finishingfeedrationFormSchema = z.object({
   .number({
     required_error: "Please enter a number.",
   }),
+  selffeedrationrows: z.array(z.object({
+    value: z.string()
+  })),
+  boughtfeedrationrows: z.array(z.object({
+    value: z.string()
+  })),
+
 })
  
   type FinishingFeedRationFormValues = z.infer<typeof finishingfeedrationFormSchema>
@@ -76,6 +83,15 @@ const finishingfeedrationFormSchema = z.object({
     const form = useForm<FinishingFeedRationFormValues>({
       resolver: zodResolver(finishingfeedrationFormSchema),
       defaultValues: { },  
+    })
+    const { fields, append, remove } = useFieldArray({
+      control: form.control,
+      name: "selffeedrationrows",
+    })
+
+    const { fields:boughtfields, append:boughtappend, remove:boughtremove } = useFieldArray({
+      control: form.control,
+      name: "boughtfeedrationrows",
     })
  
     const finishingselfproduced = [''];
@@ -129,36 +145,122 @@ const finishingfeedrationFormSchema = z.object({
                          </tr>
                        ))}
                      </tbody>
-                   </table> 
-                   <Button type="button">Add Row</Button>
-                   <h1>Bought Feed</h1>
-                     <table className="w-full my-4">
-                     <thead>
-                          <tr>
-                             <th className="font-medium min-w-[200px]">Crop Name</th>
-                             {finishingboughtfeedTypes.map((finishingboughtfeedTypes) => (
-                            <th key={finishingboughtfeedTypes} className="p-1 font-medium min-w-[120px]">
-                              {finishingboughtfeedTypes}
-                            </th>
-                            ))}
-                             </tr>
-                          </thead>
-                          <tbody>
-                             {finishingboughtfeeds.map((finishingboughtfeeds) => (
-                            <tr key={finishingboughtfeeds}>
-                                <td className="p-2 ">{finishingboughtfeeds}
-                                  <Input type="text" name={`${finishingboughtfeeds}-name`} className="w-full"/>
-                                </td>
-                              {finishingboughtfeedTypes.map((finishingboughtfeedType) => (
-                                 <td key={finishingboughtfeedType} className="p-2">
-                                    <Input type="number" name={`${finishingboughtfeeds}-${finishingboughtfeedType}`} className="w-full"/>
-                                 </td>
-                              ))}
-                            </tr>
+                   </table>
+                   <div>
+                    {fields.map((field, index) => (
+                      <FormField
+                      control={form.control}
+                    key={field.id}
+                    name={`selffeedrationrows.${index}.value`}
+                    render={({ field }) => (
+                      <table className="w-full my-4">
+                   <thead> 
+                     <tr>
+                       <th className="font-medium min-w-[200px]">Crop Name</th>
+                       {finishingselfproducedTypes.map((finishingselfproducedTypes) => (
+                         <th key={finishingselfproducedTypes} className="p-1 font-medium min-w-[120px]">
+                           {finishingselfproducedTypes}
+                         </th>
+                         ))}
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {finishingselfproduced.map((finishingselfproduced) => (
+                         <tr key={finishingselfproduced}>
+                            <td className="p-2 ">{finishingselfproduced}
+                              <Input type="text" name={`${finishingselfproduced}-name`} className="w-full"/>
+                            </td>
+                           {finishingselfproducedTypes.map((finishingselfproducedType) => (
+                             <td key={finishingselfproducedType} className="p-2">
+                               <Input type="number" name={`${finishingselfproduced}-${finishingselfproducedType}`} className="w-full"/>
+                             </td>
+                           ))}
+                           <td>
+                              <Button 
+                                type="button"
+                                variant="destructive" 
+                                onClick={() => remove(index)}>Remove Row</Button>
+                           </td>
+                         </tr>
+                       ))}
+                     </tbody>
+                   </table>
+                    )}
+                    />
+                    ))}
+                    <Button type="button" onClick={() => append({ value: "" })}>Add Row</Button>
+                    </div>
+                    <h1>Bought Feed</h1>
+                      <table className="w-full my-4">
+                      <thead>
+                           <tr>
+                              <th className="font-medium min-w-[200px]">Crop Name</th>
+                              {finishingboughtfeedTypes.map((finishingboughtfeedTypes) => (
+                             <th key={finishingboughtfeedTypes} className="p-1 font-medium min-w-[120px]">
+                               {finishingboughtfeedTypes}
+                             </th>
                              ))}
-                          </tbody>
-                        </table>
-                        <Button type="button">Add Row</Button>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              {finishingboughtfeeds.map((finishingboughtfeeds) => (
+                             <tr key={finishingboughtfeeds}>
+                                 <td className="p-2 ">{finishingboughtfeeds}
+                                   <Input type="text" name={`${finishingboughtfeeds}-name`} className="w-full"/>
+                                 </td>
+                               {finishingboughtfeedTypes.map((finishingboughtfeedType) => (
+                                  <td key={finishingboughtfeedType} className="p-2">
+                                     <Input type="number" name={`${finishingboughtfeeds}-${finishingboughtfeedType}`} className="w-full"/>
+                                  </td>
+                               ))}
+                             </tr>
+                              ))}
+                           </tbody>
+                         </table>
+                         <div>
+                    {boughtfields.map((field, index) => (
+                      <FormField
+                      control={form.control}
+                    key={field.id}
+                    name={`boughtfeedrationrows.${index}.value`}
+                    render={({ field }) => (
+                      <table className="w-full my-4">
+                      <thead>
+                           <tr>
+                              <th className="font-medium min-w-[200px]">Crop Name</th>
+                              {finishingboughtfeedTypes.map((finishingboughtfeedTypes) => (
+                             <th key={finishingboughtfeedTypes} className="p-1 font-medium min-w-[120px]">
+                               {finishingboughtfeedTypes}
+                             </th>
+                             ))}
+                              </tr>
+                           </thead>
+                           <tbody>
+                              {finishingboughtfeeds.map((finishingboughtfeeds) => (
+                             <tr key={finishingboughtfeeds}>
+                                  <td className="p-2 ">{finishingboughtfeeds}
+                                    <Input type="text" name={`${finishingboughtfeeds}-name`} className="w-full"/>
+                                  </td>
+                                {finishingboughtfeedTypes.map((finishingboughtfeedType) => (
+                                    <td key={finishingboughtfeedType} className="p-2">
+                                      <Input type="number" name={`${finishingboughtfeeds}-${finishingboughtfeedType}`} className="w-full"/>
+                                    </td>
+                                ))}
+                                <td>
+                                   <Button 
+                                     type="button"
+                                     variant="destructive" 
+                                     onClick={() => boughtremove(index)}>Remove Row</Button>
+                                </td>
+                              </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                    )}
+                    />
+                    ))}
+                    <Button type="button" onClick={() => boughtappend({ value: "" })}>Add Row</Button>
+                    </div>
 
 
       </form>

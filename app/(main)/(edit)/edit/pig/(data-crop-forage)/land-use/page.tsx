@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faTrashCan} from "@fortawesome/free-regular-svg-icons"
 
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
@@ -82,6 +84,10 @@ const landuseFormSchema = z.object({
       value: z.string(),
     })
   ),
+  landuserow: z.array(z.object({
+    value: z.string()
+  })),
+
   })
   
   type LandUseFormValues = z.infer<typeof landuseFormSchema>
@@ -91,6 +97,10 @@ const landuseFormSchema = z.object({
       resolver: zodResolver(landuseFormSchema),
       defaultValues: {
          },  
+    })
+    const { fields, append, remove } = useFieldArray({
+      control: form.control,
+      name: "landuserow",
     }) 
 
     function onSubmit(data: LandUseFormValues) {
@@ -110,7 +120,6 @@ const landuseFormSchema = z.object({
         <h3 className="text-lg font-medium">Land use, Yields, Prices and Direct Payments</h3>
       </div>
       <Separator />
-
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
         <table className="w-full my-4">
@@ -138,8 +147,54 @@ const landuseFormSchema = z.object({
                 </tr>
               ))}
             </tbody>
-          </table> 
-          <Button className="mx-2" type="button">Add Row</Button>
+          </table>
+          <div>
+            {fields.map((field, index) => (
+              <FormField
+            control={form.control}
+            key={field.id}
+            name={`landuserow.${index}.value`}
+            render={({ field }) => (
+              <table className="w-full my-4">
+              <thead>
+                <tr>
+                  <th className="font-medium min-w-[120px]">Crop Name</th>
+                  {landuseTypes.map((landuseType) => (
+                    <th key={landuseType} className="p-1 font-medium min-w-[120px]">
+                      {landuseType}
+                    </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {landuses.map((landuse) => (
+                    <tr key={landuse}>
+                      <td className="p-2 ">{landuse}
+                        <Input type="text" name={`${landuse}-name`}/>
+                      </td>
+                      {landuseTypes.map((landuseType) => (
+                        <td key={landuseType} className="p-2">
+                          <Input type="number" name={`${landuse}-${landuseType}`}/>
+                        </td>
+                      ))}
+                      <td>
+                        <Button type="button"
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => remove(index)}><FontAwesomeIcon icon={faTrashCan} /></Button>   
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          />
+            ))}
+            <Button
+            type="button"
+            onClick={() => append({ value: "" })}>Add Row</Button>  
+          </div>
+        
 
         <Button type="submit">Submit</Button>
       </form>

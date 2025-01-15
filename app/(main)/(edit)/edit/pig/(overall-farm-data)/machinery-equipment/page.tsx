@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faTrashCan} from "@fortawesome/free-regular-svg-icons"
 
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
@@ -69,7 +71,12 @@ const machineryFormSchema = z.object({
       resolver: zodResolver(machineryFormSchema),
       defaultValues: {
         sum_annual_depreciation: "", sum_bookvalues: "", },  
-    }) 
+    })
+
+    const { fields, append, remove } = useFieldArray({
+      control: form.control,
+      name: "tractors",
+    })
 
     const machines = [''];
     const costTypes = ['Purchase Year', 'Purchase Price', 'Utilization Period', 'Replacement Value', 'Enterprise Codes'];
@@ -91,7 +98,6 @@ const machineryFormSchema = z.object({
         <h3 className="text-lg font-medium">What kind of machinery and equipment do you use on your farm?</h3>
       </div>
       <Separator />
-
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
         <FormField
@@ -151,8 +157,53 @@ const machineryFormSchema = z.object({
                 </tr>
               ))}
             </tbody>
-          </table> 
-          <Button className="mx-2" type="button">Add Row</Button>
+          </table>
+          <div>
+            {fields.map((field, index) => (
+              <FormField
+              control={form.control}
+              key={field.id}
+              name={`tractors.${index}.name`}
+              render={({ field }) => (
+          <table className="w-full my-4">
+          <thead>
+            <tr>
+              <th className="font-medium">Machine</th>
+              {costTypes.map((costType) => (
+                <th key={costType} className="p-1 font-medium">
+                  {costType}
+                </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {machines.map((machine) => (
+                <tr key={machine}>
+                  <td className="p-2 ">{machine}
+                    <Input type="text" name={`${machine}-name`} className="w-full"/>
+                  </td>
+                  {costTypes.map((costType) => (
+                    <td key={costType} className="p-2">
+                      <Input type="number" name={`${machine}-${costType}`} className="w-full"/>
+                    </td>
+                  ))}
+                  <td>
+                    <Button 
+                    type="button"
+                    variant="destructive"
+                    size="icon" onClick={() => remove(index)}><FontAwesomeIcon icon={faTrashCan} /></Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+            )}
+          />
+            ))}
+            <Button
+            type="button"
+            onClick={() => append({ name: "", purchase_year: "", purchase_price: "", utilization_period: "", replacement_value: "", enterprise_codes: "" })}>Add Row</Button>
+            </div>
 
         <Button type="submit">Submit</Button>
       </form>

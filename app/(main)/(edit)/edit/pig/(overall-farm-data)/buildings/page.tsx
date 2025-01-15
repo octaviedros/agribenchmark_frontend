@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faTrashCan} from "@fortawesome/free-regular-svg-icons"
 
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
@@ -61,10 +63,12 @@ const buildingsFormSchema = z.object({
       utilization_period: z.string(),
       replacement_value: z.string(),
       enterprise_codes: z.string(),
-  }),
+    })
+    .optional(),
+  ),
+})
 
-)})
-  
+
   type BuildingsFormValues = z.infer<typeof buildingsFormSchema>
   
   export function BuildingsFarmPage() {
@@ -74,6 +78,10 @@ const buildingsFormSchema = z.object({
         sum_annual_depreciation: "",
       },
   }) 
+    const { fields, append, remove } = useFieldArray({
+      control: form.control,
+      name: "building_name",
+    })
   
     function onSubmit(data: BuildingsFormValues) {
       toast({
@@ -151,8 +159,61 @@ const buildingsFormSchema = z.object({
                 </tr>
               ))}
             </tbody>
-          </table> 
-          <Button className="mx-2" type="button">Add Row</Button>
+          </table>
+          <div>
+            {fields.map((field, index) => (
+              <FormField
+              control={form.control}
+              key={field.id}
+              name={`building_name.${index}.name`}
+              render={({ field }) => (
+        <table className="w-full my-4">
+          <thead>
+            <tr>
+              <th className="font-medium">Building</th>
+              {costTypes.map((costType) => (
+                <th key={costType} className="p-1 font-medium">
+                  {costType}
+                </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {buildings.map((building) => (
+                <tr key={building}>
+                  <td className="p-2 ">{building}
+                    <Input type="text" name={`${building}-name`} className="w-full"/>
+                  </td>
+                  {costTypes.map((costType) => (
+                    <td key={costType} className="p-2">
+                      <Input type="number" name={`${building}-${costType}`} className="w-full"/>
+                    </td>
+                  ))}
+                  <td>
+                    <Button 
+                    type="button"
+                    variant="destructive"
+                    size="icon" onClick={() => remove(index)}><FontAwesomeIcon icon={faTrashCan} /></Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          )}
+        />
+        ))}
+        <Button
+        type="button"
+        onClick={() => append({ 
+          name: "",
+          purchase_year: "",
+          purchase_price: "",
+          utilization_period: "",
+          replacement_value: "",
+          enterprise_codes: ""
+        })} >Add Row</Button>
+        
+          </div>
         
         <Button type="submit">Submit</Button>
       </form>

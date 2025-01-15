@@ -53,31 +53,34 @@ const sowfeedingFormSchema = z.object({
         sowlactationfeed: z.string().min(2, {
             message: "Username must be at least 2 characters.",
         }),
-        sowtotalamount: z.string().min(2, {
+        sowtotalamountday: z.string().min(2, {
+            message: "Username must be at least 2 characters.",
+        }),
+        sowtotalamountyear: z.string().min(2, {
             message: "Username must be at least 2 characters.",
         }),
     giltsfeeding: z.string().min(2, {
         message: "Username must be at least 2 characters.",
         }),
-        gitlspecialfeeding: z.string().min(2, {
+        gitlsspecialfeeding: z.string().min(2, {
             message: "Username must be at least 2 characters.",
         }),
-        giltsharegestation: z.string().min(2, {
+        giltssharegestation: z.string().min(2, {
             message: "Username must be at least 2 characters.",
         }),
-        giltsharelactation: z.string().min(2, {
+        giltssharelactation: z.string().min(2, {
             message: "Username must be at least 2 characters.",
         }),
         giltfeedquantity: z.string().min(2, {
             message: "Username must be at least 2 characters.",
         }),
-        gilttotalamount: z.string().min(2, {
+        gilttotalamountyear: z.string().min(2, {
             message: "Username must be at least 2 characters.",
         }),
     boarsfeeding: z.string().min(2, {
         message: "Username must be at least 2 characters.",
         }),
-        boarspecialfeeding: z.string().min(2, {
+        boarsspecialfeeding: z.string().min(2, {
             message: "Username must be at least 2 characters.",
         }),
         boarsharegestation: z.string().min(2, {
@@ -89,7 +92,7 @@ const sowfeedingFormSchema = z.object({
         boarfeedquantity: z.string().min(2, {
             message: "Username must be at least 2 characters.",
         }),
-        boartotalamount: z.string().min(2, {
+        boartotalamountyear: z.string().min(2, {
             message: "Username must be at least 2 characters.",
         }),
     pigletsfeeding1: z.string().min(2, {
@@ -99,6 +102,9 @@ const sowfeedingFormSchema = z.object({
             message: "Username must be at least 2 characters.",
         }),
         pigletfeedquantity: z.string().min(2, {
+            message: "Username must be at least 2 characters.",
+        }),
+        piglettotalamountyear: z.string().min(2, {
             message: "Username must be at least 2 characters.",
         }),
 })
@@ -144,13 +150,14 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
       <Separator />
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 w-full">
+        <div><h3>Sows</h3></div>
       <FormField
           control={form.control}
-          name="sowfeeding"
+          name="sowgestationfeed"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Sow Feeding</FormLabel>
-              <FormDescription>Gestation Feed</FormDescription>
+              <FormLabel>Gestation Feed</FormLabel>
+              <FormDescription>kg per animal and year</FormDescription>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
@@ -160,10 +167,11 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="giltsfeeding"
+          name="sowlactationfeed"
           render={({ field }) => (
-            <FormItem>             
-              <FormDescription>Special Gilt Feed</FormDescription>
+            <FormItem>
+              <FormLabel>Lactation Feed</FormLabel>
+              <FormDescription>kg per animal and year</FormDescription>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
@@ -173,10 +181,11 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="boarsfeeding"
+          name="sowtotalamountday"
           render={({ field }) => (
-            <FormItem>             
-              <FormDescription>Special Boar Feed</FormDescription>
+            <FormItem>
+              <FormLabel>Total Amount of Feed per animal and day</FormLabel>
+              <FormDescription>kg per animal and day</FormDescription>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
@@ -184,12 +193,180 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="sowtotalamountyear"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Total Amount of Feed kg and year</FormLabel>
+              <FormDescription>kg per animal and year</FormDescription>
+              <FormControl>
+                <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div><h3>Gilts</h3></div>
+        <FormField
+          control={form.control}
+          name="gitlsspecialfeeding"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Special Gilt Feed</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your Gilt Feed" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="specialgiltfeed">Special Gilt Feed</SelectItem>
+                  <SelectItem value="giltsmixgestationlactationfeed">A mix of Gestation and Lactation Feed</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />  
+        <FormField
+          control={form.control}
+          name="giltssharegestation"
+          render={({ field }) => (
+            <FormItem>             
+              <FormLabel>Share Gestation Feed</FormLabel>
+              <FormControl>
+                <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="giltssharelactation"
+          render={({ field }) => (
+            <FormItem>             
+              <FormLabel>Share Lactation Feed</FormLabel>
+              <FormControl>
+              <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="giltfeedquantity"
+            render={({ field }) => (
+            <FormItem>             
+              <FormLabel>Feed Quantity (in terms of dry matter)</FormLabel>
+              <FormControl>
+              <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="gilttotalamountyear"
+            render={({ field }) => (
+            <FormItem>             
+              <FormLabel>Total Amount of Feed kg per year</FormLabel>
+              <FormControl>
+              <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+            )}
+          />
+        <div><h3>Boars</h3></div>
+        <FormField
+          control={form.control}
+          name="boarsspecialfeeding"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Special Boar Feed</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your Boar Feed" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="specialboarfeed">Special Boar Feed</SelectItem>
+                  <SelectItem value="boarmixgestationlactationfeed">A mix of Gestation and Lactation Feed</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="boarsharegestation"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Share of Gestation Feed</FormLabel>             
+              <FormDescription>%</FormDescription>
+              <FormControl>
+                <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="boarsharelactation"
+          render={({ field }) => (
+            <FormItem>             
+              <FormDescription>Share Lactation Feed</FormDescription>
+              <FormLabel>%</FormLabel>
+              <FormControl>
+                <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="boarfeedquantity"
+          render={({ field }) => (
+            <FormItem>             
+              <FormDescription>Feed Quantity (in terms of dry matter)</FormDescription>
+              <FormLabel>Feed Quantity (in terms of dry matter)</FormLabel>
+              <FormControl>
+                <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="boartotalamountyear"
+          render={({ field }) => (
+            <FormItem>             
+              <FormDescription>Total Amount of Feed kg per year</FormDescription>
+              <FormLabel>Total Amount of Feed kg per year</FormLabel>
+              <FormControl>
+                <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div><h3>Piglets</h3></div>
         <FormField
           control={form.control}
           name="pigletsfeeding1"
           render={({ field }) => (
             <FormItem>
-              <FormDescription>Piglet Feed 1</FormDescription>
+              <FormLabel>Piglet Feed 1</FormLabel>
+              <FormDescription>kg per animal</FormDescription>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
@@ -202,7 +379,8 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
           name="pigletsfeeding2"
           render={({ field }) => (
             <FormItem>
-              <FormDescription>Piglet Feed 2</FormDescription>
+              <FormLabel>Piglet Feed 2</FormLabel>  
+              <FormDescription>kg per animal</FormDescription>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
@@ -210,6 +388,33 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="pigletfeedquantity"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Feed Quantity (in terms of dry matter)</FormLabel>
+              <FormControl>
+                <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="piglettotalamountyear"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Total Amount of Feed</FormLabel>
+              <FormDescription>kg per year</FormDescription>
+              <FormControl>
+                <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        /> 
 
 
       <Button className="mt-4"  type="submit">Submit</Button>

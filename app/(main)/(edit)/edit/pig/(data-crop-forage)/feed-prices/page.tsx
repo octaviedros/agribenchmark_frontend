@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faTrashCan} from "@fortawesome/free-regular-svg-icons"
 
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
@@ -77,6 +79,9 @@ const feedpriceFormSchema = z.object({
       value: z.string(),
     })
   ),
+  feedpricerow: z.array(z.object({
+    value: z.string()
+  })),
 
   })
   
@@ -88,6 +93,10 @@ const feedpriceFormSchema = z.object({
       defaultValues: {
      },  
     }) 
+    const { fields, append, remove } = useFieldArray({
+      control: form.control,
+      name: "feedpricerow",
+    })
 
     function onSubmit(data: FeedPriceValues) {
       toast({
@@ -135,8 +144,53 @@ const feedpriceFormSchema = z.object({
                ))}
             </tbody>
           </table> 
-          <Button className="mx-2" type="button">Add Row</Button>
-
+          <div>
+            {fields.map((field, index) => (
+              <FormField
+                control={form.control}
+                key={field.id}
+                name={`feedpricerow.${index}.value`}
+                render={({ field }) => (
+                  <table className="w-full my-4">
+                  <thead>
+                    <tr>
+                      <th className="font-medium min-w-[120px]">Feed Type</th>
+                      {feedpriceTypes.map((feedpriceType) => (
+                        <th key={feedpriceType} className="p-1 font-medium min-w-[120px]">
+                          {feedpriceType}
+                        </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {feedprices.map((feedprice) => (
+                        <tr key={feedprice}>
+                          <td className="p-2 ">{feedprice}
+                            <Input type="text" name={`${feedprice}-name`}/>
+                          </td>
+                          {feedpriceTypes.map((feedpriceType) => (
+                            <td key={feedpriceType} className="p-2">
+                              <Input type="number" name={`${feedprice}-${feedpriceType}`}/>
+                            </td>
+                        ))} 
+                        <td>
+                        <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => remove(index)}><FontAwesomeIcon icon={faTrashCan} /></Button>
+                        </td>
+                        </tr>
+                       ))}
+                    </tbody>
+                  </table>
+                )}
+              />
+            ))}
+            <Button
+            type="button"
+            onClick={() => append({ value: "" })}>Add Row</Button>
+          </div>
         <Button type="submit">Submit</Button>
       </form>
     </Form>
