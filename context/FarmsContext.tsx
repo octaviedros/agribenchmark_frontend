@@ -1,6 +1,7 @@
 "use client"
 import React from "react"
 import { Farm } from "@/data/schema"
+import { getFarms } from "@/lib/utils"
 
 export const FarmsContext = React.createContext<{
   farms: Farm[]
@@ -12,6 +13,14 @@ export const FarmsContext = React.createContext<{
 
 export function FarmsProvider({ children }: { children: React.ReactNode }) {
   const [farms, setFarms] = React.useState<Farm[]>([])
+
+  React.useEffect(() => {
+    async function fetchFarms() {
+      const farms = await getFarms()
+      setFarms(farms)
+    }
+    fetchFarms()
+  })
 
   return (
     <FarmsContext.Provider value={{ farms, setFarms }}>
