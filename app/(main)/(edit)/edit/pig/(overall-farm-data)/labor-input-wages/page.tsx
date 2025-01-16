@@ -105,13 +105,13 @@ const wagesFormSchema = z.object({
     }) 
  
     const permanentwages = [''];
-    const permanentcostTypes = ['Labor Force', 'Working hours (per Person per year)', 'Annual Wage per Person'];
+    const permanentcostTypes = ['Labor Force', 'Working hours (per Person per year)', 'Annual Wage per Person', 'Enterprise Codes'];
 
     const casualwages = [''];
-    const casualcostTypes = ['Labor Force', 'Working hours per Person per year', 'Wage per hour per Person'];
+    const casualcostTypes = ['Labor Force', 'Working hours per Person per year', 'Wage per hour per Person', 'Enterprise Codes'];
 
     const familywages = [''];
-    const familycostTypes = ['Labor Force', 'Working hours per Person per year', 'Opportuniy Costs per Person'];
+    const familycostTypes = ['Labor Force', 'Working hours per Person per year', 'Opportuniy Costs per Person', 'Enterprise Codes'];
 
     function onSubmit(data: WagesFormValues) {
       toast({

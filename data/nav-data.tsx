@@ -57,7 +57,7 @@ export const navData = {
     navLinks: [
       {
         name: "Add Farm",
-        url: "/create/",
+        url: "/create/pig/basic-information",
         icon: HousePlus,
         isActive: false,
       },
