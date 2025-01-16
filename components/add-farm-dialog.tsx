@@ -6,7 +6,7 @@ import { z } from "zod"
 import { v4 as uuidv4 } from "uuid"
 import { NetworkContext } from "@/context/NetworkContext"
 import { navData } from "@/data/nav-data"
-import { FarmsContext } from "@/context/FarmsContext"
+import { useFarmData } from "@/hooks/use-farm-data"
 
 import {
   SidebarMenuButton,
@@ -89,7 +89,7 @@ interface ProfileFormProps {
 export function ProfileForm({
   item
 }: ProfileFormProps) {
-  const { farms, setFarms } = React.useContext(FarmsContext)
+  const { data: farms, mutate } = useFarmData("/generalfarm") as { data: ProfileFormValues[], mutate: any }
   const { activeNetwork } = React.useContext(NetworkContext)
   const [open, setOpen] = React.useState(false);
 
@@ -138,14 +138,16 @@ export function ProfileForm({
     }
     // send data to the server
     try {
-      await post("/generalfarm/", data)
+      await mutate(post("/generalfarm/", data), {
+        optimisticData: [...farms, data],
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: false
+      })
       toast({
         title: "Success",
         description: "Farm data has been saved successfully.",
       })
-      // get the updated list of farms
-      const updatedFarms = await getFarms()
-      setFarms(updatedFarms)
       // close the dialog
       setOpen(false)
     } catch (error: unknown) {
@@ -455,12 +457,12 @@ export function ProfileForm({
                     <FormField
                       key={network.value}
                       control={form.control}
-                      name={"network_" + network.value}
+                      name={`network_${network.value}` as keyof ProfileFormValues}
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                           <FormControl>
                             <Checkbox
-                              checked={field.value || false}
+                              checked={!!field.value || false}
                               onCheckedChange={(checked) => field.onChange(!!checked)}
                             />
                           </FormControl>

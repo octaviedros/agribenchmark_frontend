@@ -5,7 +5,7 @@ import { Pencil } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
-
+import { navData } from "@/data/nav-data"
 import { labels, priorities } from "../data/data"
 import { Farm } from "../data/schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
@@ -68,12 +68,15 @@ export const columns: ColumnDef<Farm>[] = [
       <DataTableColumnHeader column={column} title="Networks" />
     ),
     cell: ({ row }) => {
-      const networks = row.original.networks ?? []
+      const networks = navData.networks
+              .filter(network => (row.original as any)["network_" + network.value])
+              .map(network => network.value)
+      
       const label = labels.filter((label) => networks.includes(label.value))
 
       return (
         <div className="flex space-x-2">
-        {label.map((label) => (
+          {label.map((label) => (
             <Badge key={label.value} variant="outline">
               {label.label}
             </Badge>

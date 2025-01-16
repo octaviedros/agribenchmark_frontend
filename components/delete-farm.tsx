@@ -7,8 +7,7 @@ import { DestructiveDialog } from "@/components/ui/destructive-dialog"
 import type { Farm } from "@/data/schema"
 import { toast } from "@/hooks/use-toast"
 import { del } from "@/lib/api"
-import { FarmsContext } from "@/context/FarmsContext"
-import { getFarms } from "@/lib/utils"
+import { useFarmData } from "@/hooks/use-farm-data"
 
 interface DeleteFarmProps {
   farms: Farm[]
@@ -36,18 +35,24 @@ export function DeleteFarmContent({
 }: {
   farms: Farm[]
 }) {
-  const { setFarms } = useContext(FarmsContext)
+  const { data: allFarms, mutate } = useFarmData("/generalfarm") as { data: Farm[], mutate: any }
 
   const onConfirm = async () => {
     try {
-      await Promise.all(farms.map(farm => del(`/generalfarm/${farm.general_id}`)))
+      await mutate(
+        Promise.all(farms.map(farm => del(`/generalfarm/${farm.general_id}`))),
+        {
+          optimisticData: allFarms.filter(f => !farms.some(farm => farm.general_id === f.general_id)),
+          rollbackOnError: true,
+          populateCache: false,
+          revalidate: false
+        }
+      )
+      
       toast({
         title: "Success",
         description: `The farm${farms.length === 1 ? "" : "s"} ${farms.length === 1 ? "has" : "have"} been deleted.`,
       })
-      // Update the farms list
-      const updatedFarms = await getFarms()
-      setFarms(updatedFarms)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
       toast({

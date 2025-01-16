@@ -1,47 +1,82 @@
 "use client"
 
-import { useContext, useState, useEffect } from "react"
+import { useContext, useState, useEffect, act } from "react"
 import { NetworkContext } from "@/context/NetworkContext"
-import Image from "next/image"
+import { useFarmData } from "@/hooks/use-farm-data"
 import { useSearchParams } from 'next/navigation'
 import { Separator } from "@/components/ui/separator"
 import { SidebarNav } from "@/components/sidebar-nav"
 import { allSidebarNavItems } from "@/app/(main)/(edit)/all-sidebar-nav-items"
 import { Combobox } from "@/components/ui/combobox"
+import { Farm } from "@/data/schema"
 
 interface EditLayoutProps {
   children: React.ReactNode
 }
 
+interface FarmData {
+  data: Farm[],
+  error: any,
+  isLoading: boolean
+}
+
 export function EditLayoutContent({ children }: EditLayoutProps) {
+  let { 
+    data: farms,
+    error, 
+    isLoading 
+  } = useFarmData("/generalfarm") as FarmData
+  if (!farms) farms = [] as Farm[] 
   const { activeNetwork } = useContext(NetworkContext)
   // Use the active network to determine which sidebar nav items to show
   // E.g. pig related feeding etc.
   const sidebarNavItems = allSidebarNavItems[activeNetwork.value]
-  // query available farms from the server
-  // TODO: replace with actual query
-  const farms = [
-    { id: '1', name: 'Farm 1' },
-    { id: '2', name: 'Farm 2' },
-    { id: '3', name: 'Farm 3' },
-  ]
+
   // parse query params
   const searchParams = useSearchParams()
-  const farmId = searchParams.get('id') || farms[0].id
-  const year = searchParams.get('year') || '2025'
-  const scenario = searchParams.get('scenario') || 'baseline'
+  const generalId = searchParams.get("general_id") || (farms[0]?.general_id ?? "") 
+  let activeFarm = farms.find(f => f.general_id?.toString() === generalId)
 
-  const [selectedFarm, setSelectedFarm] = useState(farmId)
-  const [selectedYear, setSelectedYear] = useState(year)
-  const [selectedScenario, setSelectedScenario] = useState(scenario)
+  const [selectedFarm, setSelectedFarm] = useState(activeFarm?.farm_id)
+  const [selectedYear, setSelectedYear] = useState(activeFarm?.year?.toString())
+  const [selectedScenario, setSelectedScenario] = useState(activeFarm?.scenario_name)
+  const [availableYears, setAvailableYears] = useState<{ value: string, label: string}[]>([])
+  const [availableScenarios, setAvailableScenarios] = useState<{ value: string, label: string }[]>([])
 
+  useEffect(() => {
+    setSelectedFarm(activeFarm?.farm_id)
+    setSelectedYear(activeFarm?.year?.toString())
+    setSelectedScenario(activeFarm?.scenario_name)
+    
+    const availableYears = farms
+      .filter(f => f.farm_id === activeFarm?.farm_id)
+      .map(f => ({value: f.year?.toString(), label: f.year?.toString()}))
+    setAvailableYears(availableYears)
+    
+    const availableScenarios = farms
+      .filter(f => f.farm_id === activeFarm?.farm_id && f.year?.toString() === activeFarm?.year?.toString())
+      .map(f => ({value: f.scenario_name, label: f.scenario_name}))
+    setAvailableScenarios(availableScenarios)
+  }, [activeFarm])
+  
   // update query params
   const updateQueryParams = async () => {
     const params = new URLSearchParams()
-    params.set('id', selectedFarm)
-    params.set('year', selectedYear)
-    params.set('scenario', selectedScenario)
-    window.history.replaceState({}, '', `${window.location.pathname}?${params}`)
+    // get general_id from the combination of selectedFarm, selectedYear, and selectedScenario
+    let newFarm = farms.find(f => (
+      f.farm_id === selectedFarm 
+        && f.year?.toString() === selectedYear 
+        && f.scenario_name === selectedScenario
+      )
+    )
+    if (!newFarm) {
+      // if no farm is found, use the first farm with the selected farm_id
+      newFarm = farms.find(f => f.farm_id === selectedFarm)
+    }
+    if (newFarm) {
+      params.set('general_id', newFarm?.general_id?.toString() || "")
+      window.history.replaceState({}, '', `${window.location.pathname}?${params}`)
+    }
   }
 
   // update query params when selected values change
@@ -49,25 +84,28 @@ export function EditLayoutContent({ children }: EditLayoutProps) {
     updateQueryParams()
   }, [selectedFarm, selectedYear, selectedScenario])
 
+  if (error) {
+    return <div>failed to load</div>
+  }
+  if (isLoading) {
+    return <div>loading...</div>
+  }
+
+  // If no farms exist, show a notice and return
+  if (!farms || farms.length === 0) {
+    return (
+      <div className="space-y-6 p-10 pb-16 md:block">
+        <h2 className="text-2xl font-bold tracking-tight">No Farms Found</h2>
+        <p className="text-muted-foreground">
+          You currently have access to no farms. Please create one first, or contact your agribenchmark associate for help.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <>
-      <div className="md:hidden">
-        <Image
-          src="/examples/forms-light.png"
-          width={1280}
-          height={791}
-          alt="Forms"
-          className="block dark:hidden"
-        />
-        <Image
-          src="/examples/forms-dark.png"
-          width={1280}
-          height={791}
-          alt="Forms"
-          className="hidden dark:block"
-        />
-      </div>
-      <div className="hidden space-y-6 p-10 pb-16 md:block">
+      <div className="space-y-6 p-10 pb-16 md:block">
         <div className="space-y-0.5">
           <h2 className="text-2xl font-bold tracking-tight">Edit Farm</h2>
           <p className="text-muted-foreground">
@@ -75,11 +113,11 @@ export function EditLayoutContent({ children }: EditLayoutProps) {
           </p>
           <div className="pt-2 flex items-center space-x-4">
             <Combobox valueState={[selectedFarm, setSelectedFarm]} options={farms.map(f => ({
-              value: f.id,
-              label: f.name,
+              value: f.farm_id,
+              label: f.farm_id,
             }))} />
-            <Combobox valueState={[selectedYear, setSelectedYear]} options={[{ value: '2025', label: '2025' }]} />
-            <Combobox valueState={[selectedScenario, setSelectedScenario]} options={[{ value: 'baseline', label: 'Baseline' }]} />
+            <Combobox valueState={[selectedYear, setSelectedYear]} options={availableYears} />
+            <Combobox valueState={[selectedScenario, setSelectedScenario]} options={availableScenarios} />
           </div>
         </div>
         <Separator className="my-6" />

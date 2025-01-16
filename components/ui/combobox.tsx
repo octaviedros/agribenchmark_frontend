@@ -36,7 +36,7 @@ export function Combobox({
 }) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = valueState
-
+  
   return (
     <Popover open={open} onOpenChange={setOpen} modal={isDialog}>
       <PopoverTrigger asChild>
@@ -46,9 +46,11 @@ export function Combobox({
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value
-            ? options.find((option) => option.value === value)?.label
-            : selectText}
+          <span className="max-w-[176px] overflow-hidden whitespace-nowrap overflow-ellipsis">
+            {value
+              ? options.find((option) => option.value === value)?.label
+              : selectText}
+          </span>
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
