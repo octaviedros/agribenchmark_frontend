@@ -1,4 +1,4 @@
-import { ProfileForm } from "@/app/(main)/(create)/create/overall-farm-data"
+import { ProfileForm } from "@/app/(main)/(create)/create/pig/(overall-farm-data)/basic-information/basic-information"
 
 export default function CreateFarmPage() {
   return (

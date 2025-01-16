@@ -3,7 +3,7 @@
 import { useContext } from "react"
 import { NetworkContext } from "@/context/NetworkContext"
 import Image from "next/image"
-import { sidebarNavItems } from "@/app/(main)/(create)/sidebar-nav-items"
+import { allSidebarNavItems } from "@/app/(main)/(create)/sidebar-nav-items"
 import { Separator } from "@/components/ui/separator"
 import { SidebarNav } from "@/components/sidebar-nav"
 
@@ -13,6 +13,8 @@ interface CreateLayoutProps {
 
 export function CreateLayoutContent({ children }: CreateLayoutProps) {
   const { activeNetwork } = useContext(NetworkContext)
+
+  const sidebarNavItems = allSidebarNavItems[activeNetwork.value]
 
   return (
     <>

@@ -1,11 +1,140 @@
-type SidebarNavItem = {
-  title: string;
-  url: string;
-}[]
+type SidebarNavItems = {
+  [key: string]: {
+    title: string;
+    url: string;
+    items?: {
+      title: string;
+      url: string;
+    }[]
+  }[]
+}
 
-export const sidebarNavItems: SidebarNavItem = [
-  {
-    title: "Overall farm data",
-    url: "/create",
+export const allSidebarNavItems: SidebarNavItems = {
+  "pig": [{
+    title: "1 Whole Farm Data",
+    url: "",
+    items: [
+      {
+        title: "1.1 Farm Overview",
+        url: "/create/pig/basic-information",
+      },
+      {
+        title: "1.2 Machinery and Equipment",
+        url: "/create/pig/machinery-equipment",
+      },
+      {
+        title: "1.3 Buildings and Facilities",
+        url: "/create/pig/buildings",
+      },
+      {
+        title: "1.4 Labor Input and Wages",
+        url: "/create/pig/labor-input-wages",
+      },
+      {
+        title: "1.5 Liabilities and Interest rates",
+        url: "/create/pig/liabilities-interest-rates",
+      },
+      {
+        title: "1.6 Profit and Capital Structure",
+        url: "/create/pig/profit-capital-structure",
+      },
+      {
+        title: "1.7 Information on Farm Ownership",
+        url: "/create/pig/farm-ownership",
+      },
+      {
+        title: "1.8 Overhead Costs",
+        url: "/create/pig/overhead-costs",
+      },
+    ],
   },
+  {
+    title: "2 Data on Crop and Forage Production",
+    url: "",
+    items: [
+      {
+        title: "2.1 Available Acreage and Prices",
+        url: "/create/pig/data-crop-forage",
+      },
+      {
+        title: "2.2 Land use, Yields, Prices and direct payments",
+        url: "/create/pig/land-use",
+      },
+      {
+        title: "2.3 Variable Costs of Crop and Forage Production",
+        url: "/create/pig/variable-costs-crop",
+      },
+      {
+        title: "2.4 Mineral balance and fertilizer input",
+        url: "/create/pig/mineral-balance",
+      },
+      {
+        title: "2.5 Prices for Feed and Dry Matter Content",
+        url: "/create/pig/feed-prices",
+      }
+    ],
+  },
+  {
+    title: "10 Data for the Sow Enterprise",
+    url: "",
+    items: [
+      {
+        title: "10.1 Livestock and Performance Data",
+        url: "/create/pig/data-sow-enterprise",
+      },
+      {
+        title: "10.2 Prices",
+        url: "/create/pig/sow-prices",
+      },
+      {
+        title: "10.3 Costs",
+        url: "/create/pig/sow-costs",
+      },
+      {
+        title: "10.4 Feeding",
+        url: "/create/pig/sow-feeding",
+      },
+      {
+        title: "10.5 Feed Rations",
+        url: "/create/pig/sow-feed-rations",
+      }
+    ],
+  },
+  {
+    title: "11 Data for the Pig Finishing Enterprise",
+    url: "",
+    items: [
+      {
+        title: "11.1 Livestock and Performance data",
+        url: "/create/pig/data-pig-finishing",
+      },
+      {
+        title: "11.2 Prices",
+        url: "/create/pig/finishing-prices",
+      },
+      {
+        title: "11.3 Costs",
+        url: "/create/pig/finishing-costs",
+      },
+      {
+        title: "11.4 Feeding",
+        url: "/create/pig/finishing-feeding",
+      },
+      {
+        title: "11.5 Feed Rations",
+        url: "/create/pig/finishing-feed-rations",
+      }
+    ],
+  },
+  {
+    title: "12 Labor Allocation Sow and Pig Finishing Enterprise",
+    url: "",
+    items: [
+      {
+        title: "12.1 Labor Allocation",
+        url: "/create/pig/labor-allocation",
+      }
+    ],
+  }
 ]
+}
