@@ -44,68 +44,68 @@ import {
 } from "@/components/ui/popover"
 
 const sowfeedingFormSchema = z.object({
-    sowfeeding: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
+    sowfeeding: z.number().min(1, {
+        message: "Must be at least 1 characters.",
       }),
-        sowgestationfeed: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        sowgestationfeed: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        sowlactationfeed: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        sowlactationfeed: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        sowtotalamountday: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        sowtotalamountday: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        sowtotalamountyear: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        sowtotalamountyear: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-    giltsfeeding: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
+    giltsfeeding: z.string().min(1, {
+        message: "Must be at least 1 characters.",
         }),
-        gitlsspecialfeeding: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        gitlsspecialfeeding: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        giltssharegestation: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        giltssharegestation: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        giltssharelactation: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        giltssharelactation: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        giltfeedquantity: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        giltfeedquantity: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        gilttotalamountyear: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        gilttotalamountyear: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-    boarsfeeding: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
+    boarsfeeding: z.string().min(1, {
+        message: "Must be at least 1 characters.",
         }),
-        boarsspecialfeeding: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        boarsspecialfeeding: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        boarsharegestation: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        boarsharegestation: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        boarsharelactation: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        boarsharelactation: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        boarfeedquantity: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        boarfeedquantity: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        boartotalamountyear: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        boartotalamountyear: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-    pigletsfeeding1: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
+    pigletsfeeding1: z.string().min(1, {
+        message: "Must be at least 1 characters.",
         }),
-        pigletsfeeding2: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        pigletsfeeding2: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        pigletfeedquantity: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        pigletfeedquantity: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
-        piglettotalamountyear: z.string().min(2, {
-            message: "Username must be at least 2 characters.",
+        piglettotalamountyear: z.string().min(1, {
+            message: "Must be at least 1 characters.",
         }),
 })
 

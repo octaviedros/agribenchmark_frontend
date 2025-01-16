@@ -109,7 +109,7 @@ const buildingsFormSchema = z.object({
             <FormItem>
               <FormLabel>Annual Deprecation on Buildings & Facilities</FormLabel>
               <FormControl>
-                <Input placeholder="Annual Depreciation" {...field} />
+                <Input type="number" placeholder="Annual Depreciation" {...field} />
               </FormControl>
               <FormDescription>
               Sum of all depreciation values of all buildings. Can be found in the inventory list of your accounting.
@@ -125,7 +125,7 @@ const buildingsFormSchema = z.object({
             <FormItem>
               <FormLabel>Building & Facilities Book Values</FormLabel>
               <FormControl>
-                <Input placeholder="Book Value" {...field} />
+                <Input type="number" placeholder="Book Value" {...field} />
               </FormControl>
               <FormDescription>
               Sum of all building book values in the start year. Often corresponds with the residual value.

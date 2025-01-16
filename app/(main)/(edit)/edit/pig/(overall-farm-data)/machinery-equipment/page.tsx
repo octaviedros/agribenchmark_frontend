@@ -107,7 +107,7 @@ const machineryFormSchema = z.object({
             <FormItem>
               <FormLabel>What is your annual Machinery Depreciation?</FormLabel>
               <FormControl>
-                <Input placeholder="Depreciation" {...field} />
+                <Input type="number" placeholder="Depreciation" {...field} />
               </FormControl>
               <FormDescription>
                 Sum of all depreciation values of all machines. Can be found in the inventory list of your accounting.
@@ -123,7 +123,7 @@ const machineryFormSchema = z.object({
             <FormItem>
               <FormLabel>What is your Machinery Book Values?</FormLabel>
               <FormControl>
-                <Input placeholder="Book Values" {...field} />
+                <Input type="number" placeholder="Book Values" {...field} />
               </FormControl>
               <FormDescription>
                 Sum of all machinery book values in the start year. Often corresponds with the residual value.
