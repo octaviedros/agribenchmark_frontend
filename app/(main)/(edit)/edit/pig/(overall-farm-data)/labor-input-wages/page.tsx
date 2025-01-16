@@ -139,7 +139,7 @@ const wagesFormSchema = z.object({
                      <tr>
                        <th className="font-medium min-w-[200px]">Permanent Worker</th>
                        {permanentcostTypes.map((permanentcostTypes) => (
-                         <th key={permanentcostTypes} className="p-1 font-medium min-w-[120px]">
+                         <th key={permanentcostTypes} className="p-1 font-medium min-w-[160px]">
                            {permanentcostTypes}
                          </th>
                          ))}
@@ -188,20 +188,10 @@ const wagesFormSchema = z.object({
                           name={`permanentrows.${index}.value`}
                           render={({ field }) => (
                             <table className="w-full my-4">
-                            <thead>
-                              <tr>
-                                <th className="font-medium min-w-[200px]">Permanent Worker</th>
-                                {permanentcostTypes.map((permanentcostTypes) => (
-                                  <th key={permanentcostTypes} className="p-1 font-medium min-w-[120px]">
-                                    {permanentcostTypes}
-                                  </th>
-                                  ))}
-                                </tr>
-                              </thead>
                               <tbody>
                                 {permanentwages.map((permanentwages) => (
                                   <tr key={permanentwages}>
-                                    <td className="p-2 ">{permanentwages}
+                                    <td className="p-2 min-w-[200px]">{permanentwages}
                                     <FormField
                                        control={form.control}
                                        name="permanentwages"
@@ -226,7 +216,7 @@ const wagesFormSchema = z.object({
                                      />
                                     </td>
                                     {permanentcostTypes.map((permanentcostType) => (
-                                      <td key={permanentcostType} className="p-2">
+                                      <td key={permanentcostType} className="p-2 min-w-[160px]">
                                         <Input type="number" name={`${permanentwages}-${permanentcostType}`} className="w-full"/>
                                       </td>
                                     ))}
@@ -263,11 +253,11 @@ const wagesFormSchema = z.object({
                       <tbody>
                         {casualwages.map((casualwages) => (
                           <tr key={casualwages}>
-                            <td className="p-2 ">{casualwages}
+                            <td className="p-2 min-w-[200px]">{casualwages}
                               <Input type="text" name={`${casualwages}-name`} className="w-full"/>
                             </td>
                             {casualcostTypes.map((casualcostType) => (
-                              <td key={casualcostType} className="p-2">
+                              <td key={casualcostType} className="p-2 min-w-[160px]">
                                 <Input type="number" name={`${casualwages}-${casualcostType}`} className="w-full"/>
                               </td>
                             ))}
@@ -283,24 +273,14 @@ const wagesFormSchema = z.object({
                           name={`casualrows.${index}.value`}
                           render={({ field }) => (
                             <table className="w-full my-4">
-                            <thead>
-                              <tr>
-                                <th className="font-medium">Casual Worker</th>
-                                {casualcostTypes.map((casualcostTypes) => (
-                                  <th key={casualcostTypes} className="p-1 font-medium">
-                                    {casualcostTypes}
-                                  </th>
-                                  ))}
-                                </tr>
-                              </thead>
                               <tbody>
                                 {casualwages.map((casualwages) => (
                                   <tr key={casualwages}>
-                                    <td className="p-2 ">{casualwages}
+                                    <td className="p-2 min-w-[200px] ">{casualwages}
                                       <Input type="text" name={`${casualwages}-name`} className="w-full"/>
                                     </td>
                                     {casualcostTypes.map((casualcostType) => (
-                                      <td key={casualcostType} className="p-2">
+                                      <td key={casualcostType} className="p-2 min-w-[160px]">
                                         <Input type="number" name={`${casualwages}-${casualcostType}`} className="w-full"/>
                                       </td>
                                     ))}
@@ -337,11 +317,11 @@ const wagesFormSchema = z.object({
                         <tbody>
                           {familywages.map((familywages) => (
                             <tr key={familywages}>
-                              <td className="p-1 ">{familywages}
+                              <td className="p-2 min-w-[200px] ">{familywages}
                                 <Input type="text" name={`${familywages}-name`} className="w-full"/>
                               </td>
                               {familycostTypes.map((familycostType) => (
-                                <td key={familycostType} className="p-2">
+                                <td key={familycostType} className="p-2 min-w-[160px]">
                                   <Input type="number" name={`${familywages}-${familycostType}`} className="w-full"/>
                                 </td>
                               ))}
@@ -357,24 +337,14 @@ const wagesFormSchema = z.object({
                             name={`familyrows.${index}.value`}
                             render={({ field }) => (
                               <table className="w-full my-4">
-                              <thead>
-                                <tr>
-                                  <th className="font-medium">Family Worker</th>
-                                  {familycostTypes.map((familycostTypes) => (
-                                    <th key={familycostTypes} className="p-1 font-medium">
-                                      {familycostTypes}
-                                    </th>
-                                    ))}
-                                  </tr>
-                                </thead>
                                 <tbody>
                                   {familywages.map((familywages) => (
                                     <tr key={familywages}>
-                                      <td className="p-1 ">{familywages}
+                                      <td className="p-2 min-w-[200px] ">{familywages}
                                         <Input type="text" name={`${familywages}-name`} className="w-full"/>
                                       </td>
                                       {familycostTypes.map((familycostType) => (
-                                        <td key={familycostType} className="p-2">
+                                        <td key={familycostType} className="p-2 min-w-[160px]">
                                           <Input type="number" name={`${familywages}-${familycostType}`} className="w-full"/>
                                         </td>
                                       ))}

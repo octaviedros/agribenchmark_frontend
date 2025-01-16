@@ -117,7 +117,7 @@ const feedpriceFormSchema = z.object({
       <Separator />
 
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
         <table className="w-full my-4">
           <thead>
             <tr>
@@ -152,24 +152,14 @@ const feedpriceFormSchema = z.object({
                 name={`feedpricerow.${index}.value`}
                 render={({ field }) => (
                   <table className="w-full my-4">
-                  <thead>
-                    <tr>
-                      <th className="font-medium min-w-[120px]">Feed Type</th>
-                      {feedpriceTypes.map((feedpriceType) => (
-                        <th key={feedpriceType} className="p-1 font-medium min-w-[120px]">
-                          {feedpriceType}
-                        </th>
-                        ))}
-                      </tr>
-                    </thead>
                     <tbody>
                       {feedprices.map((feedprice) => (
                         <tr key={feedprice}>
-                          <td className="p-2 ">{feedprice}
+                          <td className="p-2 min-w-[120px]">{feedprice}
                             <Input type="text" name={`${feedprice}-name`}/>
                           </td>
                           {feedpriceTypes.map((feedpriceType) => (
-                            <td key={feedpriceType} className="p-2">
+                            <td key={feedpriceType} className="p-2 min-w-[120px]">
                               <Input type="number" name={`${feedprice}-${feedpriceType}`}/>
                             </td>
                         ))} 

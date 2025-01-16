@@ -239,7 +239,7 @@ const sowdataFormSchema = z.object({
           )}
         />
         </form>
-        <form className="my-2 max-w-72">
+        <form className="my-2 w-full">
         <div>
           <h3 className="mt-6 font-medium">Performance</h3>
         <FormField

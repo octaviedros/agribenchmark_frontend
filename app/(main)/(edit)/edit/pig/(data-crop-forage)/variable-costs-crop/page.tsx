@@ -90,20 +90,20 @@ const varcostcropFormSchema = z.object({
     }
 
   return (
-    <div className="space-y-6 min">
+    <div className="space-y-6">
       <div>
         <h3 className="text-lg font-medium">Variable Costs of Crop and Forage Production</h3>
       </div>
       <Separator />
 
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
       <table className="w-full my-4">
           <thead>
             <tr>
-              <th className="font-medium min-w-[120px]">Crop</th>
+              <th className="font-medium">Crop</th>
               {varcostcropTypes.map((varcostcropType) => (
-                <th key={varcostcropType} className="p-1 font-medium min-w-[120px]">
+                <th key={varcostcropType} className="p-1 font-medium">
                   {varcostcropType}
                 </th>
                 ))}
@@ -112,11 +112,11 @@ const varcostcropFormSchema = z.object({
             <tbody>
               {varcostcrops.map((varcostcrop) => (
                 <tr key={varcostcrop}>
-                  <td className="p-2 ">{varcostcrop}
+                  <td className="p-2 min-w-[120px]">{varcostcrop}
                     <Input type="text" name={`${varcostcrop}-name`}/>
                   </td>
                   {varcostcropTypes.map((varcostcropType) => (
-                    <td key={varcostcropType} className="p-2">
+                    <td key={varcostcropType} className="p-2 min-w-[120px]">
                       <Input type="number" name={`${varcostcrop}-${varcostcropType}`}/>
                     </td>
                   ))}
@@ -132,24 +132,14 @@ const varcostcropFormSchema = z.object({
             name={`varcostrow.${index}.value`}
             render={({ field }) => (
         <table className="w-full my-4">
-          <thead>
-            <tr>
-              <th className="font-medium min-w-[120px]">Crop</th>
-              {varcostcropTypes.map((varcostcropType) => (
-                <th key={varcostcropType} className="p-1 font-medium min-w-[120px]">
-                  {varcostcropType}
-                </th>
-                ))}
-              </tr>
-            </thead>
             <tbody>
               {varcostcrops.map((varcostcrop) => (
                 <tr key={varcostcrop}>
-                  <td className="p-2 ">{varcostcrop}
+                  <td className="p-2 min-w-[127px]">{varcostcrop}
                     <Input type="text" name={`${varcostcrop}-name`}/>
                   </td>
                   {varcostcropTypes.map((varcostcropType) => (
-                    <td key={varcostcropType} className="p-2">
+                    <td key={varcostcropType} className="p-2 min-w-[127px]">
                       <Input type="number" name={`${varcostcrop}-${varcostcropType}`}/>
                     </td>
                   ))}

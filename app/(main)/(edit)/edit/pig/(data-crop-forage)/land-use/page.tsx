@@ -115,13 +115,13 @@ const landuseFormSchema = z.object({
     }
 
   return (
-    <div className="space-y-6 min">
+    <div className="space-y-6">
       <div>
         <h3 className="text-lg font-medium">Land use, Yields, Prices and Direct Payments</h3>
       </div>
       <Separator />
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
         <table className="w-full my-4">
           <thead>
             <tr>
@@ -156,24 +156,14 @@ const landuseFormSchema = z.object({
             name={`landuserow.${index}.value`}
             render={({ field }) => (
               <table className="w-full my-4">
-              <thead>
-                <tr>
-                  <th className="font-medium min-w-[120px]">Crop Name</th>
-                  {landuseTypes.map((landuseType) => (
-                    <th key={landuseType} className="p-1 font-medium min-w-[120px]">
-                      {landuseType}
-                    </th>
-                    ))}
-                  </tr>
-                </thead>
                 <tbody>
                   {landuses.map((landuse) => (
                     <tr key={landuse}>
-                      <td className="p-2 ">{landuse}
+                      <td className="p-2 min-w-[120px]">{landuse}
                         <Input type="text" name={`${landuse}-name`}/>
                       </td>
                       {landuseTypes.map((landuseType) => (
-                        <td key={landuseType} className="p-2">
+                        <td key={landuseType} className="p-2 min-w-[120px]">
                           <Input type="number" name={`${landuse}-${landuseType}`}/>
                         </td>
                       ))}

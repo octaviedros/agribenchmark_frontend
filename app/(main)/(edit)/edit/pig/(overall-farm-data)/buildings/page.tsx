@@ -137,9 +137,9 @@ const buildingsFormSchema = z.object({
         <table className="w-full my-4">
           <thead>
             <tr>
-              <th className="font-medium">Building</th>
+              <th className="font-medium min-w-[120px]">Building</th>
               {costTypes.map((costType) => (
-                <th key={costType} className="p-1 font-medium">
+                <th key={costType} className="p-1 font-medium min-w-[120px]">
                   {costType}
                 </th>
                 ))}
@@ -167,25 +167,15 @@ const buildingsFormSchema = z.object({
               key={field.id}
               name={`building_name.${index}.name`}
               render={({ field }) => (
-        <table className="w-full my-4">
-          <thead>
-            <tr>
-              <th className="font-medium">Building</th>
-              {costTypes.map((costType) => (
-                <th key={costType} className="p-1 font-medium">
-                  {costType}
-                </th>
-                ))}
-              </tr>
-            </thead>
+        <table className="w-full my-4 ">
             <tbody>
               {buildings.map((building) => (
                 <tr key={building}>
-                  <td className="p-2 ">{building}
+                  <td className="p-2 min-w-[120px]">{building}
                     <Input type="text" name={`${building}-name`} className="w-full"/>
                   </td>
                   {costTypes.map((costType) => (
-                    <td key={costType} className="p-2">
+                    <td key={costType} className="p-2 min-w-[120px]">
                       <Input type="number" name={`${building}-${costType}`} className="w-full"/>
                     </td>
                   ))}

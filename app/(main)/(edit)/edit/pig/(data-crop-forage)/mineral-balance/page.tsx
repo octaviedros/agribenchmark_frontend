@@ -92,8 +92,8 @@ const mineralbalanceFormSchema = z.object({
       </div>
       <Separator />
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
-        <table className="w-full my-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
+        <table className="w-full">
           <thead>
             <tr>
               <th className="font-medium min-w-[120px]">Crop</th>
@@ -127,24 +127,14 @@ const mineralbalanceFormSchema = z.object({
                 name={`mineralrow.${index}.value`}
                 render={({ field }) => (
                   <table className="w-full my-4">
-                  <thead>
-                    <tr>
-                      <th className="font-medium min-w-[120px]">Crop</th>
-                      {mineralTypes.map((mineralType) => (
-                        <th key={mineralType} className="p-1 font-medium min-w-[120px]">
-                          {mineralType}
-                        </th>
-                        ))}
-                      </tr>
-                    </thead>
                     <tbody>
                       {minerals.map((mineral) => (
                         <tr key={mineral}>
-                          <td className="p-2 ">{mineral}
+                          <td className="p-2 min-w-[120px] ">{mineral}
                             <Input type="text" name={`${mineral}-name`}/>
                           </td>
                           {mineralTypes.map((mineralType) => (
-                            <td key={mineralType} className="p-2">
+                            <td key={mineralType} className="p-2 min-w-[120px]">
                               <Input type="number" name={`${mineral}-${mineralType}`}/>
                             </td>
                           ))}

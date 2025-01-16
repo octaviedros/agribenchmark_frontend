@@ -123,7 +123,7 @@ const sowfeedrationFormSchema = z.object({
       </div>
       <Separator />
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <h3>Self Produced</h3>
          <table className="w-full my-4">
                    <thead>
@@ -159,24 +159,14 @@ const sowfeedrationFormSchema = z.object({
                     name={`selffeedrationrows.${index}.value`}
                     render={({ field }) => (
                       <table className="w-full my-4">
-                   <thead>
-                     <tr>
-                       <th className="font-medium min-w-[200px]">Crop Name</th>
-                       {sowselfproducedTypes.map((sowselfproducedTypes) => (
-                         <th key={sowselfproducedTypes} className="p-1 font-medium min-w-[120px]">
-                           {sowselfproducedTypes}
-                         </th>
-                         ))}
-                       </tr>
-                     </thead>
                      <tbody>
                        {sowselfproduced.map((sowselfproduced) => (
                          <tr key={sowselfproduced}>
-                            <td className="p-2 ">{sowselfproduced}
+                            <td className="p-2 min-w-[200px]">{sowselfproduced}
                               <Input type="text" name={`${sowselfproduced}-name`} className="w-full"/>
                             </td>
                            {sowselfproducedTypes.map((sowselfproducedType) => (
-                             <td key={sowselfproducedType} className="p-2">
+                             <td key={sowselfproducedType} className="p-2 min-w-[120px]">
                                <Input type="number" name={`${sowselfproduced}-${sowselfproducedType}`} className="w-full"/>
                              </td>
                            ))}
@@ -196,13 +186,8 @@ const sowfeedrationFormSchema = z.object({
                     ))}
                     <Button
                     type="button" 
-                    onClick={() => append({ value: "" })}
-                    >
-                    Add Row
-                    </Button>
-                    </div> 
-                   
-                   
+                    onClick={() => append({ value: "" })}>Add Row</Button>
+                    </div>
                    <h3>Bought Feed</h3>
                      <table className="w-full my-4">
                      <thead>
@@ -238,24 +223,14 @@ const sowfeedrationFormSchema = z.object({
                         name={`boughtfeedrationrows.${index}.value`}
                         render={({ field }) => (
                           <table className="w-full my-4">
-                     <thead>
-                          <tr>
-                             <th className="font-medium min-w-[200px]">Crop Name</th>
-                             {sowboughtfeedTypes.map((sowboughtfeedTypes) => (
-                            <th key={sowboughtfeedTypes} className="p-1 font-medium min-w-[120px]">
-                              {sowboughtfeedTypes}
-                            </th>
-                            ))}
-                             </tr>
-                          </thead>
                           <tbody>
                              {sowboughtfeeds.map((sowboughtfeeds) => (
                             <tr key={sowboughtfeeds}>
-                                <td className="p-2 ">{sowboughtfeeds}
+                                <td className="p-2 min-w-[200px]">{sowboughtfeeds}
                                   <Input type="text" name={`${sowboughtfeeds}-name`} className="w-full"/>
                                 </td>
                               {sowboughtfeedTypes.map((sowboughtfeedType) => (
-                                 <td key={sowboughtfeedType} className="p-2">
+                                 <td key={sowboughtfeedType} className="p-2 min-w-[120px]">
                                     <Input type="number" name={`${sowboughtfeeds}-${sowboughtfeedType}`} className="w-full"/>
                                  </td>
                               ))}

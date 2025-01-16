@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faTrashCan} from "@fortawesome/free-regular-svg-icons"
 
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
@@ -118,27 +120,27 @@ const finishingfeedrationFormSchema = z.object({
       </div>
       <Separator />
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <h1>Self Produced Feed</h1>
          <table className="w-full my-4">
-                   <thead> 
-                     <tr>
-                       <th className="font-medium min-w-[200px]">Crop Name</th>
-                       {finishingselfproducedTypes.map((finishingselfproducedTypes) => (
-                         <th key={finishingselfproducedTypes} className="p-1 font-medium min-w-[120px]">
-                           {finishingselfproducedTypes}
-                         </th>
-                         ))}
+            <thead> 
+             <tr>
+               <th className="font-medium min-w-[200px]">Crop Name</th>
+                 {finishingselfproducedTypes.map((finishingselfproducedTypes) => (
+                 <th key={finishingselfproducedTypes} className="p-1 font-medium min-w-[120px]">
+                  {finishingselfproducedTypes}
+               </th>
+                 ))}
                        </tr>
                      </thead>
                      <tbody>
                        {finishingselfproduced.map((finishingselfproduced) => (
                          <tr key={finishingselfproduced}>
-                            <td className="p-2 ">{finishingselfproduced}
+                            <td className="p-2 min-w-[200px]">{finishingselfproduced}
                               <Input type="text" name={`${finishingselfproduced}-name`} className="w-full"/>
                             </td>
                            {finishingselfproducedTypes.map((finishingselfproducedType) => (
-                             <td key={finishingselfproducedType} className="p-2">
+                             <td key={finishingselfproducedType} className="p-2 min-w-[160px]">
                                <Input type="number" name={`${finishingselfproduced}-${finishingselfproducedType}`} className="w-full"/>
                              </td>
                            ))}
@@ -154,32 +156,23 @@ const finishingfeedrationFormSchema = z.object({
                     name={`selffeedrationrows.${index}.value`}
                     render={({ field }) => (
                       <table className="w-full my-4">
-                   <thead> 
-                     <tr>
-                       <th className="font-medium min-w-[200px]">Crop Name</th>
-                       {finishingselfproducedTypes.map((finishingselfproducedTypes) => (
-                         <th key={finishingselfproducedTypes} className="p-1 font-medium min-w-[120px]">
-                           {finishingselfproducedTypes}
-                         </th>
-                         ))}
-                       </tr>
-                     </thead>
                      <tbody>
                        {finishingselfproduced.map((finishingselfproduced) => (
                          <tr key={finishingselfproduced}>
-                            <td className="p-2 ">{finishingselfproduced}
+                            <td className="p-2 min-w-[200px]">{finishingselfproduced}
                               <Input type="text" name={`${finishingselfproduced}-name`} className="w-full"/>
                             </td>
                            {finishingselfproducedTypes.map((finishingselfproducedType) => (
-                             <td key={finishingselfproducedType} className="p-2">
+                             <td key={finishingselfproducedType} className="p-2 min-w-[160px]">
                                <Input type="number" name={`${finishingselfproduced}-${finishingselfproducedType}`} className="w-full"/>
                              </td>
                            ))}
                            <td>
                               <Button 
                                 type="button"
-                                variant="destructive" 
-                                onClick={() => remove(index)}>Remove Row</Button>
+                                variant="destructive"
+                                size="icon"
+                                onClick={() => remove(index)}><FontAwesomeIcon icon={faTrashCan} /></Button>
                            </td>
                          </tr>
                        ))}
@@ -205,11 +198,11 @@ const finishingfeedrationFormSchema = z.object({
                            <tbody>
                               {finishingboughtfeeds.map((finishingboughtfeeds) => (
                              <tr key={finishingboughtfeeds}>
-                                 <td className="p-2 ">{finishingboughtfeeds}
+                                 <td className="p-2 min-w-[200px]">{finishingboughtfeeds}
                                    <Input type="text" name={`${finishingboughtfeeds}-name`} className="w-full"/>
                                  </td>
                                {finishingboughtfeedTypes.map((finishingboughtfeedType) => (
-                                  <td key={finishingboughtfeedType} className="p-2">
+                                  <td key={finishingboughtfeedType} className="p-2 min-w-[160px]">
                                      <Input type="number" name={`${finishingboughtfeeds}-${finishingboughtfeedType}`} className="w-full"/>
                                   </td>
                                ))}
@@ -225,32 +218,23 @@ const finishingfeedrationFormSchema = z.object({
                     name={`boughtfeedrationrows.${index}.value`}
                     render={({ field }) => (
                       <table className="w-full my-4">
-                      <thead>
-                           <tr>
-                              <th className="font-medium min-w-[200px]">Crop Name</th>
-                              {finishingboughtfeedTypes.map((finishingboughtfeedTypes) => (
-                             <th key={finishingboughtfeedTypes} className="p-1 font-medium min-w-[120px]">
-                               {finishingboughtfeedTypes}
-                             </th>
-                             ))}
-                              </tr>
-                           </thead>
                            <tbody>
                               {finishingboughtfeeds.map((finishingboughtfeeds) => (
                              <tr key={finishingboughtfeeds}>
-                                  <td className="p-2 ">{finishingboughtfeeds}
+                                  <td className="p-2 min-w-[200px]">{finishingboughtfeeds}
                                     <Input type="text" name={`${finishingboughtfeeds}-name`} className="w-full"/>
                                   </td>
                                 {finishingboughtfeedTypes.map((finishingboughtfeedType) => (
-                                    <td key={finishingboughtfeedType} className="p-2">
+                                    <td key={finishingboughtfeedType} className="p-2 min-w-[160px]">
                                       <Input type="number" name={`${finishingboughtfeeds}-${finishingboughtfeedType}`} className="w-full"/>
                                     </td>
                                 ))}
                                 <td>
                                    <Button 
                                      type="button"
-                                     variant="destructive" 
-                                     onClick={() => boughtremove(index)}>Remove Row</Button>
+                                     variant="destructive"
+                                     size="icon" 
+                                     onClick={() => boughtremove(index)}><FontAwesomeIcon icon={faTrashCan} /></Button>
                                 </td>
                               </tr>
                               ))}

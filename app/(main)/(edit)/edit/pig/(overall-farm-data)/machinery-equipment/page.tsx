@@ -135,9 +135,9 @@ const machineryFormSchema = z.object({
         <table className="w-full my-4">
           <thead>
             <tr>
-              <th className="font-medium">Machine</th>
+              <th className="font-medium min-w-[120px]">Machine</th>
               {costTypes.map((costType) => (
-                <th key={costType} className="p-1 font-medium">
+                <th key={costType} className="p-1 font-medium min-w-[120px]">
                   {costType}
                 </th>
                 ))}
@@ -146,11 +146,11 @@ const machineryFormSchema = z.object({
             <tbody>
               {machines.map((machine) => (
                 <tr key={machine}>
-                  <td className="p-2 ">{machine}
+                  <td className="p-1 ">{machine}
                     <Input type="text" name={`${machine}-name`} className="w-full"/>
                   </td>
                   {costTypes.map((costType) => (
-                    <td key={costType} className="p-2">
+                    <td key={costType} className="p-1">
                       <Input type="number" name={`${machine}-${costType}`} className="w-full"/>
                     </td>
                   ))}
@@ -165,25 +165,15 @@ const machineryFormSchema = z.object({
               key={field.id}
               name={`tractors.${index}.name`}
               render={({ field }) => (
-          <table className="w-full my-4">
-          <thead>
-            <tr>
-              <th className="font-medium">Machine</th>
-              {costTypes.map((costType) => (
-                <th key={costType} className="p-1 font-medium">
-                  {costType}
-                </th>
-                ))}
-              </tr>
-            </thead>
+          <table className="">
             <tbody>
               {machines.map((machine) => (
                 <tr key={machine}>
-                  <td className="p-2 ">{machine}
+                  <td className="p-1 min-w-[120px]">{machine}
                     <Input type="text" name={`${machine}-name`} className="w-full"/>
                   </td>
                   {costTypes.map((costType) => (
-                    <td key={costType} className="p-2">
+                    <td key={costType} className="p-1 min-w-[120px]">
                       <Input type="number" name={`${machine}-${costType}`} className="w-full"/>
                     </td>
                   ))}
@@ -202,6 +192,7 @@ const machineryFormSchema = z.object({
             ))}
             <Button
             type="button"
+            className="mt-4"
             onClick={() => append({ name: "", purchase_year: "", purchase_price: "", utilization_period: "", replacement_value: "", enterprise_codes: "" })}>Add Row</Button>
             </div>
 
