@@ -7,6 +7,11 @@ import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
 
+import { put } from "@/lib/api"
+import { useFarmData } from "@/hooks/use-farm-data"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
+
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
@@ -28,96 +33,142 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 
 const sowfeedingFormSchema = z.object({
-    sowfeeding: z.number().min(1, {
-        message: "Must be at least 1 characters.",
-      }),
-        sowgestationfeed: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        sowlactationfeed: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        sowtotalamountday: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        sowtotalamountyear: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-    giltsfeeding: z.string().min(1, {
-        message: "Must be at least 1 characters.",
-        }),
-        gitlsspecialfeeding: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        giltssharegestation: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        giltssharelactation: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        giltfeedquantity: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        gilttotalamountyear: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-    boarsfeeding: z.string().min(1, {
-        message: "Must be at least 1 characters.",
-        }),
-        boarsspecialfeeding: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        boarsharegestation: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        boarsharelactation: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        boarfeedquantity: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        boartotalamountyear: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-    pigletsfeeding1: z.string().min(1, {
-        message: "Must be at least 1 characters.",
-        }),
-        pigletsfeeding2: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        pigletfeedquantity: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
-        piglettotalamountyear: z.string().min(1, {
-            message: "Must be at least 1 characters.",
-        }),
+  general_id: z.number().nullable().optional(),
+  sowfeeding: z.number().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  sows_gestation_feed: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  sows_lactation_feed: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  sows_total_feed_daily: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  sows_total_feed_yearly: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  gilts_feeding: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  gilts_special_feed: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  gilts_share_gestation_feed: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  gilts_share_lactation_feed: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  gilts_feed_quantity_yearly: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  gilts_total_feed_yearly: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  boars_feeding: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  boars_special_feed: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  boars_share_gestation_feed: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  boars_share_lactation_feed: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  boars_feed_quantity_yearly: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  boars_total_feed_yearly: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  piglet_feed_1: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  piglet_feed_2: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  piglet_feed_quantity_yearly: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
+  piglet_total_feed_yearly: z.string().min(1, {
+    message: "Must be at least 1 characters.",
+  }),
 })
 
 type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
+
+interface SowFeedingFormProps {
+  farmData: SowFeedingFormValues | undefined
+}
   
-  export function SowFeedingPage() {
-    const form = useForm<SowFeedingFormValues>({
-      resolver: zodResolver(sowfeedingFormSchema),
-      defaultValues: {
-      },
-  })
-    const sowfeeding =['Gestation Feed', 'Lactation Feed', 'Total Amount of Feed per animal and day', 'Total Amount of Feed kg and year'];
+  export function SowFeedingPage({ farmData }: SowFeedingFormProps) {
+      const searchParams = useSearchParams()
+      const general_id = searchParams.get("general_id") || ""
+      const { data, error, isLoading } = useFarmData("/feedsows" , general_id)
+      
+      if (!general_id) {
+        return (
+          <div className="p-4">
+            <h2>No farm selected.</h2>
+            <p>Select a farm from the dropdown menu to get started.</p>
+          </div>
+        )
+      }
+    
+      if (isLoading) {
+        return <div className="p-4">Loading farm data…</div>
+      }
+      if (error) {
+        console.error(error)
+        return <div className="p-4">Failed to load farm data.</div>
+      }
+      const { mutate } = useFarmData("/feedsows", farmData?.general_id?.toString())
+        const form = useForm<SowFeedingFormValues>({
+          resolver: zodResolver(sowfeedingFormSchema),
+          defaultValues: {
+            ...farmData
+          },
+          mode: "onChange",
+        })
+      
+        useEffect(() => {
+          form.reset({
+            ...farmData
+          })
+        }, [farmData]) 
+    
+      async function onSubmit(data: SowFeedingFormValues) {
+            try {
+              const mergedData = {
+                ...farmData, // overwrite the farmData with the new data
+                ...data,
+              }
+              await mutate(put(`/feedsows/${farmData?.general_id}`, mergedData), {
+                optimisticData: mergedData,
+                rollbackOnError: true,
+                populateCache: false,
+                revalidate: false
+              })
+              toast({
+                title: "Success",
+                description: "Farm data has been saved successfully.",
+              })
+            } catch (error: unknown) {
+              const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+              toast({
+                variant: "destructive",
+                title: "Error",
+                description: `Failed to save farm data. ${errorMessage}`,
+              })
+            }
+          }
+    /*const sowfeeding =['Gestation Feed', 'Lactation Feed', 'Total Amount of Feed per animal and day', 'Total Amount of Feed kg and year'];
     const sowfeedingTypes = [''];
 
     const giltsfeeding = ['Share of Gestation Feed','Share of Lactation Feed', 'Feed Quantity (in terms of dry matter)', 'Total Amount of Feed kg per year'];
@@ -128,19 +179,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
     const boarsfeedingTypes = [''];
 
     const pigletsfeeding = ['Piglet Feed 1', 'Piglet Feed 2', 'Total Amount of Feed kg per year'];
-    const pigletsfeedingTypes = [''];
-
-
-    function onSubmit(data: SowFeedingFormValues) {
-      toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-      })
-    }
+    const pigletsfeedingTypes = [''];*/
 
   return (
     <div className="space-y-6">
@@ -153,7 +192,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         <div><h3>Sows</h3></div>
       <FormField
           control={form.control}
-          name="sowgestationfeed"
+          name="sows_gestation_feed"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Gestation Feed</FormLabel>
@@ -167,7 +206,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="sowlactationfeed"
+          name="sows_lactation_feed"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Lactation Feed</FormLabel>
@@ -181,7 +220,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="sowtotalamountday"
+          name="sows_total_feed_daily"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Total Amount of Feed per animal and day</FormLabel>
@@ -195,7 +234,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="sowtotalamountyear"
+          name="sows_total_feed_yearly"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Total Amount of Feed kg and year</FormLabel>
@@ -210,7 +249,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         <div><h3>Gilts</h3></div>
         <FormField
           control={form.control}
-          name="gitlsspecialfeeding"
+          name="gilts_special_feed"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Special Gilt Feed</FormLabel>
@@ -231,7 +270,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />  
         <FormField
           control={form.control}
-          name="giltssharegestation"
+          name="gilts_share_gestation_feed"
           render={({ field }) => (
             <FormItem>             
               <FormLabel>Share Gestation Feed</FormLabel>
@@ -244,7 +283,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="giltssharelactation"
+          name="gilts_share_lactation_feed"
           render={({ field }) => (
             <FormItem>             
               <FormLabel>Share Lactation Feed</FormLabel>
@@ -257,7 +296,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
           />
           <FormField
             control={form.control}
-            name="giltfeedquantity"
+            name="gilts_feed_quantity_yearly"
             render={({ field }) => (
             <FormItem>             
               <FormLabel>Feed Quantity (in terms of dry matter)</FormLabel>
@@ -270,7 +309,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
           />
           <FormField
             control={form.control}
-            name="gilttotalamountyear"
+            name="gilts_total_feed_yearly"
             render={({ field }) => (
             <FormItem>             
               <FormLabel>Total Amount of Feed kg per year</FormLabel>
@@ -284,7 +323,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         <div><h3>Boars</h3></div>
         <FormField
           control={form.control}
-          name="boarsspecialfeeding"
+          name="boars_special_feed"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Special Boar Feed</FormLabel>
@@ -305,7 +344,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="boarsharegestation"
+          name="boars_share_gestation_feed"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Share of Gestation Feed</FormLabel>             
@@ -319,7 +358,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="boarsharelactation"
+          name="boars_share_lactation_feed"
           render={({ field }) => (
             <FormItem>             
               <FormDescription>Share Lactation Feed</FormDescription>
@@ -333,7 +372,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="boarfeedquantity"
+          name="boars_feed_quantity_yearly"
           render={({ field }) => (
             <FormItem>             
               <FormDescription>Feed Quantity (in terms of dry matter)</FormDescription>
@@ -347,7 +386,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="boartotalamountyear"
+          name="boars_total_feed_yearly"
           render={({ field }) => (
             <FormItem>             
               <FormDescription>Total Amount of Feed kg per year</FormDescription>
@@ -362,7 +401,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         <div><h3>Piglets</h3></div>
         <FormField
           control={form.control}
-          name="pigletsfeeding1"
+          name="piglet_feed_1"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Piglet Feed 1</FormLabel>
@@ -376,7 +415,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="pigletsfeeding2"
+          name="piglet_feed_2"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Piglet Feed 2</FormLabel>  
@@ -390,7 +429,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="pigletfeedquantity"
+          name="piglet_feed_quantity_yearly"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Feed Quantity (in terms of dry matter)</FormLabel>
@@ -403,7 +442,7 @@ type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
         />
         <FormField
           control={form.control}
-          name="piglettotalamountyear"
+          name="piglet_total_feed_yearly"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Total Amount of Feed</FormLabel>

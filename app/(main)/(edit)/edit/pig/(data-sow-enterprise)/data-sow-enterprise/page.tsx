@@ -7,10 +7,15 @@ import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
 
+import { put } from "@/lib/api"
+import { useFarmData } from "@/hooks/use-farm-data"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
+
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+
 import {
   Form,
   FormControl,
@@ -28,23 +33,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-
 
 const sowdataFormSchema = z.object({
+  general_id: z.number().nullable().optional(),
   productionsystem: z
   .string({
     required_error: "Please select a production system.",
@@ -137,34 +128,93 @@ const sowdataFormSchema = z.object({
   .number({
     required_error: "Please enter the amount of Reared Piglets.",
   }),
-  salesweightsows: z
+  sales_weight_sows: z
   .number({
     required_error: "Please enter the Sales Weight of Sows.",
   }),
-  salesweightboars: z
+  sales_weight_boars: z
   .number({
     required_error: "Please enter the Sales Weight of Boars.",
   }),
-  salesweightweaningpiglets: z
+  sales_weight_weaning_piglets: z
   .number({
     required_error: "Please enter the Sales Weight of Weaning Piglets.",
   }),
-  salesweightrearingpiglets: z
+  sales_weight_rearing_piglets: z
   .number({
     required_error: "Please enter the Sales Weight of Rearing Piglets.",
   }),
   })
 
   type SowDataFormValues = z.infer<typeof sowdataFormSchema>
-  
-  export function SowDataPage() {
-    const form = useForm<SowDataFormValues>({
-      resolver: zodResolver(sowdataFormSchema),
-      defaultValues: {
-      },
-  }) 
 
-        const livestock = ['Number of Sows and Mated Gilts', 'Number of Unserved Gilts', 'Number of Boars', 'Total Number of Sows and Gilts'];
+  interface SowDataProps {
+    farmData: SowDataFormValues | undefined
+  }
+  
+  export function SowDataPage({ farmData }: SowDataProps) {
+      const searchParams = useSearchParams()
+      const general_id = searchParams.get("general_id") || ""
+      const { data, error, isLoading } = useFarmData("/sows/salesweight/sowsperformance" , general_id)
+      
+      if (!general_id) {
+        return (
+          <div className="p-4">
+            <h2>No farm selected.</h2>
+            <p>Select a farm from the dropdown menu to get started.</p>
+          </div>
+        )
+      }
+    
+      if (isLoading) {
+        return <div className="p-4">Loading farm data…</div>
+      }
+      if (error) {
+        console.error(error)
+        return <div className="p-4">Failed to load farm data.</div>
+      }
+      const { mutate } = useFarmData("/sows/salesweight/sowsperformance", farmData?.general_id?.toString())
+        const form = useForm<SowDataFormValues>({
+          resolver: zodResolver(sowdataFormSchema),
+          defaultValues: {
+            ...farmData
+          },
+          mode: "onChange",
+        })
+      
+        useEffect(() => {
+          form.reset({
+            ...farmData
+          })
+        }, [farmData]) 
+    
+      async function onSubmit(data: SowDataFormValues) {
+            try {
+              const mergedData = {
+                ...farmData, // overwrite the farmData with the new data
+                ...data,
+              }
+              await mutate(put(`/sows/salesweight/sowsperformance/${farmData?.general_id}`, mergedData), {
+                optimisticData: mergedData,
+                rollbackOnError: true,
+                populateCache: false,
+                revalidate: false
+              })
+              toast({
+                title: "Success",
+                description: "Farm data has been saved successfully.",
+              })
+            } catch (error: unknown) {
+              const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+              toast({
+                variant: "destructive",
+                title: "Error",
+                description: `Failed to save farm data. ${errorMessage}`,
+              })
+            }
+          }
+
+        /*const livestock = ['Number of Sows and Mated Gilts', 'Number of Unserved Gilts', 'Number of Boars', 'Total Number of Sows and Gilts'];
         const livestockTypes = [''];
 
         const sowdata = ['Piglets born Alive', 'Cycles born per sow and year', 'Average time of gestation period', 
@@ -175,18 +225,8 @@ const sowdataFormSchema = z.object({
         const sowdataTypes= [''];
 
         const salesweight = ['Sows', 'Boars', 'Weaning Piglets', 'Rearing Piglets'];
-        const salesweightTypes = [''];
+        const salesweightTypes = [''];*/
   
-    function onSubmit(data: SowDataFormValues) {
-      toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-      })
-    }
 
   return (
     <div className="space-y-4">
@@ -276,10 +316,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Number of Boars</FormLabel>
+              <FormDescription>Number of heads </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>Number of heads </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -290,17 +330,17 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Total Number of Sows and Gilts</FormLabel>
+              <FormDescription>Number of heads </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>Number of heads </FormDescription>
               <FormMessage />
             </FormItem>
           )}
           />
           </div>
           </form>
-          <form className="my-2 max-w-72">
+          <form className="my-2">
           <div><h3 className="mt-6 font-medium">Livestock</h3>
           </div>
           <FormField
@@ -309,10 +349,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Piglets born Alive</FormLabel>
+              <FormDescription>Number of heads </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>Number of heads </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -323,10 +363,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Cycles born per sow and year</FormLabel>
+              <FormDescription>Number of heads </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>Number of heads </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -337,10 +377,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Average time of gestation period</FormLabel>
+              <FormDescription>Days</FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>Days </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -351,10 +391,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Duration of Suckling</FormLabel>
+              <FormDescription>Days </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>Days </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -365,10 +405,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Number of Dry Sow Days</FormLabel>
+              <FormDescription>Days </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>Days </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -379,10 +419,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Rate of insuccessful Insemination</FormLabel>
+              <FormDescription>% </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>% </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -393,10 +433,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Weaning Weight</FormLabel>
+              <FormDescription>kg </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>kg </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -407,10 +447,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Cull Rate Sows</FormLabel>
+              <FormDescription>% </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>% </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -421,10 +461,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Cull Rate Boars</FormLabel>
+              <FormDescription>% </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>% </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -435,10 +475,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Fraction of Own Replacement</FormLabel>
+              <FormDescription>% </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>% </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -449,10 +489,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Annual Sow Mortality</FormLabel>
+              <FormDescription>% </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>% </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -463,10 +503,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Annual Boar Mortality</FormLabel>
+              <FormDescription>% </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>% </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -477,10 +517,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Piglet Mortality Weaning</FormLabel>
+              <FormDescription>% </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>% </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -491,10 +531,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Piglet Mortality Rearing</FormLabel>
+              <FormDescription>% </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>% </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -505,10 +545,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Piglets Weaned</FormLabel>
+              <FormDescription>Number of heads </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>Number of heads </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -519,10 +559,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Average Piglet Rearing</FormLabel>
+              <FormDescription>kg </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>kg </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -533,10 +573,10 @@ const sowdataFormSchema = z.object({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Reared Piglets</FormLabel>
+              <FormDescription>Number of heads </FormDescription>
               <FormControl>
           <Input type="number" {...field} />
               </FormControl>
-              <FormDescription>Number of heads </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -545,56 +585,56 @@ const sowdataFormSchema = z.object({
           <h3 className="mt-6 font-medium">Sales Weight</h3>
           <FormField
           control={form.control}
-          name="salesweightsows"
+          name="sales_weight_sows"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Sows</FormLabel>
+              <FormDescription>kg CW per head </FormDescription>
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>kg CW per head </FormDescription>
               <FormMessage />
             </FormItem>
           )}
           />
           <FormField
           control={form.control}
-          name="salesweightboars"
+          name="sales_weight_boars"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Boars</FormLabel>
+              <FormDescription>kg CW per head </FormDescription>
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>kg CW per head </FormDescription>
               <FormMessage />
             </FormItem>
           )}
           />
           <FormField
           control={form.control}
-          name="salesweightweaningpiglets"
+          name="sales_weight_weaning_piglets"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Weaning Piglets</FormLabel>
+              <FormDescription>kg CW per head </FormDescription>
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>kg CW per head </FormDescription>
               <FormMessage />
             </FormItem>
           )}
           />
           <FormField
           control={form.control}
-          name="salesweightrearingpiglets"
+          name="sales_weight_rearing_piglets"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Rearing Piglets</FormLabel>
+              <FormDescription>kg CW per head </FormDescription>
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>kg CW per head </FormDescription>
               <FormMessage />
             </FormItem>
           )}

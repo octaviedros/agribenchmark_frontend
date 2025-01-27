@@ -4,15 +4,17 @@ import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, Trash2 } from "lucide-react"
 import { z } from "zod"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faTrashCan} from "@fortawesome/free-regular-svg-icons"
+
+import { put } from "@/lib/api"
+import { useFarmData } from "@/hooks/use-farm-data"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -23,32 +25,9 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-
-const minerals = [''];
-const mineralTypes = ['Nitrogen','Phosphorus','Potash','Calcium','Other'];
 
 const mineralbalanceFormSchema = z.object({
+  general_id: z.number().nullable().optional(),
   fertilizer_type: z.string(),
   fertilizer_name: z.string(),
   fertilizer_name_custom: z.string(),
@@ -62,28 +41,79 @@ const mineralbalanceFormSchema = z.object({
   })
   
   type MineralBalanceValues = z.infer<typeof mineralbalanceFormSchema>
+
+  interface MineralBalanceProps {
+    farmData: MineralBalanceValues | undefined
+  }
   
-  export function MineralBalancePage() {
-    const form = useForm<MineralBalanceValues>({
-      resolver: zodResolver(mineralbalanceFormSchema),
-      defaultValues: {
-     },  
-    }) 
+  export function MineralBalancePage({ farmData }: MineralBalanceProps) {
+        const searchParams = useSearchParams()
+        const general_id = searchParams.get("general_id") || ""
+        const { data, error, isLoading } = useFarmData("/fertilizer", general_id)
+        
+        if (!general_id) {
+          return (
+            <div className="p-4">
+              <h2>No farm selected.</h2>
+              <p>Select a farm from the dropdown menu to get started.</p>
+            </div>
+          )
+        }
+      
+        if (isLoading) {
+          return <div className="p-4">Loading farm data…</div>
+        }
+        if (error) {
+          console.error(error)
+          return <div className="p-4">Failed to load farm data.</div>
+        }
+        const { mutate } = useFarmData("/fertilizer", farmData?.general_id?.toString())
+          const form = useForm<MineralBalanceValues>({
+            resolver: zodResolver(mineralbalanceFormSchema),
+            defaultValues: {
+              ...farmData
+            },
+            mode: "onChange",
+          })
+        
+          useEffect(() => {
+            form.reset({
+              ...farmData
+            })
+          }, [farmData]) 
+      
+        async function onSubmit(data: MineralBalanceValues) {
+              try {
+                const mergedData = {
+                  ...farmData, // overwrite the farmData with the new data
+                  ...data,
+                }
+                await mutate(put(`/fertilizer/${farmData?.general_id}`, mergedData), {
+                  optimisticData: mergedData,
+                  rollbackOnError: true,
+                  populateCache: false,
+                  revalidate: false
+                })
+                toast({
+                  title: "Success",
+                  description: "Farm data has been saved successfully.",
+                })
+              } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+                toast({
+                  variant: "destructive",
+                  title: "Error",
+                  description: `Failed to save farm data. ${errorMessage}`,
+                })
+              }
+            } 
     const { fields, append, remove } = useFieldArray({
       control: form.control,
       name: "mineralrow",
     })
 
-    function onSubmit(data: MineralBalanceValues) {
-      toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-      })
-    }
+    const minerals = [''];
+    const mineralTypes = ['Nitrogen','Phosphorus','Potash','Calcium','Other'];
 
   return (
     <div className="space-y-6 min">
@@ -143,7 +173,7 @@ const mineralbalanceFormSchema = z.object({
                             type="button"
                             variant="destructive"
                             size="icon"
-                            onClick={() => remove(index)}><FontAwesomeIcon icon={faTrashCan} /></Button>
+                            onClick={() => remove(index)}><Trash2/></Button>
                           </td>
                         </tr>
                       ))}

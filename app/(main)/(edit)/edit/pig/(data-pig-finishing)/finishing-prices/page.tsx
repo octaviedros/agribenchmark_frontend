@@ -7,10 +7,15 @@ import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
 
+import { put } from "@/lib/api"
+import { useFarmData } from "@/hooks/use-farm-data"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
+
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+
 import {
   Form,
   FormControl,
@@ -21,29 +26,10 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+
 
 const finishingpriceFormSchema = z.object({
+  general_id: z.number().nullable().optional(),
   buying_f_castpiglets: z
   .number({
     required_error: "Please enter a number.",
@@ -63,31 +49,79 @@ const finishingpriceFormSchema = z.object({
 })
 
 type FinishingPriceFormValues = z.infer<typeof finishingpriceFormSchema>
-  
-  export function FinishingPricePage() {
-    const form = useForm<FinishingPriceFormValues>({
-      resolver: zodResolver(finishingpriceFormSchema),
-      defaultValues: {
-      },
-  })
 
-      const finishingbuying = ['Female & Castrate Piglets', 'Boars Piglets for Finishing'];
+interface FinishingPriceFormProps {
+  farmData: FinishingPriceFormValues | undefined
+}
+  
+  export function FinishingPricePage({ farmData }: FinishingPriceFormProps) {
+          const searchParams = useSearchParams()
+          const general_id = searchParams.get("general_id") || ""
+          const { data, error, isLoading } = useFarmData("/pricesfinishing" , general_id)
+          
+          if (!general_id) {
+            return (
+              <div className="p-4">
+                <h2>No farm selected.</h2>
+                <p>Select a farm from the dropdown menu to get started.</p>
+              </div>
+            )
+          }
+        
+          if (isLoading) {
+            return <div className="p-4">Loading farm data…</div>
+          }
+          if (error) {
+            console.error(error)
+            return <div className="p-4">Failed to load farm data.</div>
+          }
+          const { mutate } = useFarmData("/pricesfinishing", farmData?.general_id?.toString())
+            const form = useForm<FinishingPriceFormValues>({
+              resolver: zodResolver(finishingpriceFormSchema),
+              defaultValues: {
+                ...farmData
+              },
+              mode: "onChange",
+            })
+          
+            useEffect(() => {
+              form.reset({
+                ...farmData
+              })
+            }, [farmData]) 
+        
+          async function onSubmit(data: FinishingPriceFormValues) {
+                try {
+                  const mergedData = {
+                    ...farmData, // overwrite the farmData with the new data
+                    ...data,
+                  }
+                  await mutate(put(`/pricesfinishing/${farmData?.general_id}`, mergedData), {
+                    optimisticData: mergedData,
+                    rollbackOnError: true,
+                    populateCache: false,
+                    revalidate: false
+                  })
+                  toast({
+                    title: "Success",
+                    description: "Farm data has been saved successfully.",
+                  })
+                } catch (error: unknown) {
+                  const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+                  toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: `Failed to save farm data. ${errorMessage}`,
+                  })
+                }
+              }
+
+      /*const finishingbuying = ['Female & Castrate Piglets', 'Boars Piglets for Finishing'];
       const finishingbuyingTypes = [''];
   
       const finishingselling = ['Finishing Pigs (Female & Castrates)', 'Finishing Pigs (Boars)'];
-      const finishingsellingTypes = [''];
+      const finishingsellingTypes = [''];*/
    
-
-function onSubmit(data: FinishingPriceFormValues) {
-      toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-      })
-    }
 
   return (
     <div className="space-y-6">
