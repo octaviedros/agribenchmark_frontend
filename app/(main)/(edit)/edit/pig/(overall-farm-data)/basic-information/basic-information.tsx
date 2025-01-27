@@ -36,7 +36,8 @@ const currencyOptions = currencies.map((cur) => ({
 }))
 
 const profileFormSchema = z.object({
-  general_id: z.number().nullable().optional(),
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
   land: CountriesEnum,
   region: z
     .string()
