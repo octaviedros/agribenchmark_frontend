@@ -29,7 +29,8 @@ import { Input } from "@/components/ui/input"
 
 
 const sowfeedrationFormSchema = z.object({
-  general_id: z.number().nullable().optional(),
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
   production: z
     .string({
       required_error: "Please select a production system.",

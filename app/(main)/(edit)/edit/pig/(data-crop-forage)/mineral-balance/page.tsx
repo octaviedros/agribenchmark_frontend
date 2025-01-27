@@ -27,7 +27,8 @@ import {
 import { Input } from "@/components/ui/input"
 
 const mineralbalanceFormSchema = z.object({
-  general_id: z.number().nullable().optional(),
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
   fertilizer_type: z.string(),
   fertilizer_name: z.string(),
   fertilizer_name_custom: z.string(),

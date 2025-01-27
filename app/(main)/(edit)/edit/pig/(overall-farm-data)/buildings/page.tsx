@@ -30,7 +30,8 @@ const buildings = [''];
 const costTypes = ['Purchase Year', 'Purchase Price', 'Utilization Period', 'Replacement Value', 'Enterprise Codes'];
 
 const buildingsFormSchema = z.object({
-  general_id: z.number().nullable().optional(),
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
   sum_annual_depreciation: z.string().min(2, {
     message: "Depreciation must be at least 2 characters.",
   }),

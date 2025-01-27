@@ -28,7 +28,8 @@ import {
 import { Input } from "@/components/ui/input"
 
 const feedpriceFormSchema = z.object({
-  general_id: z.number().nullable().optional(),
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
   feed_type: z.array(
     z.object({
       value: z.string(),
@@ -63,83 +64,83 @@ const feedpriceFormSchema = z.object({
     value: z.string()
   })),
 
-  })
-  
-  type FeedPriceValues = z.infer<typeof feedpriceFormSchema>
+})
 
-  interface FeedPriceProps {
-    farmData: FeedPriceValues | undefined
+type FeedPriceValues = z.infer<typeof feedpriceFormSchema>
+
+interface FeedPriceProps {
+  farmData: FeedPriceValues | undefined
+}
+
+export function FeedPricesPage({ farmData }: FeedPriceProps) {
+  const searchParams = useSearchParams()
+  const general_id = searchParams.get("general_id") || ""
+  const { data, error, isLoading } = useFarmData("/feedpricesdrymatter", general_id)
+
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
   }
-  
-  export function FeedPricesPage({ farmData }: FeedPriceProps) {
-          const searchParams = useSearchParams()
-          const general_id = searchParams.get("general_id") || ""
-          const { data, error, isLoading } = useFarmData("/feedpricesdrymatter", general_id)
-          
-          if (!general_id) {
-            return (
-              <div className="p-4">
-                <h2>No farm selected.</h2>
-                <p>Select a farm from the dropdown menu to get started.</p>
-              </div>
-            )
-          }
-        
-          if (isLoading) {
-            return <div className="p-4">Loading farm data…</div>
-          }
-          if (error) {
-            console.error(error)
-            return <div className="p-4">Failed to load farm data.</div>
-          }
-          const { mutate } = useFarmData("/feedpricesdrymatter", farmData?.general_id?.toString())
-            const form = useForm<FeedPriceValues>({
-              resolver: zodResolver(feedpriceFormSchema),
-              defaultValues: {
-                ...farmData
-              },
-              mode: "onChange",
-            })
-          
-            useEffect(() => {
-              form.reset({
-                ...farmData
-              })
-            }, [farmData]) 
-        
-          async function onSubmit(data: FeedPriceValues) {
-                try {
-                  const mergedData = {
-                    ...farmData, // overwrite the farmData with the new data
-                    ...data,
-                  }
-                  await mutate(put(`/feedpricesdrymatter/${farmData?.general_id}`, mergedData), {
-                    optimisticData: mergedData,
-                    rollbackOnError: true,
-                    populateCache: false,
-                    revalidate: false
-                  })
-                  toast({
-                    title: "Success",
-                    description: "Farm data has been saved successfully.",
-                  })
-                } catch (error: unknown) {
-                  const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
-                  toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: `Failed to save farm data. ${errorMessage}`,
-                  })
-                }
-              }
 
-    const { fields, append, remove } = useFieldArray({
-      control: form.control,
-      name: "feedpricerow",
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
+  }
+  const { mutate } = useFarmData("/feedpricesdrymatter", farmData?.general_id?.toString())
+  const form = useForm<FeedPriceValues>({
+    resolver: zodResolver(feedpriceFormSchema),
+    defaultValues: {
+      ...farmData
+    },
+    mode: "onChange",
+  })
+
+  useEffect(() => {
+    form.reset({
+      ...farmData
     })
+  }, [farmData])
 
-    const feedprices = [''];
-    const feedpriceTypes = ['Price per tonne', 'Dry Matter', 'MJ', 'Protein (%)', 'Feed Concentrate'];
+  async function onSubmit(data: FeedPriceValues) {
+    try {
+      const mergedData = {
+        ...farmData, // overwrite the farmData with the new data
+        ...data,
+      }
+      await mutate(put(`/feedpricesdrymatter/${farmData?.general_id}`, mergedData), {
+        optimisticData: mergedData,
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: false
+      })
+      toast({
+        title: "Success",
+        description: "Farm data has been saved successfully.",
+      })
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to save farm data. ${errorMessage}`,
+      })
+    }
+  }
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "feedpricerow",
+  })
+
+  const feedprices = [''];
+  const feedpriceTypes = ['Price per tonne', 'Dry Matter', 'MJ', 'Protein (%)', 'Feed Concentrate'];
 
   return (
     <div className="space-y-6 min">
@@ -149,15 +150,15 @@ const feedpriceFormSchema = z.object({
       <Separator />
 
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
-        <table className="w-full my-4">
-          <thead>
-            <tr>
-              <th className="font-medium min-w-[120px]">Feed Type</th>
-              {feedpriceTypes.map((feedpriceType) => (
-                <th key={feedpriceType} className="p-1 font-medium min-w-[120px]">
-                  {feedpriceType}
-                </th>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
+          <table className="w-full my-4">
+            <thead>
+              <tr>
+                <th className="font-medium min-w-[120px]">Feed Type</th>
+                {feedpriceTypes.map((feedpriceType) => (
+                  <th key={feedpriceType} className="p-1 font-medium min-w-[120px]">
+                    {feedpriceType}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -165,17 +166,17 @@ const feedpriceFormSchema = z.object({
               {feedprices.map((feedprice) => (
                 <tr key={feedprice}>
                   <td className="p-2 ">{feedprice}
-                    <Input type="text" name={`${feedprice}-name`}/>
+                    <Input type="text" name={`${feedprice}-name`} />
                   </td>
                   {feedpriceTypes.map((feedpriceType) => (
                     <td key={feedpriceType} className="p-2">
-                      <Input type="number" name={`${feedprice}-${feedpriceType}`}/>
+                      <Input type="number" name={`${feedprice}-${feedpriceType}`} />
                     </td>
-                ))} 
+                  ))}
                 </tr>
-               ))}
+              ))}
             </tbody>
-          </table> 
+          </table>
           <div>
             {fields.map((field, index) => (
               <FormField
@@ -188,34 +189,34 @@ const feedpriceFormSchema = z.object({
                       {feedprices.map((feedprice) => (
                         <tr key={feedprice}>
                           <td className="p-2 min-w-[120px]">{feedprice}
-                            <Input type="text" name={`${feedprice}-name`}/>
+                            <Input type="text" name={`${feedprice}-name`} />
                           </td>
                           {feedpriceTypes.map((feedpriceType) => (
                             <td key={feedpriceType} className="p-2 min-w-[120px]">
-                              <Input type="number" name={`${feedprice}-${feedpriceType}`}/>
+                              <Input type="number" name={`${feedprice}-${feedpriceType}`} />
                             </td>
-                        ))} 
-                        <td>
-                        <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => remove(index)}><Trash2/></Button>
-                        </td>
+                          ))}
+                          <td>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => remove(index)}><Trash2 /></Button>
+                          </td>
                         </tr>
-                       ))}
+                      ))}
                     </tbody>
                   </table>
                 )}
               />
             ))}
             <Button
-            type="button"
-            onClick={() => append({ value: "" })}>Add Row</Button>
+              type="button"
+              onClick={() => append({ value: "" })}>Add Row</Button>
           </div>
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
     </div>
   )
 }

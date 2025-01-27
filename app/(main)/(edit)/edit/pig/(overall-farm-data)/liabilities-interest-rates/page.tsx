@@ -28,7 +28,8 @@ import { Input } from "@/components/ui/input"
 
 
 const liabilitiesFormSchema = z.object({
-  general_id: z.number().nullable().optional(),
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
   long_term_loans: z.string({
     required_error: "Please enter your Long-Term loans.",}),
   medium_term_loans: z.string({

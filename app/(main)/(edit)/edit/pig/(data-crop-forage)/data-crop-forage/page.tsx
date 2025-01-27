@@ -32,7 +32,8 @@ const lands = ['Own Land', 'Rented Land', 'Rent Price for existing contracts', '
 const landTypes = ['Cropland', 'Grassland', 'Other incl. wood']
 
 const acreageFormSchema = z.object({
-  general_id: z.number().nullable().optional(),
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
   own_land: z.object({
     cropland: z.string(),
     grassland: z.string(),
@@ -58,75 +59,75 @@ const acreageFormSchema = z.object({
     grassland: z.string(),
     other: z.string(),
   }),
-  })
-  
+})
+
 type AcreageFormValues = z.infer<typeof acreageFormSchema>
 
 interface AcreageFormProps {
   farmData: AcreageFormValues | undefined
 }
-  
-  export function DataCropFarmPage({ farmData }: AcreageFormProps) {
-    const searchParams = useSearchParams()
-    const general_id = searchParams.get("general_id") || ""
-    const { data, error, isLoading } = useFarmData("/acreageprices", general_id)
-    
-    if (!general_id) {
-      return (
-        <div className="p-4">
-          <h2>No farm selected.</h2>
-          <p>Select a farm from the dropdown menu to get started.</p>
-        </div>
-      )
-    }
-  
-    if (isLoading) {
-      return <div className="p-4">Loading farm data…</div>
-    }
-    if (error) {
-      console.error(error)
-      return <div className="p-4">Failed to load farm data.</div>
-    }
-    const { mutate } = useFarmData("/acreageprices", farmData?.general_id?.toString())
-      const form = useForm<AcreageFormValues>({
-        resolver: zodResolver(acreageFormSchema),
-        defaultValues: {
-          ...farmData
-        },
-        mode: "onChange",
+
+export function DataCropFarmPage({ farmData }: AcreageFormProps) {
+  const searchParams = useSearchParams()
+  const general_id = searchParams.get("general_id") || ""
+  const { data, error, isLoading } = useFarmData("/acreageprices", general_id)
+
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
+  }
+  const { mutate } = useFarmData("/acreageprices", farmData?.general_id?.toString())
+  const form = useForm<AcreageFormValues>({
+    resolver: zodResolver(acreageFormSchema),
+    defaultValues: {
+      ...farmData
+    },
+    mode: "onChange",
+  })
+
+  useEffect(() => {
+    form.reset({
+      ...farmData
+    })
+  }, [farmData])
+
+  async function onSubmit(data: AcreageFormValues) {
+    try {
+      const mergedData = {
+        ...farmData, // overwrite the farmData with the new data
+        ...data,
+      }
+      await mutate(put(`/acreageprices/${farmData?.general_id}`, mergedData), {
+        optimisticData: mergedData,
+        rollbackOnError: true,
+        populateCache: false,
+        revalidate: false
       })
-    
-      useEffect(() => {
-        form.reset({
-          ...farmData
-        })
-      }, [farmData]) 
-  
-    async function onSubmit(data: AcreageFormValues) {
-          try {
-            const mergedData = {
-              ...farmData, // overwrite the farmData with the new data
-              ...data,
-            }
-            await mutate(put(`/acreageprices/${farmData?.general_id}`, mergedData), {
-              optimisticData: mergedData,
-              rollbackOnError: true,
-              populateCache: false,
-              revalidate: false
-            })
-            toast({
-              title: "Success",
-              description: "Farm data has been saved successfully.",
-            })
-          } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
-            toast({
-              variant: "destructive",
-              title: "Error",
-              description: `Failed to save farm data. ${errorMessage}`,
-            })
-          }
-        }
+      toast({
+        title: "Success",
+        description: "Farm data has been saved successfully.",
+      })
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to save farm data. ${errorMessage}`,
+      })
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -138,32 +139,32 @@ interface AcreageFormProps {
       </div>
       <Separator />
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-      <table className="w-full my-2">
-        <thead>
-          <tr>
-            <th className="font-medium"></th>
-            {landTypes.map((landType) => (
-              <th key={landType} className="p-1 font-medium" >{landType}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {lands.map((land) => (
-            <tr key={land}>
-              <td className="p-2">{land}</td>
-              {landTypes.map((landType) => (
-                <td key={landType}>
-                  <Input type="number" name={`${land}-${landType}`} className="w-full m-2"/>
-                </td>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <table className="w-full my-2">
+            <thead>
+              <tr>
+                <th className="font-medium"></th>
+                {landTypes.map((landType) => (
+                  <th key={landType} className="p-1 font-medium" >{landType}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {lands.map((land) => (
+                <tr key={land}>
+                  <td className="p-2">{land}</td>
+                  {landTypes.map((landType) => (
+                    <td key={landType}>
+                      <Input type="number" name={`${land}-${landType}`} className="w-full m-2" />
+                    </td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+            </tbody>
+          </table>
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
     </div>
   )
 }

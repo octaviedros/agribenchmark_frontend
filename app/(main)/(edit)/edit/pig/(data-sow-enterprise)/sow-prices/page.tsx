@@ -28,7 +28,8 @@ import {
 import { Input } from "@/components/ui/input"
 
 const sowpriceFormSchema = z.object({
-  general_id: z.number().nullable().optional(),
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
   buying_gilts: z
   .number({
     required_error: "Please enter a number.",

@@ -52,7 +52,7 @@ const profileFormSchema = z.object({
     .min(2, {
       message: "Legal status must be at least 2 characters.",
     }),
-  reference_year_data: z.number().int().positive().min(1000).max(9999).optional(),
+  reference_year_data: z.coerce.number().int().positive().min(1000).max(9999).optional(),
   cash_crop: z.boolean().nullable().optional(),
   sows: z.boolean().nullable().optional(),
   pig_finishing: z.boolean().nullable().optional(),

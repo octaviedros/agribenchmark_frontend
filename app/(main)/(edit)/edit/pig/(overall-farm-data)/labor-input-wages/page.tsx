@@ -33,7 +33,8 @@ import {
 } from "@/components/ui/select"
 
 const wagesFormSchema = z.object({
-  general_id: z.number().nullable().optional(),
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
   permanentwages: z
   .string({
     required_error: "Please select an option.",

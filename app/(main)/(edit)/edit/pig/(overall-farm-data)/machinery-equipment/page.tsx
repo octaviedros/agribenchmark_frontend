@@ -28,7 +28,8 @@ import { Input } from "@/components/ui/input"
 
 
 const machineryFormSchema = z.object({
-  general_id: z.number().nullable().optional(),
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
     sum_annual_depreciation: z.string({
         required_error: "Please enter your yearly machinery depreciation.",}),
     sum_bookvalues: z.string({
