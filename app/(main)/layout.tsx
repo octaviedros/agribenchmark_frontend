@@ -6,7 +6,7 @@ const data = {
   user: {
     name: "Octavie Droste",
     email: "octavie.droste@agribenchmark.com",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "",
   },
 }
 
