@@ -291,7 +291,9 @@ export function MachineryFarmPage() {
                       variant="destructive"
                       size="icon"
                       onClick={() => {
-                        del(`/machines/${farmData.tractors[index].id}`)
+                        if (farmData.tractors[index]?.id) {
+                          del(`/machines/${farmData.tractors[index].id}`)
+                        }
                         remove(index)
                       }}
                     >
