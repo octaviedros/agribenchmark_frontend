@@ -1,4 +1,3 @@
-import { useContext } from "react"
 import {
   Dialog,
   DialogTrigger,
@@ -8,6 +7,7 @@ import type { Farm } from "@/data/schema"
 import { toast } from "@/hooks/use-toast"
 import { del } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
+import { KeyedMutator } from "swr"
 
 interface DeleteFarmProps {
   farms: Farm[]
@@ -35,14 +35,14 @@ export function DeleteFarmContent({
 }: {
   farms: Farm[]
 }) {
-  const { data: allFarms, mutate } = useFarmData("/generalfarm") as { data: Farm[], mutate: any }
+  const { data: allFarms, mutate } = useFarmData("/generalfarm") as { data: Farm[], mutate: KeyedMutator<DeleteFarmProps[]> }
 
   const onConfirm = async () => {
     try {
       await mutate(
-        Promise.all(farms.map(farm => del(`/generalfarm/${farm.general_id}`))),
+        Promise.all(farms.map(farm => del(`/generalfarm/${farm.id}`))),
         {
-          optimisticData: allFarms.filter(f => !farms.some(farm => farm.general_id === f.general_id)),
+          optimisticData: allFarms.filter(f => !farms.some(farm => farm.id === f.id)),
           rollbackOnError: true,
           populateCache: false,
           revalidate: false

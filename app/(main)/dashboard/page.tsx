@@ -1,8 +1,5 @@
-import { z } from "zod"
-import { farmSchema } from "@/data/schema"
 import { DashboardClient } from "./DashboardClient"
 import type { Metadata } from "next";
-import { getFarms } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Dashboard | agribenchmark",

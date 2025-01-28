@@ -8,8 +8,9 @@ const CurrenciesEnum = z.enum(currencies.map((curr) => curr.code) as [string, ..
 // We're keeping a simple non-relational schema here.
 // IRL, you will have a schema for your data models.
 export const farmSchema = z.object({
-  general_id: z.number().optional().nullable(),
-  scenario_id: z.string().uuid().optional().nullable(),
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
+  scenario_id: z.string().uuid(),
   scenario_name: z.string().min(3).max(50).optional().nullable(),
   farm_id: z
     .string()

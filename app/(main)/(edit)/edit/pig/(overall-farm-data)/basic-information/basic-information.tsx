@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 
 import { useState, useEffect } from "react"
@@ -36,7 +38,8 @@ const currencyOptions = currencies.map((cur) => ({
 }))
 
 const profileFormSchema = z.object({
-  general_id: z.number().nullable().optional(),
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
   land: CountriesEnum,
   region: z
     .string()
@@ -86,11 +89,12 @@ export function ProfileForm({ farmData }: ProfileFormProps) {
         ...farmData, // overwrite the farmData with the new data
         ...data,
       }
-      await mutate(put(`/generalfarm/${farmData?.general_id}`, mergedData), {
+      console.log(mergedData)
+      await mutate(put(`/generalfarm/${farmData?.id}`, mergedData), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: false,
-        revalidate: false
+        revalidate: true
       })
       toast({
         title: "Success",
@@ -151,7 +155,7 @@ export function ProfileForm({ farmData }: ProfileFormProps) {
             <FormItem>
               <FormLabel>In which Region is your farm located?</FormLabel>
               <FormControl>
-                <Input placeholder="Region" {...field} />
+                <Input placeholder="Region" {...field} value={field.value ?? ""}/>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -196,7 +200,7 @@ export function ProfileForm({ farmData }: ProfileFormProps) {
             <FormItem>
               <FormLabel>What is the legal status of your farm?</FormLabel>
               <FormControl>
-                <Input placeholder="Legal status" {...field} />
+                <Input placeholder="Legal status" {...field} value={field.value ?? ""} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -209,7 +213,7 @@ export function ProfileForm({ farmData }: ProfileFormProps) {
             <FormItem>
               <FormLabel>What is the Reference year of the following Data for this farm?</FormLabel>
               <FormControl>
-                <Input placeholder="Reference year" {...field} />
+                <Input placeholder="Reference year" {...field} value={field.value ?? ""} />
               </FormControl>
               <FormMessage />
             </FormItem>

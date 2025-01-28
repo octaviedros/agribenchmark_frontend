@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable prefer-const */
 "use client"
 
-import { useContext, useState, useEffect, act } from "react"
+import { useContext, useState, useEffect } from "react"
 import { NetworkContext } from "@/context/NetworkContext"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useSearchParams } from 'next/navigation'
@@ -16,7 +18,7 @@ interface EditLayoutProps {
 
 interface FarmData {
   data: Farm[],
-  error: any,
+  error: Error | null,
   isLoading: boolean
 }
 
@@ -37,25 +39,25 @@ export function EditLayoutContent({ children }: EditLayoutProps) {
   const generalId = searchParams.get("general_id") || (farms[0]?.general_id ?? "") 
   let activeFarm = farms.find(f => f.general_id?.toString() === generalId)
 
-  const [selectedFarm, setSelectedFarm] = useState(activeFarm?.farm_id)
-  const [selectedYear, setSelectedYear] = useState(activeFarm?.year?.toString())
-  const [selectedScenario, setSelectedScenario] = useState(activeFarm?.scenario_name)
+  const [selectedFarm, setSelectedFarm] = useState(activeFarm?.farm_id || "")
+  const [selectedYear, setSelectedYear] = useState(activeFarm?.year?.toString() || "")
+  const [selectedScenario, setSelectedScenario] = useState(activeFarm?.scenario_name || "")
   const [availableYears, setAvailableYears] = useState<{ value: string, label: string}[]>([])
   const [availableScenarios, setAvailableScenarios] = useState<{ value: string, label: string }[]>([])
 
   useEffect(() => {
-    setSelectedFarm(activeFarm?.farm_id)
-    setSelectedYear(activeFarm?.year?.toString())
-    setSelectedScenario(activeFarm?.scenario_name)
+    setSelectedFarm(activeFarm?.farm_id || "")
+    setSelectedYear(activeFarm?.year?.toString() || "")
+    setSelectedScenario(activeFarm?.scenario_name || "")
     
     const availableYears = farms
       .filter(f => f.farm_id === activeFarm?.farm_id)
-      .map(f => ({value: f.year?.toString(), label: f.year?.toString()}))
+      .map(f => ({value: f.year?.toString() || "", label: f.year?.toString() || ""}))
     setAvailableYears(availableYears)
     
     const availableScenarios = farms
       .filter(f => f.farm_id === activeFarm?.farm_id && f.year?.toString() === activeFarm?.year?.toString())
-      .map(f => ({value: f.scenario_name, label: f.scenario_name}))
+      .map(f => ({value: f.scenario_name || "", label: f.scenario_name || ""}))
     setAvailableScenarios(availableScenarios)
   }, [activeFarm])
   
