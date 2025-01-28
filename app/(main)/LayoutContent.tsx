@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Fragment } from "react"
 import { useRouter } from "next/navigation"
 import { useLogin } from "@/context/LoginContext"
 import { AppSidebar } from "@/components/app-sidebar"
@@ -22,11 +22,11 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-export function LayoutContent({ 
-  children, 
+export function LayoutContent({
+  children,
   userData
-}: { 
-  children: React.ReactNode, 
+}: {
+  children: React.ReactNode,
   userData: { user: { name: string, email: string, avatar: string } }
 }) {
   const router = useRouter();
@@ -49,12 +49,17 @@ export function LayoutContent({
     setIsSSR(false);
   }, []);
 
+  // Only redirect after hydration:
+  useEffect(() => {
+    if (!email && !isSSR) {
+      router.push("/")
+    }
+  }, [email, isSSR, router])
+
+  // If email is present, fill user data
   if (email) {
-    userData.user.name = email;
-    userData.user.email = email;
-  } else {
-    // Redirect to login page
-    router.push('/'); 
+    userData.user.name = email
+    userData.user.email = email
   }
 
   return (
@@ -75,19 +80,21 @@ export function LayoutContent({
                   </BreadcrumbItem>
                   {!isSSR && paths.length > 0 && <BreadcrumbSeparator className="hidden md:block" />}
                   {!isSSR && paths.length > 0 && paths.map((segment, index, arr) => (
-                    <BreadcrumbItem key={index}>
-                      <BreadcrumbLink href={`/${arr.map(p => p.href).slice(0, index + 1).join('/')}`}>
-                        {segment.label}
-                      </BreadcrumbLink>
-                      {index < arr.length - 1 && <BreadcrumbSeparator className="hidden md:block"  />}
-                    </BreadcrumbItem>
+                    <Fragment key={index}>
+                      <BreadcrumbItem>
+                        <BreadcrumbLink href={`/${arr.map(p => p.href).slice(0, index + 1).join('/')}`}>
+                          {segment.label}
+                        </BreadcrumbLink>
+                      </BreadcrumbItem>
+                      {index < arr.length - 1 && <BreadcrumbSeparator className="hidden md:block" />}
+                    </Fragment>
                   ))}
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
             <div className="ml-auto pt-4 pr-8">
-              {!isSSR && theme === "light" && <Image key="light-logo" src="/images/logo.png" alt="Logo" width={150} height={40} />}
-              {!isSSR && theme === "dark" && <Image key="dark-logo" src="/images/logo-dark.png" alt="Logo" width={150} height={40} />}
+              {!isSSR && theme === "light" && <Image key="light-logo" src="/images/logo.png" alt="Logo" width={150} height={59} priority={true}/>}
+              {!isSSR && theme === "dark" && <Image key="dark-logo" src="/images/logo-dark.png" alt="Logo" width={150} height={59} priority={true} />}
             </div>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
