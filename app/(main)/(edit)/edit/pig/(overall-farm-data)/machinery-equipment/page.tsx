@@ -1,14 +1,15 @@
 "use client"
 
+import { useSearchParams } from "next/navigation"
 import { Separator } from "@/components/ui/separator"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown, Trash2 } from "lucide-react"
+import { Trash2 } from "lucide-react"
 import { z } from "zod"
-import { put } from "@/lib/api"
+import { upsert, del } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
+import { v4 as uuidv4 } from "uuid"
 
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
@@ -23,56 +24,101 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-
 const machineryFormSchema = z.object({
-  id: z.string().uuid(),
   general_id: z.string().uuid(),
-  sum_annual_depreciation: z.string({
+  sum_annual_depreciation: z.coerce.number({
     required_error: "Please enter your yearly machinery depreciation.",
   }),
-  sum_bookvalues: z.string({
+  sum_book_values: z.coerce.number({
     required_error: "Please enter your machinery Book Values.",
   }),
   tractors: z.array(
     z.object({
+      id: z.string().uuid(),
+      machines_id: z.string().uuid(),
       name: z.string(),
-      purchase_year: z.string(),
-      purchase_price: z.string(),
-      utilization_period: z.string(),
-      replacement_value: z.string(),
-      enterprise_codes: z.string(),
+      purchase_year: z.coerce.number(),
+      purchase_price: z.coerce.number(),
+      utilization_period: z.coerce.number(),
+      replacement_value: z.coerce.number(),
+      enterprise_code: z.coerce.number(),
     })
   )
 })
 
-type MachineryFormValues = z.infer<typeof machineryFormSchema>
+export const MachinesDBSchema = z.object({
+  id: z.string().uuid(),
+  machines_id: z.string().uuid(),
+  general_id: z.string().uuid(),
+  sow_id: z.string().uuid().optional(),
+  finishing_id: z.number().int().optional(),
+  sum_annual_depreciation: z.coerce.number().optional(),
+  sum_book_values: z.coerce.number().optional(),
+  tractors: z.string().max(255).optional(),
+  purchase_year: z.coerce.number().optional(),
+  purchase_price: z.coerce.number().optional(),
+  utilization_period: z.coerce.number().optional(),
+  salvage_value: z.coerce.number().optional(),
+  replacement_value: z.coerce.number().optional(),
+  enterprise_code: z.coerce.number().int().optional(),
+  year: z.coerce.number().int().optional(),
+});
 
-interface MachineryFormProps {
-  farmData: MachineryFormValues | undefined
+type MachineryFormValues = z.infer<typeof machineryFormSchema>
+type MachinesDBValues = z.infer<typeof MachinesDBSchema>
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function dbDataToForm(data: any, general_id: string) {
+  if (!data || !data.length) return createDefaults(general_id)
+  return {
+    id: data[0].id,
+    general_id: data[0].general_id,
+    sum_annual_depreciation: data[0].sum_annual_depreciation,
+    sum_book_values: data[0].sum_book_values,
+    tractors: data
+  }
 }
 
-export function MachineryFarmPage({ farmData }: MachineryFormProps) {
+function formDataToDb(data: MachineryFormValues) {
+  return data.tractors.map((tractor) => ({
+    general_id: data.general_id,
+    ...tractor,
+    sum_annual_depreciation: data.sum_annual_depreciation,
+    sum_book_values: data.sum_book_values,
+  }))
+}
+
+function createDefaults(general_id: string) {
+  return {
+    general_id: general_id,
+    sum_annual_depreciation: "",
+    sum_book_values: "",
+    tractors: [{
+      id: uuidv4(),
+      machines_id: uuidv4(),
+      general_id: general_id,
+      name: "",
+      purchase_year: 2010,
+      purchase_price: 0,
+      utilization_period: 0,
+      replacement_value: 0,
+      enterprise_code: 0
+    }]
+  }
+}
+
+export function MachineryFarmPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
-  const { data, error, isLoading } = useFarmData("/machines", general_id)
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/machines", general_id)
 
-  if (!general_id) {
-    return (
-      <div className="p-4">
-        <h2>No farm selected.</h2>
-        <p>Select a farm from the dropdown menu to get started.</p>
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return <div className="p-4">Loading farm data…</div>
-  }
-  if (error) {
-    console.error(error)
-    return <div className="p-4">Failed to load farm data.</div>
-  }
-  const { mutate } = useFarmData("/machines", farmData?.general_id?.toString())
+  const farmData = dbDataToForm(data, general_id)
+  console.log(farmData)
   const form = useForm<MachineryFormValues>({
     resolver: zodResolver(machineryFormSchema),
     defaultValues: {
@@ -83,26 +129,32 @@ export function MachineryFarmPage({ farmData }: MachineryFormProps) {
 
   useEffect(() => {
     form.reset({
+      // ...createDefaults(farmData.general_id),
       ...farmData
     })
-  }, [farmData])
+  }, [isLoading])
+
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "tractors",
   })
 
-  async function onSubmit(data: MachineryFormValues) {
+  async function onSubmit(formData: MachineryFormValues,) {
     try {
-      const mergedData = {
-        ...farmData, // overwrite the farmData with the new data
-        ...data,
-      }
-      await mutate(put(`/machines/${farmData?.general_id}`, mergedData), {
+      console.log(formData)
+      const updatedData = formDataToDb(formData)
+      // merge with previous farm data
+      const mergedData = updatedData.map((row) => {
+        const existingRow = (data as MachinesDBValues[])?.find((r) => r.id === row.id)
+        return existingRow ? { ...existingRow, ...row } : row
+      })
+      console.log(mergedData)
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/machines`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: false,
       })
       toast({
         title: "Success",
@@ -118,9 +170,45 @@ export function MachineryFarmPage({ farmData }: MachineryFormProps) {
     }
   }
 
-  const machines = [''];
-  const costTypes = ['Purchase Year', 'Purchase Price', 'Utilization Period', 'Replacement Value', 'Enterprise Codes'];
+  const costTypes = [
+    {
+      name: "Purchase Year",
+      value: "purchase_year",
+    },
+    {
+      name: "Purchase Price",
+      value: "purchase_price",
+    },
+    {
+      name: "Utilization Period",
+      value: "utilization_period",
+    },
+    {
+      name: "Replacement Value",
+      value: "replacement_value",
+    },
+    {
+      name: "Enterprise Codes",
+      value: "enterprise_code",
+    },
+  ]
 
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error && error.status !== 404) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
+  }
   return (
     <div className="space-y-6">
       <div>
@@ -147,7 +235,7 @@ export function MachineryFarmPage({ farmData }: MachineryFormProps) {
           />
           <FormField
             control={form.control}
-            name="sum_bookvalues"
+            name="sum_book_values"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>What is your Machinery Book Values?</FormLabel>
@@ -165,64 +253,60 @@ export function MachineryFarmPage({ farmData }: MachineryFormProps) {
             <thead>
               <tr>
                 <th className="font-medium min-w-[120px]">Machine</th>
-                {costTypes.map((costType) => (
-                  <th key={costType} className="p-1 font-medium min-w-[120px]">
-                    {costType}
+                {costTypes.map(({ name }) => (
+                  <th key={name} className="p-1 font-medium min-w-[120px]">
+                    {name}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {machines.map((machine) => (
-                <tr key={machine}>
-                  <td className="p-1 ">{machine}
-                    <Input type="text" name={`${machine}-name`} className="w-full" />
+              {fields.map((field, index) => (
+                <tr key={field.id}>
+                  <td className="p-1 min-w-[120px]">
+                    {/* Tractor name */}
+                    <FormField
+                      control={form.control}
+                      name={`tractors.${index}.name`}
+                      render={({ field: f }) => (
+                        <Input {...f} className="w-full" />
+                      )}
+                    />
                   </td>
-                  {costTypes.map((costType) => (
-                    <td key={costType} className="p-1">
-                      <Input type="number" name={`${machine}-${costType}`} className="w-full" />
+                  {costTypes.map(({ value: costType }) => (
+                    <td key={costType} className="p-1 min-w-[120px]">
+                      {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
+                      <FormField
+                        control={form.control}
+                        name={`tractors.${index}.${costType}`}
+                        render={({ field: ff }) => (
+                          <Input {...ff} className="w-full" type="number" />
+                        )}
+                      />
                     </td>
                   ))}
+                  <td>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => {
+                        del(`/machines/${farmData.tractors[index].id}`)
+                        remove(index)
+                      }}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
           <div>
-            {fields.map((field, index) => (
-              <FormField
-                control={form.control}
-                key={field.id}
-                name={`tractors.${index}.name`}
-                render={() => (
-                  <table className="">
-                    <tbody>
-                      {machines.map((machine) => (
-                        <tr key={machine}>
-                          <td className="p-1 min-w-[120px]">{machine}
-                            <Input type="text" name={`${machine}-name`} className="w-full" />
-                          </td>
-                          {costTypes.map((costType) => (
-                            <td key={costType} className="p-1 min-w-[120px]">
-                              <Input type="number" name={`${machine}-${costType}`} className="w-full" />
-                            </td>
-                          ))}
-                          <td>
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="icon" onClick={() => remove(index)}><Trash2 /></Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              />
-            ))}
             <Button
               type="button"
               className="mt-4"
-              onClick={() => append({ name: "", purchase_year: "", purchase_price: "", utilization_period: "", replacement_value: "", enterprise_codes: "" })}>Add Row</Button>
+              onClick={() => append(createDefaults(general_id).tractors[0])}>Add Row</Button>
           </div>
 
           <Button type="submit">Submit</Button>

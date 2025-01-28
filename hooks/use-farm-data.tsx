@@ -15,7 +15,11 @@ async function fetchFarmData(table: string, general_id: string = "") {
 export function useFarmData(table: string, general_id: string = "") {
   const { data, error, isLoading, mutate } = useSWR(
     `${table}/by_general_id/${general_id}`,
-    () => fetchFarmData(table as string, general_id as string)
+    () => fetchFarmData(table as string, general_id as string),
+    {
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
+    }
   )
   return {
     data,
