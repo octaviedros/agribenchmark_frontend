@@ -91,8 +91,8 @@ function formDataToDb(data: MachineryFormValues) {
 function createDefaults(general_id: string) {
   return {
     general_id: general_id,
-    sum_annual_depreciation: "",
-    sum_book_values: "",
+    sum_annual_depreciation: 0,
+    sum_book_values: 0,
     tractors: [{
       id: uuidv4(),
       machines_id: uuidv4(),
@@ -118,7 +118,7 @@ export function MachineryFarmPage() {
   } = useFarmData("/machines", general_id)
 
   const farmData = dbDataToForm(data, general_id)
-  console.log(farmData)
+  
   const form = useForm<MachineryFormValues>({
     resolver: zodResolver(machineryFormSchema),
     defaultValues: {
@@ -129,9 +129,9 @@ export function MachineryFarmPage() {
 
   useEffect(() => {
     form.reset({
-      // ...createDefaults(farmData.general_id),
       ...farmData
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
 
 
@@ -170,7 +170,7 @@ export function MachineryFarmPage() {
     }
   }
 
-  const costTypes = [
+  const costTypes: { name: string; value: keyof MachineryFormValues["tractors"][number] }[] = [
     {
       name: "Purchase Year",
       value: "purchase_year",
@@ -278,9 +278,9 @@ export function MachineryFarmPage() {
                       {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
                       <FormField
                         control={form.control}
-                        name={`tractors.${index}.${costType}`}
+                        name={`tractors.${index}.${costType as keyof MachineryFormValues["tractors"][number]}`}
                         render={({ field: ff }) => (
-                          <Input {...ff} className="w-full" type="number" />
+                          <Input {...ff} className="w-full" type="number" value={ff.value as number} />
                         )}
                       />
                     </td>
@@ -306,7 +306,7 @@ export function MachineryFarmPage() {
             <Button
               type="button"
               className="mt-4"
-              onClick={() => append(createDefaults(general_id).tractors[0])}>Add Row</Button>
+              onClick={() => append(createDefaults(general_id).tractors[0])}>Add Machine</Button>
           </div>
 
           <Button type="submit">Submit</Button>
