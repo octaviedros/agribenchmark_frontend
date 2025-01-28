@@ -4,15 +4,16 @@ import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, Trash2 } from "lucide-react"
 import { z } from "zod"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrashCan } from '@fortawesome/free-regular-svg-icons'
+import { put } from "@/lib/api"
+import { useFarmData } from "@/hooks/use-farm-data"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -30,22 +31,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 
 const wagesFormSchema = z.object({
+  id: z.string().uuid(),
+  general_id: z.string().uuid(),
   permanentwages: z
   .string({
     required_error: "Please select an option.",
@@ -85,12 +74,48 @@ const wagesFormSchema = z.object({
 })
  
   type WagesFormValues = z.infer<typeof wagesFormSchema>
+
+  interface WagesFormProps {
+    farmData: WagesFormValues | undefined
+  }
   
-  export function WagesFarmPage() {
-    const form = useForm<WagesFormValues>({
-      resolver: zodResolver(wagesFormSchema),
-      defaultValues: { },  
-    })
+  export function WagesFarmPage({ farmData }: WagesFormProps) {
+      const searchParams = useSearchParams()
+      const general_id = searchParams.get("general_id") || ""
+      const { data, error, isLoading } = useFarmData("/labour", general_id)
+      
+      if (!general_id) {
+        return (
+          <div className="p-4">
+            <h2>No farm selected.</h2>
+            <p>Select a farm from the dropdown menu to get started.</p>
+          </div>
+        )
+      }
+    
+      if (isLoading) {
+        return <div className="p-4">Loading farm data…</div>
+      }
+      if (error) {
+        console.error(error)
+        return <div className="p-4">Failed to load farm data.</div>
+      }
+      const { mutate } = useFarmData("/labour", farmData?.general_id?.toString())
+        const form = useForm<WagesFormValues>({
+          resolver: zodResolver(wagesFormSchema),
+          defaultValues: {
+            ...farmData
+          },
+          mode: "onChange",
+        })
+      
+        useEffect(() => {
+          form.reset({
+            ...farmData
+          })
+        }, [farmData])
+
+
     const { fields:permanentfields, append:permanentapped, remove:permanentremove } = useFieldArray({
       control: form.control,
       name: "permanentrows",
@@ -102,7 +127,33 @@ const wagesFormSchema = z.object({
     const { fields:familyfields, append:familyapped, remove:familyremove } = useFieldArray({
       control: form.control,
       name: "familyrows",
-    }) 
+    })
+
+    async function onSubmit(data: WagesFormValues) {
+            try {
+              const mergedData = {
+                ...farmData, // overwrite the farmData with the new data
+                ...data,
+              }
+              await mutate(put(`/labour/${farmData?.general_id}`, mergedData), {
+                optimisticData: mergedData,
+                rollbackOnError: true,
+                populateCache: false,
+                revalidate: false
+              })
+              toast({
+                title: "Success",
+                description: "Farm data has been saved successfully.",
+              })
+            } catch (error: unknown) {
+              const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+              toast({
+                variant: "destructive",
+                title: "Error",
+                description: `Failed to save farm data. ${errorMessage}`,
+              })
+            }
+          }
  
     const permanentwages = [''];
     const permanentcostTypes = ['Labor Force', 'Working hours (per Person per year)', 'Annual Wage per Person', 'Enterprise Codes'];
@@ -112,17 +163,6 @@ const wagesFormSchema = z.object({
 
     const familywages = [''];
     const familycostTypes = ['Labor Force', 'Working hours per Person per year', 'Opportuniy Costs per Person', 'Enterprise Codes'];
-
-    function onSubmit(data: WagesFormValues) {
-      toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-      })
-    }
 
   return (
     <div className="space-y-6">
@@ -225,7 +265,7 @@ const wagesFormSchema = z.object({
                                         type="button"
                                         variant="destructive"
                                         size="icon"
-                                        onClick={() => permanentremove(0)}><FontAwesomeIcon icon={faTrashCan} /></Button>
+                                        onClick={() => permanentremove(0)}><Trash2/></Button>
                                     </td>
                                   </tr>
                                 ))}
@@ -289,7 +329,7 @@ const wagesFormSchema = z.object({
                                         type="button"
                                         variant="destructive"
                                         size="icon"
-                                        onClick={() => casualremove(0)}><FontAwesomeIcon icon={faTrashCan} /></Button>
+                                        onClick={() => casualremove(0)}><Trash2/></Button>
                                     </td>
                                   </tr>
                                 ))}
@@ -353,7 +393,7 @@ const wagesFormSchema = z.object({
                                           type="button"
                                           variant="destructive"
                                           size="icon"
-                                          onClick={() => familyremove(0)}><FontAwesomeIcon icon={faTrashCan} /></Button>
+                                          onClick={() => familyremove(0)}><Trash2/></Button>
                                       </td>
                                     </tr>
                                   ))}

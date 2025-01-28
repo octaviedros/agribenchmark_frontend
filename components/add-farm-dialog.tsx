@@ -68,9 +68,9 @@ const profileFormSchema = z.object({
   land: CountriesEnum,
   region: z.string().max(50).optional(),
   currency: CurrenciesEnum,
-  year: z.number().int().nonnegative().min(1000).max(9999),
+  year: z.coerce.number().int().nonnegative().min(1000).max(9999),
   legal_status: z.string().optional(),
-  reference_year_data: z.number().int().positive().min(1000).max(9999).optional(),
+  reference_year_data: z.coerce.number().int().positive().min(1000).max(9999).optional(),
   cash_crop: z.boolean().optional(),
   sows: z.boolean().optional(),
   pig_finishing: z.boolean().optional(),
@@ -359,25 +359,25 @@ export function ProfileForm({
               }}
             />
 
-            {/** year */}
-            <FormField
-              control={form.control}
-              name="year"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Year</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="2025"
-                      {...field}
-                      onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : "")}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                {/** year */}
+                <FormField
+                  control={form.control}
+                  name="year"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Year</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="2025"
+                          {...field}
+                         
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
             {/** region */}
             <FormField
