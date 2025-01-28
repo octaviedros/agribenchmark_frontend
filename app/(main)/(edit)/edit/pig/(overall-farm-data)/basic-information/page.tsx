@@ -9,7 +9,7 @@ export default function EditFarmPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const { data, error, isLoading } = useFarmData("/generalfarm", general_id)
-  
+
   if (!general_id) {
     return (
       <div className="p-4">
@@ -36,7 +36,7 @@ export default function EditFarmPage() {
         </p>
       </div>
       <Separator />
-      <ProfileForm farmData={data}/>
+      <ProfileForm farmData={data[0]} />
     </div>
   )
 }

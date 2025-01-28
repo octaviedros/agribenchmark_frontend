@@ -3,14 +3,8 @@
 import useSWR from "swr"
 import { get } from "@/lib/api"
 
-interface FarmProps {
-  farm_id: string
-  networks: string[],
-  [key: string]: unknown
-}
-
 async function fetchFarmData(table: string, general_id: string = "") {
-  const data = await get(`${table}/${general_id}`)
+  const data = general_id ? await get(`${table}/by_general_id/${general_id}`) : await get(`${table}/${general_id}`)
   return data
 }
 
@@ -20,7 +14,7 @@ async function fetchFarmData(table: string, general_id: string = "") {
  */
 export function useFarmData(table: string, general_id: string = "") {
   const { data, error, isLoading, mutate } = useSWR(
-    `${table}/${general_id}`,
+    `${table}/by_general_id/${general_id}`,
     () => fetchFarmData(table as string, general_id as string)
   )
   return {
