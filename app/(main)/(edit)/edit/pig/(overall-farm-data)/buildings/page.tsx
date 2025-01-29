@@ -34,11 +34,11 @@ const buildingsFormSchema = z.object({
   sum_book_values: z.coerce.number({
     required_error: "Please enter your Buildings and Facilities Book Values.",
   }),
-  building_name: z.array(
+  buildings: z.array(
     z.object({
       id: z.string().uuid(),
       buildings_id: z.string().uuid(),
-      name: z.string(),
+      building_name: z.string(),
       purchase_year: z.coerce.number(),
       purchase_price: z.coerce.number(),
       utilization_period: z.coerce.number(),
@@ -56,7 +56,7 @@ export const BuildingsDBSchema = z.object({
   finishing_id: z.number().int().optional(),
   sum_annual_depreciation: z.coerce.number().optional(),
   sum_book_values: z.coerce.number().optional(),
-  building_name: z.string().max(255).optional(),
+  buildings: z.string().max(255).optional(),
   purchase_year: z.coerce.number().optional(),
   purchase_price: z.coerce.number().optional(),
   utilization_period: z.coerce.number().optional(),
@@ -82,7 +82,7 @@ function dbDataToForm(data: any, general_id: string) {
 }
 
 function formDataToDb(data: BuildingsFormValues) {
-  return data.building_name.map((building) => ({
+  return data.buildings.map((building) => ({
     general_id: data.general_id,
     ...building,
     sum_annual_depreciation: data.sum_annual_depreciation,
@@ -99,7 +99,7 @@ function createDefaults(general_id: string) {
       id: uuidv4(),
       buildings_id: uuidv4(),
       general_id: general_id,
-      name: "",
+      building_name: "",
       purchase_year: 2010,
       purchase_price: 0,
       utilization_period: 0,
@@ -138,7 +138,7 @@ export function BuildingsFarmPage() {
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "building_name",
+    name: "buildings",
   })
   async function onSubmit(formData: BuildingsFormValues,) {
     try {
@@ -170,7 +170,7 @@ export function BuildingsFarmPage() {
     }
   }
 
-  const costTypes: { name: string; value: keyof BuildingsFormValues["building_name"][number] }[] = [
+  const costTypes: { name: string; value: keyof BuildingsFormValues["buildings"][number] }[] = [
     {
       name: "Purchase Year",
       value: "purchase_year",
@@ -268,7 +268,7 @@ export function BuildingsFarmPage() {
                     {/* Tractor name */}
                     <FormField
                       control={form.control}
-                      name={`building_name.${index}.name`}
+                      name={`buildings.${index}.building_name`}
                       render={({ field: f }) => (
                         <Input {...f} className="w-full" />
                       )}
@@ -279,7 +279,7 @@ export function BuildingsFarmPage() {
                       {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
                       <FormField
                         control={form.control}
-                        name={`building_name.${index}.${costType as keyof BuildingsFormValues["building_name"][number]}`}
+                        name={`buildings.${index}.${costType as keyof BuildingsFormValues["buildings"][number]}`}
                         render={({ field: ff }) => (
                           <Input {...ff} className="w-full" type="number" value={ff.value as number} />
                         )}
