@@ -66,7 +66,7 @@ const wagesFormSchema = z.object({
   ),
   familyworker: z.array(
     z.object({
-      general_id: z.string().uuid(),  
+      general_id: z.string().uuid(),
       id: z.string().uuid(),
       labour_id: z.string().uuid(),
       type: z.string(),
@@ -196,7 +196,7 @@ export function WagesFarmPage() {
 
   async function onSubmit(formData: WagesFormValues) {
     try {
-      console.log("submit",formData)
+      console.log("submit", formData)
       const updatedData = formDataToDb(formData)
       // merge with previous farm data
       const mergedData = updatedData.map((row) => {
@@ -282,13 +282,13 @@ export function WagesFarmPage() {
                         {tooltip &&
                           <TooltipProvider>
                             <Tooltip>
-                              <TooltipTrigger className="align-sub pl-1"><Info size={16}/></TooltipTrigger>
+                              <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                               <TooltipContent>
                                 <p>{tooltip}</p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
-                      }
+                        }
                       </FormLabel>
                     </th>
                   ))}
@@ -363,7 +363,7 @@ export function WagesFarmPage() {
                 onClick={() => permanentappend(createDefaults(general_id).permanentworker[0])}>Add Row</Button>
             </div>
           </div>
-          
+
           <br />
           <br />
           <h3 className="text-lg font-medium">Casual Workers</h3>
@@ -371,9 +371,21 @@ export function WagesFarmPage() {
             <thead>
               <tr>
                 <th className="text-left pl-2 align-bottom"><FormLabel>Desc.</FormLabel></th>
-                {costTypes.map(({ name }) => (
+                {costTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
-                    <FormLabel>{name}</FormLabel>
+                    <FormLabel>
+                      {name}
+                      {tooltip &&
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>{tooltip}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      }
+                    </FormLabel>
                   </th>
                 ))}
               </tr>
@@ -428,7 +440,7 @@ export function WagesFarmPage() {
               className="mt-4"
               onClick={() => casualappend(createDefaults(general_id).casualworker[0])}>Add Row</Button>
           </div>
-          
+
           <br />
           <br />
           <h3 className="text-lg font-medium">Family Workers</h3>
@@ -438,9 +450,21 @@ export function WagesFarmPage() {
                 <th className="text-left pl-2 align-bottom">
                   <FormLabel>Desc.</FormLabel>
                 </th>
-                {costTypes.map(({ name }) => (
+                {costTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
-                    <FormLabel>{name}</FormLabel>
+                    <FormLabel>
+                      {name}
+                      {tooltip &&
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>{tooltip}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      }
+                    </FormLabel>
                   </th>
                 ))}
               </tr>
