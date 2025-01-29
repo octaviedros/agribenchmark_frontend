@@ -3,7 +3,7 @@
 import { Separator } from "@/components/ui/separator"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
-import { Trash2 } from "lucide-react"
+import { Trash2, Info } from "lucide-react"
 import { z } from "zod"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useEffect } from "react"
@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -31,49 +30,21 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const wagesFormSchema = z.object({
-  general_id: z.string().uuid(),
-  permanentwages: z
-    .string({
-      required_error: "Please select an option.",
-    }),
-  laborForce: z.number(),
-  workingHours: z.number(),
-  annualWage: z.number(),
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
-  permanentcostTypes: z
-    .string({
-      required_error: "Please select an option.",
-    }),
-  workerrows: z.array(
-    z.object({
-      value: z.string(),
-    })
-  )
-    .optional(),
-  permanentrows: z.array(
-    z.object({
-      value: z.string(),
-    })
-  )
-    .optional(),
-  casualrows: z.array(
-    z.object({
-      value: z.string(),
-    })
-  )
-    .optional(),
-  familyrows: z.array(
-    z.object({
-      value: z.string(),
-    })
-  )
-    .optional(),
+const wagesFormSchema = z.object({
   permanentworker: z.array(
     z.object({
+      general_id: z.string().uuid(),
       id: z.string().uuid(),
       labour_id: z.string().uuid(),
       type: z.string(),
+      name: z.string().optional(),
       labor_units: z.coerce.number(),
       working_hours: z.coerce.number(),
       annual_wage_incl_sidecosts: z.coerce.number(),
@@ -82,9 +53,11 @@ const wagesFormSchema = z.object({
   ),
   casualworker: z.array(
     z.object({
+      general_id: z.string().uuid(),
       id: z.string().uuid(),
       labour_id: z.string().uuid(),
       type: z.string(),
+      name: z.string(),
       labor_units: z.coerce.number(),
       working_hours: z.coerce.number(),
       annual_wage_incl_sidecosts: z.coerce.number(),
@@ -93,9 +66,11 @@ const wagesFormSchema = z.object({
   ),
   familyworker: z.array(
     z.object({
+      general_id: z.string().uuid(),  
       id: z.string().uuid(),
       labour_id: z.string().uuid(),
       type: z.string(),
+      name: z.string(),
       labor_units: z.coerce.number(),
       working_hours: z.coerce.number(),
       annual_wage_incl_sidecosts: z.coerce.number(),
@@ -125,35 +100,28 @@ type WagesDBValues = z.infer<typeof WagesDBSchema>
 function dbDataToForm(data: any, general_id: string) {
   if (!data || !data.length) return createDefaults(general_id)
   return {
-    id: data[0].id,
-    general_id: data[0].general_id,
-    permanentworker: data,
-    casualworker: data,
-    familyworker: data
+    permanentworker: data.filter((row: WagesDBValues) => row.type !== "Casual Labour" && row.type !== "Family Labour"),
+    casualworker: data.filter((row: WagesDBValues) => row.type === "Casual Labour"),
+    familyworker: data.filter((row: WagesDBValues) => row.type === "Family Labour")
   }
 }
 function formDataToDb(data: WagesFormValues) {
-  return data.permanentworker.map((permanentworker) => ({
-    general_id: data.general_id,
-    ...permanentworker,
-  })),
-    data.casualworker.map((casualworker) => ({
-      general_id: data.general_id,
-      ...casualworker,
-    })),
-    data.familyworker.map((familyworker) => ({
-      general_id: data.general_id,
-      ...familyworker
-    }))
+  return [
+    ...data.permanentworker,
+    ...data.casualworker,
+    ...data.familyworker
+  ].map((worker) => ({
+    ...worker,
+  }))
 }
 
 function createDefaults(general_id: string) {
   return {
-    general_id: general_id,
     permanentworker: [{
+      general_id: general_id,
       id: uuidv4(),
       labour_id: uuidv4(),
-      general_id: general_id,
+      name: "",
       type: "",
       labor_units: 0,
       working_hours: 0,
@@ -161,20 +129,22 @@ function createDefaults(general_id: string) {
       enterprise_code: 0
     }],
     casualworker: [{
-      id: uuidv4(),
-      labour_id: uuidv4(),
       general_id: general_id,
-      type: "",
+      id: uuidv4(),
+      name: "",
+      labour_id: uuidv4(),
+      type: "Casual Labour",
       labor_units: 0,
       working_hours: 0,
       annual_wage_incl_sidecosts: 0,
       enterprise_code: 0
     }],
     familyworker: [{
-      id: uuidv4(),
-      labour_id: uuidv4(),
       general_id: general_id,
-      type: "",
+      id: uuidv4(),
+      name: "",
+      labour_id: uuidv4(),
+      type: "Family Labour",
       labor_units: 0,
       working_hours: 0,
       annual_wage_incl_sidecosts: 0,
@@ -194,7 +164,7 @@ export function WagesFarmPage() {
   } = useFarmData("/labour", general_id)
 
   const farmData = dbDataToForm(data, general_id)
-
+  console.log(farmData)
   const form = useForm<WagesFormValues>({
     resolver: zodResolver(wagesFormSchema),
     defaultValues: {
@@ -224,9 +194,9 @@ export function WagesFarmPage() {
     name: "familyworker",
   })
 
-  async function onSubmit(formData: WagesFormValues,) {
+  async function onSubmit(formData: WagesFormValues) {
     try {
-      console.log(formData)
+      console.log("submit",formData)
       const updatedData = formDataToDb(formData)
       // merge with previous farm data
       const mergedData = updatedData.map((row) => {
@@ -253,54 +223,20 @@ export function WagesFarmPage() {
       })
     }
   }
-  const permanentcostTypes: { name: string; value: keyof WagesFormValues["permanentworker"][number] }[] = [
+  const costTypes: { name: string; value: keyof WagesFormValues["permanentworker"][number], tooltip?: string }[] = [
     {
-      name: "Labor Force",
+      name: "Workforce",
       value: "labor_units",
     },
     {
-      name: "Working hours (per Person per year)",
+      name: "Hours",
       value: "working_hours",
+      tooltip: "per Person per year"
     },
     {
-      name: "Annual Wage (per Person)",
+      name: "Wage",
       value: "annual_wage_incl_sidecosts",
-    },
-    {
-      name: "Enterprise Codes",
-      value: "enterprise_code",
-    },
-  ]
-  const casualcostTypes: { name: string; value: keyof WagesFormValues["casualworker"][number] }[] = [
-    {
-      name: "Labor Force",
-      value: "labor_units",
-    },
-    {
-      name: "Working hours (per Person per year)",
-      value: "working_hours",
-    },
-    {
-      name: "Wage (per Person per hour?",
-      value: "annual_wage_incl_sidecosts",
-    },
-    {
-      name: "Enterprise Codes",
-      value: "enterprise_code",
-    },
-  ]
-  const familycostTypes: { name: string; value: keyof WagesFormValues["familyworker"][number] }[] = [
-    {
-      name: "Labor Force",
-      value: "labor_units",
-    },
-    {
-      name: "Working hours (per Person per year)",
-      value: "working_hours",
-    },
-    {
-      name: "Opportunity Costs (per Person per hour)",
-      value: "annual_wage_incl_sidecosts",
+      tooltip: "Annual, per Person"
     },
     {
       name: "Enterprise Codes",
@@ -332,16 +268,28 @@ export function WagesFarmPage() {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <h3></h3>
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.log(error))} className="space-y-8">
+          <h3 className="text-lg font-medium">Permanent Workers</h3>
           <div>
             <table className="w-full my-4">
               <thead>
                 <tr>
-                  <th className="font-medium min-w-[120px]">Permanent Worker</th>
-                  {permanentcostTypes.map(({ name }) => (
-                    <th key={name} className="p-1 font-medium min-w-[120px]">
-                      {name}
+                  <th className="text-left pl-2 align-bottom"><FormLabel>Type</FormLabel></th>
+                  {costTypes.map(({ name, tooltip }) => (
+                    <th key={name} className="text-left pl-2 align-bottom">
+                      <FormLabel>
+                        {name}
+                        {tooltip &&
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger className="align-sub pl-1"><Info size={16}/></TooltipTrigger>
+                              <TooltipContent>
+                                <p>{tooltip}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                      }
+                      </FormLabel>
                     </th>
                   ))}
                 </tr>
@@ -362,11 +310,11 @@ export function WagesFarmPage() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="group1:manager">Group 1: Manager</SelectItem>
-                                <SelectItem value="group2:executivestaff">Group 2: Executive Staff</SelectItem>
-                                <SelectItem value="group3:tractor">Group 3: Tractor</SelectItem>
-                                <SelectItem value="group4:pigman">Group 4: Pigman</SelectItem>
-                                <SelectItem value="group5:other">Group 5: Other</SelectItem>
+                                <SelectItem value="Manager">Group 1: Manager</SelectItem>
+                                <SelectItem value="Executive Staff">Group 2: Executive Staff</SelectItem>
+                                <SelectItem value="Tractor Driver">Group 3: Tractor</SelectItem>
+                                <SelectItem value="Pigman">Group 4: Pigman</SelectItem>
+                                <SelectItem value="Other">Group 5: Other</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -374,14 +322,17 @@ export function WagesFarmPage() {
                         )}
                       />
                     </td>
-                    {permanentcostTypes.map(({ value: permanentcostType }) => (
+                    {costTypes.map(({ value: permanentcostType }) => (
                       <td key={permanentcostType} className="p-1 min-w-[120px]">
                         {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
                         <FormField
                           control={form.control}
                           name={`permanentworker.${index}.${permanentcostType as keyof WagesFormValues["permanentworker"][number]}`}
                           render={({ field: ff }) => (
-                            <Input {...ff} className="w-full" type="number" value={ff.value as number} />
+                            <FormItem>
+                              <Input {...ff} className="w-full" type="number" value={ff.value as number} />
+                              <FormMessage />
+                            </FormItem>
                           )}
                         />
                       </td>
@@ -412,14 +363,17 @@ export function WagesFarmPage() {
                 onClick={() => permanentappend(createDefaults(general_id).permanentworker[0])}>Add Row</Button>
             </div>
           </div>
-
+          
+          <br />
+          <br />
+          <h3 className="text-lg font-medium">Casual Workers</h3>
           <table className="w-full my-4">
             <thead>
               <tr>
-                <th className="font-medium min-w-[120px]">Casual Worker</th>
-                {casualcostTypes.map(({ name }) => (
-                  <th key={name} className="p-1 font-medium min-w-[120px]">
-                    {name}
+                <th className="text-left pl-2 align-bottom"><FormLabel>Desc.</FormLabel></th>
+                {costTypes.map(({ name }) => (
+                  <th key={name} className="text-left pl-2 align-bottom">
+                    <FormLabel>{name}</FormLabel>
                   </th>
                 ))}
               </tr>
@@ -431,13 +385,13 @@ export function WagesFarmPage() {
                     {/* Casual Worker */}
                     <FormField
                       control={form.control}
-                      name={`casualworker.${index}.type`}
+                      name={`casualworker.${index}.name`}
                       render={({ field: f }) => (
                         <Input {...f} className="w-full" />
                       )}
                     />
                   </td>
-                  {casualcostTypes.map(({ value: casualcostType }) => (
+                  {costTypes.map(({ value: casualcostType }) => (
                     <td key={casualcostType} className="p-1 min-w-[120px]">
                       {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
                       <FormField
@@ -474,14 +428,19 @@ export function WagesFarmPage() {
               className="mt-4"
               onClick={() => casualappend(createDefaults(general_id).casualworker[0])}>Add Row</Button>
           </div>
-
+          
+          <br />
+          <br />
+          <h3 className="text-lg font-medium">Family Workers</h3>
           <table className="w-full my-4">
             <thead>
               <tr>
-                <th className="font-medium min-w-[120px]">Family Worker</th>
-                {familycostTypes.map(({ name }) => (
-                  <th key={name} className="p-1 font-medium min-w-[120px]">
-                    {name}
+                <th className="text-left pl-2 align-bottom">
+                  <FormLabel>Desc.</FormLabel>
+                </th>
+                {costTypes.map(({ name }) => (
+                  <th key={name} className="text-left pl-2 align-bottom">
+                    <FormLabel>{name}</FormLabel>
                   </th>
                 ))}
               </tr>
@@ -493,13 +452,13 @@ export function WagesFarmPage() {
                     {/* Family Worker */}
                     <FormField
                       control={form.control}
-                      name={`familyworker.${index}.type`}
+                      name={`familyworker.${index}.name`}
                       render={({ field: f }) => (
                         <Input {...f} className="w-full" />
                       )}
                     />
                   </td>
-                  {familycostTypes.map(({ value: familycostType }) => (
+                  {costTypes.map(({ value: familycostType }) => (
                     <td key={familycostType} className="p-1 min-w-[120px]">
                       {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
                       <FormField
@@ -536,9 +495,8 @@ export function WagesFarmPage() {
               className="mt-4"
               onClick={() => familyappend(createDefaults(general_id).familyworker[0])}>Add Row</Button>
           </div>
-
+          <Button type="submit">Submit</Button>
         </form>
-        <Button type="submit">Submit</Button>
       </Form>
     </div>
   )
