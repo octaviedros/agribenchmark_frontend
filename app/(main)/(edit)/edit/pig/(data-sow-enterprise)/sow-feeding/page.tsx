@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
-
+import { upsert, del } from "@/lib/api"
+import { v4 as uuidv4 } from "uuid"
 import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useState, useEffect } from "react"
@@ -37,124 +38,141 @@ import {
 const sowfeedingFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
-  sowfeeding: z.number().min(1, {
+  feed_id: z.string().uuid(),
+  sow_id: z.string().uuid(),
+  finishing_id: z.string().uuid(),
+  sows_gestation_feed: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  sows_gestation_feed: z.string().min(1, {
+  sows_lactation_feed: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  sows_lactation_feed: z.string().min(1, {
+  sows_total_feed_daily: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  sows_total_feed_daily: z.string().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  sows_total_feed_yearly: z.string().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  gilts_feeding: z.string().min(1, {
+  sows_total_feed_yearly: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
   gilts_special_feed: z.string().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  gilts_share_gestation_feed: z.string().min(1, {
+  gilts_share_gestation_feed: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  gilts_share_lactation_feed: z.string().min(1, {
+  gilts_share_lactation_feed: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  gilts_feed_quantity_yearly: z.string().min(1, {
+  gilts_feed_quantity_yearly: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  gilts_total_feed_yearly: z.string().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  boars_feeding: z.string().min(1, {
+  gilts_total_feed_yearly: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
   boars_special_feed: z.string().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  boars_share_gestation_feed: z.string().min(1, {
+  boars_share_gestation_feed: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  boars_share_lactation_feed: z.string().min(1, {
+  boars_share_lactation_feed: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  boars_feed_quantity_yearly: z.string().min(1, {
+  boars_feed_quantity_yearly: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  boars_total_feed_yearly: z.string().min(1, {
+  boars_total_feed_yearly: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  piglet_feed_1: z.string().min(1, {
+  piglet_feed_1: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  piglet_feed_2: z.string().min(1, {
+  piglet_feed_2: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  piglet_feed_quantity_yearly: z.string().min(1, {
+  piglet_feed_quantity_yearly: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  piglet_total_feed_yearly: z.string().min(1, {
+  piglet_total_feed_yearly: z.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
+  year: z.number().int(),
 })
 
 type SowFeedingFormValues = z.infer<typeof sowfeedingFormSchema>
 
-interface SowFeedingFormProps {
-  farmData: SowFeedingFormValues | undefined
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+function createDefaults(general_id: string): SowFeedingFormValues {
+  return {
+    id: uuidv4(),
+    feed_id: uuidv4(),
+    sow_id: uuidv4(),
+    finishing_id: uuidv4(),
+    general_id: general_id,
+    sows_gestation_feed: 0,
+    sows_lactation_feed: 0,
+    sows_total_feed_daily: 0,
+    sows_total_feed_yearly: 0,
+    gilts_special_feed: "",
+    gilts_share_gestation_feed: 0,
+    gilts_share_lactation_feed: 0,
+    gilts_feed_quantity_yearly: 0,
+    gilts_total_feed_yearly: 0,
+    boars_special_feed: "",
+    boars_share_gestation_feed: 0,
+    boars_share_lactation_feed: 0,
+    boars_feed_quantity_yearly: 0,
+    boars_total_feed_yearly: 0,
+    piglet_feed_1: 0,
+    piglet_feed_2: 0,
+    piglet_feed_quantity_yearly: 0,
+    piglet_total_feed_yearly: 0,
+    year: new Date().getFullYear(),
+  }
 }
 
-export function SowFeedingPage({ farmData }: SowFeedingFormProps) {
+export function SowFeedingPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
-  const { data, error, isLoading } = useFarmData("/feedsows", general_id)
-
-  if (!general_id) {
-    return (
-      <div className="p-4">
-        <h2>No farm selected.</h2>
-        <p>Select a farm from the dropdown menu to get started.</p>
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return <div className="p-4">Loading farm data…</div>
-  }
-  if (error) {
-    console.error(error)
-    return <div className="p-4">Failed to load farm data.</div>
-  }
-  const { mutate } = useFarmData("/feedsows", farmData?.general_id?.toString())
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/feedsows", general_id)
+  const farmData = data ? data[0] : null
+  /*let farmData 
+  if (data) { 
+    farmData = data[0]
+  }*/
+  console.log(farmData)
   const form = useForm<SowFeedingFormValues>({
     resolver: zodResolver(sowfeedingFormSchema),
     defaultValues: {
+      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
   })
-
+  // 
   useEffect(() => {
     form.reset({
       ...farmData
     })
-  }, [farmData])
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
   async function onSubmit(data: SowFeedingFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,
+        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      await mutate(put(`/feedsows/${farmData?.general_id}`, mergedData), {
+      console.log(mergedData)
+      await mutate(upsert(`/feedsows`, mergedData), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: true
       })
       toast({
         title: "Success",
@@ -169,18 +187,22 @@ export function SowFeedingPage({ farmData }: SowFeedingFormProps) {
       })
     }
   }
-  /*const sowfeeding =['Gestation Feed', 'Lactation Feed', 'Total Amount of Feed per animal and day', 'Total Amount of Feed kg and year'];
-  const sowfeedingTypes = [''];
 
-  const giltsfeeding = ['Share of Gestation Feed','Share of Lactation Feed', 'Feed Quantity (in terms of dry matter)', 'Total Amount of Feed kg per year'];
-  const specialfeeding = ['Special Gilt Feed']
-  const giltsfeedingTypes = [''];
-
-  const boarsfeeding = ['Special Boar Feed', 'Share of Gestation Feed','Share of Lactation Feed', 'Feed Quantity (in terms of dry matter)', 'Total Amount of Feed kg per year'];
-  const boarsfeedingTypes = [''];
-
-  const pigletsfeeding = ['Piglet Feed 1', 'Piglet Feed 2', 'Total Amount of Feed kg per year'];
-  const pigletsfeedingTypes = [''];*/
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
+  }
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error && error.status !== 404) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
+  }
 
   return (
     <div className="space-y-6">
@@ -261,8 +283,8 @@ export function SowFeedingPage({ farmData }: SowFeedingFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="specialgiltfeed">Special Gilt Feed</SelectItem>
-                    <SelectItem value="giltsmixgestationlactationfeed">A mix of Gestation and Lactation Feed</SelectItem>
+                    <SelectItem value="Special gilt feed">Special Gilt Feed</SelectItem>
+                    <SelectItem value="Mix of gestation and lactation feed">A mix of Gestation and Lactation Feed</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -335,8 +357,8 @@ export function SowFeedingPage({ farmData }: SowFeedingFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="specialboarfeed">Special Boar Feed</SelectItem>
-                    <SelectItem value="boarmixgestationlactationfeed">A mix of Gestation and Lactation Feed</SelectItem>
+                    <SelectItem value="Special boar feed">Special Boar Feed</SelectItem>
+                    <SelectItem value="Mix of gestation and lactation feed">A mix of Gestation and Lactation Feed</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />

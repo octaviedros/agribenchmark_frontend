@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
-
+import { upsert, del } from "@/lib/api"
+import { v4 as uuidv4 } from "uuid"
 import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useState, useEffect } from "react"
@@ -31,6 +32,7 @@ import { Input } from "@/components/ui/input"
 const finishingpriceFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
+  prices_fin_id: z.string().uuid(),
   buying_f_castpiglets: z
     .number({
       required_error: "Please enter a number.",
@@ -51,57 +53,60 @@ const finishingpriceFormSchema = z.object({
 
 type FinishingPriceFormValues = z.infer<typeof finishingpriceFormSchema>
 
-interface FinishingPriceFormProps {
-  farmData: FinishingPriceFormValues | undefined
+function createDefaults(general_id: string): FinishingPriceFormValues {
+  return {
+    id: uuidv4(),
+    general_id: general_id,
+    prices_fin_id: uuidv4(),
+    buying_f_castpiglets: 0,
+    buying_piglets_for_finishing: 0,
+    selling_finishing_pigs_gi_ba: 0,
+    selling_finishing_pigs_em_ic: 0,
+  }
 }
 
-export function FinishingPricePage({ farmData }: FinishingPriceFormProps) {
+export function FinishingPricePage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
-  const { data, error, isLoading } = useFarmData("/pricesfinishing", general_id)
-
-  if (!general_id) {
-    return (
-      <div className="p-4">
-        <h2>No farm selected.</h2>
-        <p>Select a farm from the dropdown menu to get started.</p>
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return <div className="p-4">Loading farm data…</div>
-  }
-  if (error) {
-    console.error(error)
-    return <div className="p-4">Failed to load farm data.</div>
-  }
-  const { mutate } = useFarmData("/pricesfinishing", farmData?.general_id?.toString())
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/pricesfinishing", general_id)
+  const farmData = data ? data[0] : null
+/*let farmData 
+if (data) { 
+  farmData = data[0]
+}*/
+  console.log(farmData)
   const form = useForm<FinishingPriceFormValues>({
     resolver: zodResolver(finishingpriceFormSchema),
     defaultValues: {
+      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
   })
-
+// 
   useEffect(() => {
     form.reset({
       ...farmData
     })
-  }, [farmData])
-
-  async function onSubmit(data: FinishingPriceFormValues) {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
+async function onSubmit(data: FinishingPriceFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,
+        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      await mutate(put(`/pricesfinishing/${farmData?.general_id}`, mergedData), {
+      console.log(mergedData)
+      await mutate(upsert(`/pricesfinishing`, mergedData), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: true
       })
       toast({
         title: "Success",
@@ -115,6 +120,22 @@ export function FinishingPricePage({ farmData }: FinishingPriceFormProps) {
         description: `Failed to save farm data. ${errorMessage}`,
       })
     }
+  }
+  
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
+  }
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error && error.status !== 404) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
   }
 
   /*const finishingbuying = ['Female & Castrate Piglets', 'Boars Piglets for Finishing'];

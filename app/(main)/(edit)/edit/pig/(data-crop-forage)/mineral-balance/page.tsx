@@ -4,9 +4,10 @@ import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown, Trash2 } from "lucide-react"
+import { Info, Trash2 } from "lucide-react"
 import { z } from "zod"
-
+import { upsert, del } from "@/lib/api"
+import { v4 as uuidv4 } from "uuid"
 import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useState, useEffect } from "react"
@@ -26,95 +27,166 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 const mineralbalanceFormSchema = z.object({
+  fertilizerusage: z.array(
+    z.object({
+      general_id: z.string().uuid(),
+      id: z.string().uuid(),
+      fertilizer_id: z.string().uuid(),
+      fertilizer_type: z.string(),
+      fertilizer_name: z.string(),
+      fertilizer_name_custom: z.string(),
+      amount: z.coerce.number(),
+      amount_unit: z.coerce.number(),
+      n_content_per_unit: z.coerce.number(),
+    })
+  )
+})
+
+export const MineralBalanceDBSchema = z.object({
   id: z.string().uuid(),
+  fertilizer_id: z.string().uuid(),
   general_id: z.string().uuid(),
   fertilizer_type: z.string(),
   fertilizer_name: z.string(),
   fertilizer_name_custom: z.string(),
-  amount: z.string(),
-  amount_unit: z.string(),
-  n_content_per_unit: z.string(),
+  amount: z.coerce.number(),
+  amount_unit: z.coerce.number(),
+  n_content_per_unit: z.coerce.number(),
+})
 
-  mineralrow: z.array(z.object({
-    value: z.string()
-  })),
-  })
-  
-  type MineralBalanceValues = z.infer<typeof mineralbalanceFormSchema>
+type MineralBalanceValues = z.infer<typeof mineralbalanceFormSchema>
+type MineralBalanceDBValues = z.infer<typeof MineralBalanceDBSchema>
 
-  interface MineralBalanceProps {
-    farmData: MineralBalanceValues | undefined
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function dbDataToForm(data: any, general_id: string) {
+  if (!data || !data.length) return createDefaults(general_id)
+  return {
+    id: data[0].id,
+    general_id: data[0].general_id,
+    fertilizerusage: data
   }
-  
-  export function MineralBalancePage({ farmData }: MineralBalanceProps) {
-        const searchParams = useSearchParams()
-        const general_id = searchParams.get("general_id") || ""
-        const { data, error, isLoading } = useFarmData("/fertilizer", general_id)
-        
-        if (!general_id) {
-          return (
-            <div className="p-4">
-              <h2>No farm selected.</h2>
-              <p>Select a farm from the dropdown menu to get started.</p>
-            </div>
-          )
-        }
-      
-        if (isLoading) {
-          return <div className="p-4">Loading farm data…</div>
-        }
-        if (error) {
-          console.error(error)
-          return <div className="p-4">Failed to load farm data.</div>
-        }
-        const { mutate } = useFarmData("/fertilizer", farmData?.general_id?.toString())
-          const form = useForm<MineralBalanceValues>({
-            resolver: zodResolver(mineralbalanceFormSchema),
-            defaultValues: {
-              ...farmData
-            },
-            mode: "onChange",
-          })
-        
-          useEffect(() => {
-            form.reset({
-              ...farmData
-            })
-          }, [farmData]) 
-      
-        async function onSubmit(data: MineralBalanceValues) {
-              try {
-                const mergedData = {
-                  ...farmData, // overwrite the farmData with the new data
-                  ...data,
-                }
-                await mutate(put(`/fertilizer/${farmData?.general_id}`, mergedData), {
-                  optimisticData: mergedData,
-                  rollbackOnError: true,
-                  populateCache: false,
-                  revalidate: false
-                })
-                toast({
-                  title: "Success",
-                  description: "Farm data has been saved successfully.",
-                })
-              } catch (error: unknown) {
-                const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
-                toast({
-                  variant: "destructive",
-                  title: "Error",
-                  description: `Failed to save farm data. ${errorMessage}`,
-                })
-              }
-            } 
-    const { fields, append, remove } = useFieldArray({
-      control: form.control,
-      name: "mineralrow",
-    })
+}
 
-    const minerals = [''];
-    const mineralTypes = ['Nitrogen','Phosphorus','Potash','Calcium','Other'];
+function formDataToDb(data: MineralBalanceValues) {
+  return data.fertilizerusage.map((fertilizerusages) => ({
+    ...fertilizerusages,
+  }))
+}
+
+function createDefaults(general_id: string) {
+  return {
+    feedprice: [{
+      general_id: general_id,
+      id: uuidv4(),
+      fertilizer_id: uuidv4(),
+      crop_name: "",//das fehlt in der DB; die ganze DB Tabelle ergibt keinen Sinn
+      fertilizer_type: "",
+      /*fertilizer_name: "",
+      fertilizer_name_custom: "",
+      amount: 0,
+      amount_unit: 0,
+      n_content_per_unit: 0,*/
+    }],
+  }
+}
+
+export function MineralBalancePage() {
+  const searchParams = useSearchParams()
+  const general_id = searchParams.get("general_id") || ""
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/fertilizer", general_id)
+
+  const farmData = dbDataToForm(data, general_id)
+  console.log(farmData)
+  const form = useForm<MineralBalanceValues>({
+    resolver: zodResolver(mineralbalanceFormSchema),
+    defaultValues: {
+      ...farmData
+    },
+    mode: "onChange",
+  })
+
+  useEffect(() => {
+    form.reset({
+      ...farmData
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "fertilizerusage",
+  })
+
+  async function onSubmit(formData: FeedPriceFormValues) {
+    try {
+      console.log("submit", formData)
+      const updatedData = formDataToDb(formData)
+      // merge with previous farm data
+      const mergedData = updatedData.map((row) => {
+        const existingRow = (data as FeedPriceDBValues[])?.find((r) => r.id === row.id)
+        return existingRow ? { ...existingRow, ...row } : row
+      })
+      console.log(mergedData)
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/feedpricesdrymatter`, row))), {
+        optimisticData: mergedData,
+        rollbackOnError: true,
+        populateCache: true,
+        revalidate: false,
+      })
+      toast({
+        title: "Success",
+        description: "Farm data has been saved successfully.",
+      })
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to save farm data. ${errorMessage}`,
+      })
+    }
+  }
+
+  const mineralTypes: { name: string; value: keyof MineralBalanceValues["fertilizerusage"][number], tooltip?: string, type?: string }[] = [
+    {
+      name: "Nitrogen",
+      value: "fertilizer_name",
+      tooltip: "kg/ha"
+    },
+    {
+      name: "Phosphorus",
+      value: "fertilizer_name",
+      tooltip: "kg/ha"
+    },
+    {
+      name: "Potash",
+      value: "fertilizer_name",
+      tooltip: "kg/ha"
+    },
+    {
+      name: "Calcium",
+      value: "fertilizer_name",
+      tooltip: "kg/ha"
+    },
+    {
+      name: "Other",
+      value: "fertilizer_name",
+      tooltip: "kg/ha"
+    },
+  ]
 
   return (
     <div className="space-y-6 min">
@@ -123,15 +195,15 @@ const mineralbalanceFormSchema = z.object({
       </div>
       <Separator />
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
-        <table className="w-full">
-          <thead>
-            <tr>
-              <th className="font-medium min-w-[120px]">Crop</th>
-              {mineralTypes.map((mineralType) => (
-                <th key={mineralType} className="p-1 font-medium min-w-[120px]">
-                  {mineralType}
-                </th>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
+          <table className="w-full">
+            <thead>
+              <tr>
+                <th className="font-medium min-w-[120px]">Crop</th>
+                {mineralTypes.map((mineralType) => (
+                  <th key={mineralType} className="p-1 font-medium min-w-[120px]">
+                    {mineralType}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -139,17 +211,17 @@ const mineralbalanceFormSchema = z.object({
               {minerals.map((mineral) => (
                 <tr key={mineral}>
                   <td className="p-2 ">{mineral}
-                    <Input type="text" name={`${mineral}-name`}/>
+                    <Input type="text" name={`${mineral}-name`} />
                   </td>
                   {mineralTypes.map((mineralType) => (
                     <td key={mineralType} className="p-2">
-                      <Input type="number" name={`${mineral}-${mineralType}`}/>
+                      <Input type="number" name={`${mineral}-${mineralType}`} />
                     </td>
                   ))}
                 </tr>
               ))}
             </tbody>
-          </table> 
+          </table>
           <div>
             {fields.map((field, index) => (
               <FormField
@@ -162,24 +234,24 @@ const mineralbalanceFormSchema = z.object({
                       {minerals.map((mineral) => (
                         <tr key={mineral}>
                           <td className="p-2 min-w-[120px] ">{mineral}
-                            <Input type="text" name={`${mineral}-name`}/>
+                            <Input type="text" name={`${mineral}-name`} />
                           </td>
                           {mineralTypes.map((mineralType) => (
                             <td key={mineralType} className="p-2 min-w-[120px]">
-                              <Input type="number" name={`${mineral}-${mineralType}`}/>
+                              <Input type="number" name={`${mineral}-${mineralType}`} />
                             </td>
                           ))}
                           <td>
                             <Button
-                            type="button"
-                            variant="destructive"
-                            size="icon"
-                            onClick={() => remove(index)}><Trash2/></Button>
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => remove(index)}><Trash2 /></Button>
                           </td>
                         </tr>
                       ))}
                     </tbody>
-                  </table> 
+                  </table>
                 )}
               />
             ))}
@@ -188,9 +260,9 @@ const mineralbalanceFormSchema = z.object({
               onClick={() => append({ value: "" })}>Add Row</Button>
           </div>
 
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
     </div>
   )
 }

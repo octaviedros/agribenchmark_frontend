@@ -4,8 +4,10 @@ import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown, Trash2 } from "lucide-react"
+import { Info, Trash2 } from "lucide-react"
 import { z } from "zod"
+import { upsert, del } from "@/lib/api"
+import { v4 as uuidv4 } from "uuid"
 
 import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
@@ -26,52 +28,93 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 const varcostcropFormSchema = z.object({
+  varcostcrop: z.array(
+    z.object({
+      general_id: z.string().uuid(),
+      id: z.string().uuid(),
+      var_cost_crop_id: z.string().uuid(),
+      crop_name: z.string(),
+      seeds: z.coerce.number(),
+      fertilizer: z.coerce.number(),
+      herbicides: z.coerce.number(),
+      fungicide: z.coerce.number(),
+      contract_labor: z.coerce.number(),
+      energy: z.coerce.number(),
+      other: z.coerce.number(),
+    })
+  )
+})
+export const VarCostCropDBSchema = z.object({
   id: z.string().uuid(),
+  var_cost_crop_id: z.string().uuid(),
   general_id: z.string().uuid(),
-  seeds: z.number(),
-  fertilizer: z.number(),
-  herbicide: z.number(),
-  fungicide: z.number(),
-  contract_labor: z.number(),
-  energy: z.number(),
-  other: z.number(),
-
-  varcostrow: z.array(z.object({
-    value: z.string()
-  })),
-
-
+  crop_id: z.string().uuid(),
+  seeds: z.coerce.number(),
+  fertilizer: z.coerce.number(),
+  herbicides: z.coerce.number(),
+  fungicide: z.coerce.number(),
+  contract_labor: z.coerce.number(),
+  energy: z.coerce.number(),
+  other: z.coerce.number(),
+  crop_name: z.string(),
 })
 
 type VarCostCropFormValues = z.infer<typeof varcostcropFormSchema>
+type VarCostCropDBValues = z.infer<typeof VarCostCropDBSchema>
 
-interface VarCostCropFormProps {
-  farmData: VarCostCropFormValues | undefined
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function dbDataToForm(data: any, general_id: string) {
+  if (!data || !data.length) return createDefaults(general_id)
+  return {
+    id: data[0].id,
+    general_id: data[0].general_id,
+    varcostcrop: data
+  }
+}
+function formDataToDb(data: VarCostCropFormValues) {
+  return data.varcostcrop.map((varcostcrops) => ({
+    ...varcostcrops,
+  }))
 }
 
-export function VarCostCropPage({ farmData }: VarCostCropFormProps) {
+function createDefaults(general_id: string) {
+  return {
+    varcostcrop: [{
+      general_id: general_id,
+      id: uuidv4(),
+      var_cost_crop_id: uuidv4(),
+      crop_name: "",
+      seeds: 0,
+      fertilizer: 0,
+      herbicides: 0,
+      fungicide: 0,
+      contract_labor: 0,
+      energy: 0,
+      other: 0,
+    }],
+  }
+}
+
+export function VarCostCropPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
-  const { data, error, isLoading } = useFarmData("/varcostcrop", general_id)
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/varcostcrop", general_id)
 
-  if (!general_id) {
-    return (
-      <div className="p-4">
-        <h2>No farm selected.</h2>
-        <p>Select a farm from the dropdown menu to get started.</p>
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return <div className="p-4">Loading farm data…</div>
-  }
-  if (error) {
-    console.error(error)
-    return <div className="p-4">Failed to load farm data.</div>
-  }
-  const { mutate } = useFarmData("/varcostcrop", farmData?.general_id?.toString())
+  const farmData = dbDataToForm(data, general_id)
+  console.log(farmData)
   const form = useForm<VarCostCropFormValues>({
     resolver: zodResolver(varcostcropFormSchema),
     defaultValues: {
@@ -84,19 +127,29 @@ export function VarCostCropPage({ farmData }: VarCostCropFormProps) {
     form.reset({
       ...farmData
     })
-  }, [farmData])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
 
-  async function onSubmit(data: VarCostCropFormValues) {
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "varcostcrop",
+  })
+
+  async function onSubmit(formData: VarCostCropFormValues) {
     try {
-      const mergedData = {
-        ...farmData, // overwrite the farmData with the new data
-        ...data,
-      }
-      await mutate(put(`/varcostcrop/${farmData?.general_id}`, mergedData), {
+      console.log("submit", formData)
+      const updatedData = formDataToDb(formData)
+      // merge with previous farm data
+      const mergedData = updatedData.map((row) => {
+        const existingRow = (data as VarCostCropDBValues[])?.find((r) => r.id === row.id)
+        return existingRow ? { ...existingRow, ...row } : row
+      })
+      console.log(mergedData)
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/varcostcrop`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: false,
       })
       toast({
         title: "Success",
@@ -111,14 +164,47 @@ export function VarCostCropPage({ farmData }: VarCostCropFormProps) {
       })
     }
   }
+  const varcostcropTypes: { name: string; value: keyof VarCostCropFormValues["varcostcrop"][number], tooltip?: string }[] = [
+    {
+      name: "Seeds",
+      value: "seeds",
+      tooltip: "price per ha"
+    },
+    {
+      name: "Fertilizer",
+      value: "fertilizer",
+      tooltip: "price per ha"
+    },
+    {
+      name: "Herbicide",
+      value: "herbicides",
+      tooltip: "price per ha"
+    },
+    {
+      name: "Fungicide/Insecticide",
+      value: "fungicide",
+      tooltip: "price per ha"
+    },
+    {
+      name: "Contract labor",
+      value: "contract_labor",
+      tooltip: "price per ha"
+    },
+    {
+      name: "Energy",
+      value: "energy",
+      tooltip: "price per ha"
+    },
+    {
+      name: "Other",
+      value: "other",
+      tooltip: "price per ha"
+    },
+  ]
 
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "varcostrow",
-  })
-
-  const varcostcrops = [''];
-  const varcostcropTypes = ['Seeds', 'Fertilizer', 'Herbicide', 'Fungicide/Insecticide', 'Contract labor', 'Energy', 'Other'];
+  function logformerrors(errors) {
+    console.log(errors)
+  }
 
   return (
     <div className="space-y-6">
@@ -132,68 +218,76 @@ export function VarCostCropPage({ farmData }: VarCostCropFormProps) {
           <table className="w-full my-4">
             <thead>
               <tr>
-                <th className="font-medium">Crop</th>
-                {varcostcropTypes.map((varcostcropType) => (
-                  <th key={varcostcropType} className="p-1 font-medium">
-                    {varcostcropType}
+                <th className="text-left pl-2 align-bottom"><FormLabel>Crop Name</FormLabel></th>
+                {varcostcropTypes.map(({ name, tooltip }) => (
+                  <th key={name} className="text-left pl-2 align-bottom">
+                    <FormLabel>
+                      {name}
+                      {tooltip &&
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>{tooltip}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      }
+                    </FormLabel>
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {varcostcrops.map((varcostcrop) => (
-                <tr key={varcostcrop}>
-                  <td className="p-2 min-w-[120px]">{varcostcrop}
-                    <Input type="text" name={`${varcostcrop}-name`} />
+              {fields.map((field, index) => (
+                <tr key={field.id}>
+                  <td className="p-1 min-w-[120px]">
+                    {/* Casual Worker */}
+                    <FormField
+                      control={form.control}
+                      name={`varcostcrop.${index}.crop_name`}
+                      render={({ field: f }) => (
+                        <Input {...f} className="w-full" />
+                      )}
+                    />
                   </td>
-                  {varcostcropTypes.map((varcostcropType) => (
-                    <td key={varcostcropType} className="p-2 min-w-[120px]">
-                      <Input type="number" name={`${varcostcrop}-${varcostcropType}`} />
+                  {varcostcropTypes.map(({ value: varcostcropType }) => (
+                    <td key={varcostcropType} className="p-1 min-w-[120px]">
+                      {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
+                      <FormField
+                        control={form.control}
+                        name={`varcostcrop.${index}.${varcostcropType as keyof VarCostCropFormValues["varcostcrop"][number]}`}
+                        render={({ field: ff }) => (
+                          <Input {...ff} className="w-full" type="number" value={ff.value as number} />
+                        )}
+                      />
                     </td>
                   ))}
+                  <td>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => {
+                        if (farmData.varcostcrop[index]?.id) {
+                          del(`/varcostcrop/${farmData.varcostcrop[index].id}`)
+                        }
+                        remove(index)
+                      }}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
           <div>
-            {fields.map((field, index) => (
-              <FormField
-                control={form.control}
-                key={field.id}
-                name={`varcostrow.${index}.value`}
-                render={({ field }) => (
-                  <table className="w-full my-4">
-                    <tbody>
-                      {varcostcrops.map((varcostcrop) => (
-                        <tr key={varcostcrop}>
-                          <td className="p-2 min-w-[127px]">{varcostcrop}
-                            <Input type="text" name={`${varcostcrop}-name`} />
-                          </td>
-                          {varcostcropTypes.map((varcostcropType) => (
-                            <td key={varcostcropType} className="p-2 min-w-[127px]">
-                              <Input type="number" name={`${varcostcrop}-${varcostcropType}`} />
-                            </td>
-                          ))}
-                          <td>
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="icon"
-                              onClick={() => remove(index)} ><Trash2 /></Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-
-                )}
-              />
-            ))}
             <Button
               type="button"
-              onClick={() => append({ value: "" })} >Add Row</Button>
+              className="mt-4"
+              onClick={() => append(createDefaults(general_id).varcostcrop[0])}>Add Row</Button>
           </div>
-
 
           <Button type="submit">Submit</Button>
         </form>

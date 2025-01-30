@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
-
+import { upsert, del } from "@/lib/api"
+import { v4 as uuidv4 } from "uuid"
 import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useState, useEffect } from "react"
@@ -37,6 +38,9 @@ import {
 const sowdataFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
+  sows_id: z.string().uuid(),
+  sales_weight_id: z.string().uuid(),
+  sows_performance_id: z.string().uuid(),
   productionsystem: z
     .string({
       required_error: "Please select a production system.",
@@ -46,176 +50,215 @@ const sowdataFormSchema = z.object({
       required_error: "Please select a production rhythm.",
     }),
   no_sows_mated_gilts: z
-    .number({
+    .coerce.number({
       required_error: "Please enter Number of Sows and Mated Gilts.",
     }),
   no_unserved_gilts: z
-    .number({
+    .coerce.number({
       required_error: "Please enter Number of Unserved Gilts.",
     }),
   no_boars: z
-    .number({
+    .coerce.number({
       required_error: "Please enter Number of Boars.",
     }),
   total_no_sows_gilts: z
-    .number({
+    .coerce.number({
       required_error: "Please enter Total Number of Sows and Gilts.",
     }),
   piglets_born_alive: z
-    .number({
+    .coerce.number({
       required_error: "Please enter Piglets born Alive.",
     }),
   cycles_per_sow_year: z
-    .number({
+    .coerce.number({
       required_error: "Please enter Cycles born per sow and year.",
     }),
   avg_gestation_period: z
-    .number({
+    .coerce.number({
       required_error: "Please enter Average time of gestation period.",
     }),
   duration_suckling_per_farrowing: z
-    .number({
+    .coerce.number({
       required_error: "Please enter Duration of Suckling.",
     }),
   dry_sow_days: z
-    .number({
+    .coerce.number({
       required_error: "Please enter Number of Dry Sow Days.",
     }),
   rate_insuccessful_insemination: z
-    .number({
+    .coerce.number({
       required_error: "Please enter Rate in Successful Insemination.",
     }),
   weaning_weights: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the Weaning Weight.",
     }),
   cull_rate_sows: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the Cull Rate of Sows.",
     }),
   cull_rate_boars: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the Cull Rate of Boars.",
     }),
   fraction_own_replacement: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the Fraction of Own Replacement.",
     }),
   annual_sow_mortality: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the Annual Sow Mortality.",
     }),
   annual_boar_mortality: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the Annual Boar Mortality.",
     }),
   piglet_mortality_weaning: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the Piglet Mortality Weaning.",
     }),
   piglet_mortality_rearing: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the Piglet Mortality Rearing.",
     }),
   piglets_weaned: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the Piglets Weaned.",
     }),
   avg_duration_piglet_rearing: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the Average Piglet Rearing.",
     }),
   reared_piglets: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the amount of Reared Piglets.",
     }),
   sales_weight_sows: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the Sales Weight of Sows.",
     }),
   sales_weight_boars: z
-    .number({
+    .coerce.number({
       required_error: "Please enter the Sales Weight of Boars.",
     }),
-  sales_weight_weaning_piglets: z
-    .number({
+  sales_weight_weaning_piglet: z
+    .coerce.number({
       required_error: "Please enter the Sales Weight of Weaning Piglets.",
     }),
-  sales_weight_rearing_piglets: z
-    .number({
+  sales_weight_rearing_piglet: z
+    .coerce.number({
       required_error: "Please enter the Sales Weight of Rearing Piglets.",
     }),
+    year: z.number().int(),
 })
 
 type SowDataFormValues = z.infer<typeof sowdataFormSchema>
 
-interface SowDataProps {
-  farmData: SowDataFormValues | undefined
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+
+function createDefaults(general_id: string): SowDataFormValues {
+  return {
+    id: uuidv4(),
+    sows_id: uuidv4(),
+    sales_weight_id: uuidv4(),
+    sows_performance_id: uuidv4(),
+    general_id: general_id,
+    productionsystem: "",
+    production_rhythm: "",
+    no_sows_mated_gilts: 0,
+    no_unserved_gilts: 0,
+    no_boars: 0,
+    total_no_sows_gilts: 0,
+    piglets_born_alive: 0,
+    cycles_per_sow_year: 0,
+    avg_gestation_period: 0,
+    duration_suckling_per_farrowing: 0,
+    dry_sow_days: 0,
+    rate_insuccessful_insemination: 0,
+    weaning_weights: 0,
+    cull_rate_sows: 0,
+    cull_rate_boars: 0,
+    fraction_own_replacement: 0,
+    annual_sow_mortality: 0,
+    annual_boar_mortality: 0,
+    piglet_mortality_weaning: 0,
+    piglet_mortality_rearing: 0,
+    piglets_weaned: 0,
+    avg_duration_piglet_rearing: 0,
+    reared_piglets: 0,
+    sales_weight_sows: 0,
+    sales_weight_boars: 0,
+    sales_weight_weaning_piglet: 0,
+    sales_weight_rearing_piglet: 0,
+    year: new Date().getFullYear(),
+  }
 }
 
-export function SowDataPage({ farmData }: SowDataProps) {
+export function SowDataPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
-  const { data, error, isLoading } = useFarmData("/sows", general_id)
-  const { data: salesweight, error: salesweight_error, isLoading: salesweight_isLoading } = useFarmData("/salesweight", general_id)
-  const { data: sowsperformance, error: sowsperformance_error, isLoading: sowsperformance_isLoading } = useFarmData("/sowsperformance", general_id)
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/sows", general_id)
+  const {
+    data: salesweight,
+    error: salesweight_error,
+    isLoading: salesweight_isLoading,
+    mutate: salesweight_mutate
+  } = useFarmData("/salesweight", general_id)
+  const {
+    data: sowsperformance,
+    error: sowsperformance_error,
+    isLoading: sowsperformance_isLoading,
+    mutate: sowsperformance_mutate
+  } = useFarmData("/sowsperformance", general_id)
+  const farmData = data ? data[0] : null
 
-  if (!general_id) {
-    return (
-      <div className="p-4">
-        <h2>No farm selected.</h2>
-        <p>Select a farm from the dropdown menu to get started.</p>
-      </div>
-    )
-  }
-
-  if (isLoading || salesweight_isLoading || sowsperformance_isLoading) {
-    return <div className="p-4">Loading farm data…</div>
-  }
-  if (error || salesweight_error || sowsperformance_error) {
-    console.error(error)
-    return <div className="p-4">Failed to load farm data.</div>
-  }
-  const { mutate } = useFarmData("/sows/salesweight/sowsperformance", farmData?.general_id?.toString())
-  const { mutate: salesweight_mutate } = useFarmData("/salesweight", farmData?.general_id?.toString())
-  const { mutate: sowsperformance_mutate } = useFarmData("/sowsperformance", farmData?.general_id?.toString())
-  const form = useForm<SowDataFormValues>({
-    resolver: zodResolver(sowdataFormSchema),
-    defaultValues: {
-      ...farmData
-    },
-    mode: "onChange",
-  })
-
-  useEffect(() => {
-    form.reset({
-      ...farmData
+    console.log(farmData)
+    const form = useForm<SowDataFormValues>({
+      resolver: zodResolver(sowdataFormSchema),
+      defaultValues: {
+        ...createDefaults(general_id),
+        ...farmData
+      },
+      mode: "onChange",
     })
-  }, [farmData])
+  // 
+    useEffect(() => {
+      form.reset({
+        ...farmData
+      })
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading])
 
-  async function onSubmit(data: SowDataFormValues) {
+async function onSubmit(data: SowDataFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,
+        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      await mutate(put(`/sows/${farmData?.general_id}`, mergedData), {
+      console.log(mergedData)
+      await mutate(upsert(`/sows`, mergedData), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: true
       })
-      await salesweight_mutate(put(`/salesweight/${farmData?.general_id}`, mergedData), {
+      await salesweight_mutate(upsert(`/salesweight`, mergedData), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: true
       })
-      await sowsperformance_mutate(put(`/sowsperformance/${farmData?.general_id}`, mergedData), {
+      await sowsperformance_mutate(upsert(`/sowsperformance`, mergedData), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: true
       })
       toast({
         title: "Success",
@@ -229,21 +272,22 @@ export function SowDataPage({ farmData }: SowDataProps) {
         description: `Failed to save farm data. ${errorMessage}`,
       })
     }
+  }    
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
   }
-
-  /*const livestock = ['Number of Sows and Mated Gilts', 'Number of Unserved Gilts', 'Number of Boars', 'Total Number of Sows and Gilts'];
-  const livestockTypes = [''];
-
-  const sowdata = ['Piglets born Alive', 'Cycles born per sow and year', 'Average time of gestation period', 
-                  'Duration of Suckling', 'Number of Dry Sow Days', 'Rate in Successful Insemination', 
-                  'Weaning Weight', 'Cull Rate Sows', 'Cull Rate Boars', 'Fraction of Own Replacement', 
-                  'Annual Sow Moratlity', 'Annual Boar Mortality', 'Piglet Mortalitiy Weaning', 
-                  'Piglet Mortality Rearing', 'Piglets Weaned', 'Average Piglet Rearing', 'Reared Piglets'];
-  const sowdataTypes= [''];
-
-  const salesweight = ['Sows', 'Boars', 'Weaning Piglets', 'Rearing Piglets'];
-  const salesweightTypes = [''];*/
-
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error && error.status !== 404) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
+  }
 
   return (
     <div className="space-y-4">
@@ -264,10 +308,10 @@ export function SowDataPage({ farmData }: SowDataProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="systempigletsale">System Piglet Sale(ca.8kg)</SelectItem>
-                    <SelectItem value="weanersales">Weaner Sales (approx.25-30kg)</SelectItem>
-                    <SelectItem value="purepigletrearing">Pure Piglet Rearing</SelectItem>
-                    <SelectItem value="closedsystem">Closed System</SelectItem>
+                    <SelectItem value="system piglet sale ( approx. 8kg)">System Piglet Sale(ca.8kg)</SelectItem>
+                    <SelectItem value="weaner sales ( approx. 25-30kg)">Weaner Sales (approx.25-30kg)</SelectItem>
+                    <SelectItem value="pure piglet rearing">Pure Piglet Rearing</SelectItem>
+                    <SelectItem value="closed system">Closed System</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -285,11 +329,11 @@ export function SowDataPage({ farmData }: SowDataProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="1weekrhythm">1-Week Rhythm</SelectItem>
-                    <SelectItem value="2weekrhythm">2-Week Rhythm</SelectItem>
-                    <SelectItem value="3weekrhythm">3-Week Rhythm</SelectItem>
-                    <SelectItem value="4weekrhythm">4-Week Rhythm</SelectItem>
-                    <SelectItem value="nonrhythm">None or other Rhythm</SelectItem>
+                    <SelectItem value="1-week rhythm">1-Week Rhythm</SelectItem>
+                    <SelectItem value="2-week rhythm">2-Week Rhythm</SelectItem>
+                    <SelectItem value="3-week-rhythm">3-Week Rhythm</SelectItem>
+                    <SelectItem value="4-week-rhythm">4-Week Rhythm</SelectItem>
+                    <SelectItem value="non or other rhythm">None or other Rhythm</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -630,7 +674,7 @@ export function SowDataPage({ farmData }: SowDataProps) {
             />
             <FormField
               control={form.control}
-              name="sales_weight_weaning_piglets"
+              name="sales_weight_weaning_piglet"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Weaning Piglets</FormLabel>
@@ -644,7 +688,7 @@ export function SowDataPage({ farmData }: SowDataProps) {
             />
             <FormField
               control={form.control}
-              name="sales_weight_rearing_piglets"
+              name="sales_weight_rearing_piglet"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Rearing Piglets</FormLabel>

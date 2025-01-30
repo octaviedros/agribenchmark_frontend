@@ -1,18 +1,14 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
-
-import { put } from "@/lib/api"
+import { upsert, del } from "@/lib/api"
+import { v4 as uuidv4 } from "uuid"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-
-import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -31,6 +27,8 @@ import { Input } from "@/components/ui/input"
 const sowcostFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
+  var_cost_id: z.string().uuid(),
+  fix_cost_id: z.string().uuid(),
   verterinary_medicine_supplies: z
     .number({
       required_error: "Please enter a number.",
@@ -83,7 +81,7 @@ const sowcostFormSchema = z.object({
     .number({
       required_error: "Please enter a number.",
     }),
-  feed_grinding: z
+  feed_grinding_preparation: z
     .number({
       required_error: "Please enter a number.",
     }),
@@ -95,69 +93,95 @@ const sowcostFormSchema = z.object({
     .number({
       required_error: "Please enter a number.",
     }),
+  others: z .number(),
+  year: z.number().int(),
 })
 
 type SowCostFormValues = z.infer<typeof sowcostFormSchema>
 
-interface SowCostFormProps {
-  farmData: SowCostFormValues | undefined
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+
+function createDefaults(general_id: string): SowCostFormValues {
+  return {
+    id: uuidv4(),
+    general_id: general_id,
+    var_cost_id: uuidv4(),
+    fix_cost_id: uuidv4(),
+    verterinary_medicine_supplies: 0,
+    artificial_insemination: 0,
+    pregnancy_check: 0,
+    disinfection: 0,
+    energy: 0,
+    water: 0,
+    manure_costs: 0,
+    transport_costs: 0,
+    specialised_advisors: 0,
+    animal_disease_levy: 0,
+    carcass_disposal: 0,
+    sow_planner: 0,
+    maintenance: 0,
+    feed_grinding_preparation: 0,
+    insurance: 0,
+    cleaning: 0,
+    others: 0,
+    year: new Date().getFullYear(),
+  }
 }
 
-export function SowCostPage({ farmData }: SowCostFormProps) {
+export function SowCostPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
-  const { data, error, isLoading } = useFarmData("/variablecostssows", general_id)
-  const { data: fixcosts, error: fixcosts_error, isLoading: fixcosts_isLoading } = useFarmData("/fixcosts", general_id)
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/variablecostssows", general_id)
+  const {
+    data: fixcosts,
+    error: fixcosts_error,
+    isLoading: fixcosts_isLoading,
+    mutate: fixcosts_mutate
+  } = useFarmData("/fixcosts", general_id)
 
-  if (!general_id) {
-    return (
-      <div className="p-4">
-        <h2>No farm selected.</h2>
-        <p>Select a farm from the dropdown menu to get started.</p>
-      </div>
-    )
-  }
+const farmData = data ? data[0] : null
 
-  if (isLoading || fixcosts_isLoading) {
-    return <div className="p-4">Loading farm data…</div>
-  }
-  if (error || fixcosts_error) {
-    console.error(error)
-    return <div className="p-4">Failed to load farm data.</div>
-  }
-  const { mutate } = useFarmData("/variablecostssows", farmData?.general_id?.toString())
-  const { mutate: fixcosts_mutate } = useFarmData("/fixcosts", farmData?.general_id?.toString())
-  const form = useForm<SowCostFormValues>({
-    resolver: zodResolver(sowcostFormSchema),
-    defaultValues: {
-      ...farmData
-    },
-    mode: "onChange",
-  })
-
-  useEffect(() => {
-    form.reset({
-      ...farmData
+    console.log(farmData)
+    const form = useForm<SowCostFormValues>({
+      resolver: zodResolver(sowcostFormSchema),
+      defaultValues: {
+        ...createDefaults(general_id),
+        ...farmData
+      },
+      mode: "onChange",
     })
-  }, [farmData])
+  // 
+    useEffect(() => {
+      form.reset({
+        ...farmData
+      })
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading])
 
-  async function onSubmit(data: SowCostFormValues) {
+async function onSubmit(data: SowCostFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,
+        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      await mutate(put(`/variablecostssows/${farmData?.general_id}`, mergedData), {
+      console.log(mergedData)
+      await mutate(upsert(`/variablecostssows`, mergedData), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: true
       })
-      await fixcosts_mutate(put(`/fixcosts/${farmData?.general_id}`, mergedData), {
+      await fixcosts_mutate(upsert(`/fixcosts`, mergedData), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: true
       })
       toast({
         title: "Success",
@@ -171,6 +195,21 @@ export function SowCostPage({ farmData }: SowCostFormProps) {
         description: `Failed to save farm data. ${errorMessage}`,
       })
     }
+  }    
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
+  }
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error && error.status !== 404) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
   }
 
   /*const varcosts = ['Veterenary Medicine & Supplies', 'Artificial Insemination Costs', 'Pregnancy Check', 'Disinfection', 'Energy', 'Water', 'Manure Costs', 'Transport Costs', 'Specialised Advisor', 'Animal Disease Levy', 'Carcass Disposal', 'Sow Planner', 'Maintenance' ]
@@ -378,7 +417,7 @@ export function SowCostPage({ farmData }: SowCostFormProps) {
           />
           <FormField
             control={form.control}
-            name="feed_grinding"
+            name="feed_grinding_preparation"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Feed Grinding & Preparation</FormLabel>

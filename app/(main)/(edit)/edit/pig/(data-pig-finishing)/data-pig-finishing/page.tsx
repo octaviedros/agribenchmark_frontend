@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
-
+import { upsert, del } from "@/lib/api"
+import { v4 as uuidv4 } from "uuid"
 import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useState, useEffect } from "react"
@@ -37,6 +38,8 @@ import {
 const pigfinishingdataFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
+  finishing_id: z.string().uuid(),
+  performance_fin_id: z.string().uuid(),
   production_system: z
     .string({
       required_error: "Please select a production system.",
@@ -50,17 +53,11 @@ const pigfinishingdataFormSchema = z.object({
       required_error: "Please enter Livestock data.",
     }),
   animal_places: z
-    .number({
-      required_error: "Please enter a number.",
-    }),
+    .number().int(),
   no_sold_pigs_gi_ba: z
-    .number({
-      required_error: "Please enter a number.",
-    }),
+    .number().int(),
   no_sold_em_ic: z
-    .number({
-      required_error: "Please enter a number.",
-    }),
+    .number().int(),
   share_gi_pigs: z
     .number({
       required_error: "Please enter a number.",
@@ -81,7 +78,7 @@ const pigfinishingdataFormSchema = z.object({
     .number({
       required_error: "Please enter a number.",
     }),
-  days_without_animals_stable: z
+  days_without_animals_instable: z
     .number({
       required_error: "Please enter a number.",
     }),
@@ -121,93 +118,124 @@ const pigfinishingdataFormSchema = z.object({
     .number({
       required_error: "Please enter a number.",
     }),
+  year: z.number().int(),
 })
 
 type PigFinishingDataFormValues = z.infer<typeof pigfinishingdataFormSchema>
 
-interface PigFinishingDataProps {
-  farmData: PigFinishingDataFormValues | undefined
+function createDefaults(general_id: string): PigFinishingDataFormValues {
+  return {
+    id: uuidv4(),
+    general_id: general_id,
+    finishing_id: uuidv4(),
+    performance_fin_id: uuidv4(),
+    production_system: "",
+    production_cycle: "",
+    finishingdata: "",
+    animal_places: 0,
+    no_sold_pigs_gi_ba: 0,
+    no_sold_em_ic: 0,
+    share_gi_pigs: 0,
+    stalling_in_weight: 0,
+    stalling_in_weight_em_ic_piglets: 0,
+    avg_duration_finishing_period: 0,
+    cleaning_days_cycle: 0,
+    days_without_animals_instable: 0,
+    mortality: 0,
+    avg_selling_weight_gi_ba: 0,
+    carcass_yield_gi_ba: 0,
+    index_points_autofom_gi_ba: 0,
+    lean_meat_from_gi_ba: 0,
+    avg_selling_weight_em_ic: 0,
+    carcass_yield_em_ic: 0,
+    index_points_autofom_em_ic: 0,
+    avg_duration_finishing_period_em_ic: 0,
+    year: new Date().getFullYear(),
+  }
 }
-
-export function PigFinishingDataPage({ farmData }: PigFinishingDataProps) {
-  const searchParams = useSearchParams()
-  const general_id = searchParams.get("general_id") || ""
-  const { data, error, isLoading } = useFarmData("/pigfinishing", general_id)
-  const { data: performancepigfinishing, error: performancepigfinishing_error, isLoading: performancepigfinishing_isLoading } = useFarmData("/performancepigfinishing", general_id)
-
-  if (!general_id) {
-    return (
-      <div className="p-4">
-        <h2>No farm selected.</h2>
-        <p>Select a farm from the dropdown menu to get started.</p>
-      </div>
-    )
-  }
-
-  if (isLoading || performancepigfinishing_isLoading) {
-    return <div className="p-4">Loading farm data…</div>
-  }
-  if (error || performancepigfinishing_error) {
-    console.error(error)
-    return <div className="p-4">Failed to load farm data.</div>
-  }
-  const { mutate } = useFarmData("/pigfinishing", farmData?.general_id?.toString())
-  const { mutate: performancepigfinishing_mutate } = useFarmData("/performancepigfinishing", farmData?.general_id?.toString())
-  const form = useForm<PigFinishingDataFormValues>({
-    resolver: zodResolver(pigfinishingdataFormSchema),
-    defaultValues: {
-      ...farmData
-    },
-    mode: "onChange",
-  })
-
-  useEffect(() => {
-    form.reset({
-      ...farmData
-    })
-  }, [farmData])
-
-  async function onSubmit(data: PigFinishingDataFormValues) {
-    try {
-      const mergedData = {
-        ...farmData, // overwrite the farmData with the new data
-        ...data,
+  export function PigFinishingDataPage() {
+    const searchParams = useSearchParams()
+    const general_id = searchParams.get("general_id") || ""
+    const {
+      data,
+      error,
+      isLoading,
+      mutate
+    } = useFarmData("/pigfinishing", general_id)
+    const {
+      data: performancepigfinishing,
+      error: performancepigfinishing_error,
+      isLoading: performancepigfinishing_isLoading
+    } = useFarmData("/performancepigfinishing", general_id)
+    const farmData = data ? data[0] : null
+    /*let farmData 
+    if (data) { 
+      farmData = data[0]
+    }*/
+      console.log(farmData)
+      const form = useForm<PigFinishingDataFormValues>({
+        resolver: zodResolver(pigfinishingdataFormSchema),
+        defaultValues: {
+          ...createDefaults(general_id),
+          ...farmData
+        },
+        mode: "onChange",
+      })
+    // 
+      useEffect(() => {
+        form.reset({
+          ...farmData
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [isLoading])
+    async function onSubmit(data: PigFinishingDataFormValues) {
+        try {
+          const mergedData = {
+            ...farmData, // overwrite the farmData with the new data
+            ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+          }
+          console.log(mergedData)
+          await mutate(upsert(`/pigfinishing`, mergedData), {
+            optimisticData: mergedData,
+            rollbackOnError: true,
+            populateCache: true,
+            revalidate: true
+          })
+          await mutate(upsert(`/performancepigfinishing`, mergedData), {
+            optimisticData: mergedData,
+            rollbackOnError: true,
+            populateCache: true,
+            revalidate: true
+          })
+          toast({
+            title: "Success",
+            description: "Farm data has been saved successfully.",
+          })
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: `Failed to save farm data. ${errorMessage}`,
+          })
+        }
       }
-      await mutate(put(`/pigfinishing/performancepigfinishing/${farmData?.general_id}`, mergedData), {
-        optimisticData: mergedData,
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
-      })
-      await performancepigfinishing_mutate(put(`/performancepigfinishing/${farmData?.general_id}`, mergedData), {
-        optimisticData: mergedData,
-        rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
-      })
-      toast({
-        title: "Success",
-        description: "Farm data has been saved successfully.",
-      })
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: `Failed to save farm data. ${errorMessage}`,
-      })
-    }
-  }
-
-  /* const livestock = ['Animal Places', 'Number of sold Pigs(female & castrates', 'Number of sold Pigs(Boars)', 'Share of female Pigs'];
-   const livestockTypes = [''];
-
-   const finishingdata = ['Stalling-in-Weight', 'Stalling-in-Weight (Boars)', 'Average Duration of a finishing Period', 
-                           'Cleaning days per Cycle', 'Days without Animals in Stable', 'Mortality', 'Average selling Weight (females & castrates)',
-                           'Carcass yield (%) (female & castrates)', 'Lean Meat content (FOM) (female & castrates)', 'Average selling Weight (Boars)',
-                           'Carcass yield (%) (Boars)', 'Index points (AutoFOM; Boars)', 'Average Duration of a finishing Period (Boars)'];
-   const finishingdataTypes= [''];*/
-
+      
+      if (!general_id) {
+        return (
+          <div className="p-4">
+            <h2>No farm selected.</h2>
+            <p>Select a farm from the dropdown menu to get started.</p>
+          </div>
+        )
+      }
+      if (isLoading) {
+        return <div className="p-4">Loading farm data…</div>
+      }
+      if (error && error.status !== 404) {
+        console.error(error)
+        return <div className="p-4">Failed to load farm data.</div>
+      }
 
   return (
     <div className="space-y-6">
@@ -375,7 +403,7 @@ export function PigFinishingDataPage({ farmData }: PigFinishingDataProps) {
           />
           <FormField
             control={form.control}
-            name="days_without_animals_stable"
+            name="days_without_animals_instable"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Days without Animals in Stable</FormLabel>
@@ -513,6 +541,7 @@ export function PigFinishingDataPage({ farmData }: PigFinishingDataProps) {
               </FormItem>
             )}
           />
+          <Button className="mt-4" type="submit">Submit</Button>
         </form>
       </Form>
     </div>
