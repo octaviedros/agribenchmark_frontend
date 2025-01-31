@@ -1,19 +1,15 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { upsert, del } from "@/lib/api"
+import { upsert } from "@/lib/api"
 import { v4 as uuidv4 } from "uuid"
-import { put } from "@/lib/api"
-import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
+import { useFarmData } from "@/hooks/use-farm-data"
 
-import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -47,10 +43,6 @@ const pigfinishingdataFormSchema = z.object({
   production_cycle: z
     .string({
       required_error: "Please select a production rhythm.",
-    }),
-  finishingdata: z
-    .string({
-      required_error: "Please enter Livestock data.",
     }),
   animal_places: z
     .coerce.number().int(),
@@ -131,7 +123,6 @@ function createDefaults(general_id: string): PigFinishingDataFormValues {
     performance_fin_id: uuidv4(),
     production_system: "",
     production_cycle: "",
-    finishingdata: "",
     animal_places: 0,
     no_sold_pigs_gi_ba: 0,
     no_sold_em_ic: 0,
@@ -153,6 +144,18 @@ function createDefaults(general_id: string): PigFinishingDataFormValues {
     year: new Date().getFullYear(),
   }
 }
+
+function mergeData(data: Array<object>, performanceData: Array<object>, general_id: string): PigFinishingDataFormValues {
+  if (data && performanceData) {
+    // @ts-expect-error zod types are not correct
+    return {
+      ...data[0],
+      ...performanceData[0],
+    }
+  }
+  return createDefaults(general_id)
+}
+
 export function PigFinishingDataPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
@@ -167,42 +170,44 @@ export function PigFinishingDataPage() {
     error: performancepigfinishing_error,
     isLoading: performancepigfinishing_isLoading
   } = useFarmData("/performancepigfinishing", general_id)
-  const farmData = data ? data[0] : null
-  const performanceData = performancepigfinishing ? performancepigfinishing[0] : null
-  /*let farmData 
-  if (data) { 
-    farmData = data[0]
-  }*/
-  console.log(farmData)
+  console.log("data", data, "performancepigfinishing", performancepigfinishing)
+  const farmData = mergeData(data, performancepigfinishing, general_id)
+
   const form = useForm<PigFinishingDataFormValues>({
     resolver: zodResolver(pigfinishingdataFormSchema),
     defaultValues: {
-      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
   })
-  // 
+
   useEffect(() => {
+    console.log("update", farmData)
     form.reset({
       ...farmData
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading])
-  async function onSubmit(data: PigFinishingDataFormValues) {
+  }, [isLoading, performancepigfinishing_isLoading])
+
+  async function onSubmit(updatedData: PigFinishingDataFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+        ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      console.log(mergedData)
-      await mutate(upsert(`/pigfinishing`, mergedData), {
+      await mutate(upsert(`/pigfinishing`, {
+        ...mergedData,
+        id: data?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
         revalidate: true
       })
-      await mutate(upsert(`/performancepigfinishing`, mergedData), {
+      await mutate(upsert(`/performancepigfinishing`, {
+        ...mergedData,
+        id: performancepigfinishing?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
@@ -230,10 +235,10 @@ export function PigFinishingDataPage() {
       </div>
     )
   }
-  if (isLoading) {
+  if (isLoading || performancepigfinishing_isLoading) {
     return <div className="p-4">Loading farm data…</div>
   }
-  if (error && error.status !== 404) {
+  if ((error && error.status !== 404) || (performancepigfinishing_error && performancepigfinishing_error.status !== 404)) {
     console.error(error)
     return <div className="p-4">Failed to load farm data.</div>
   }
@@ -245,14 +250,14 @@ export function PigFinishingDataPage() {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 w-full">
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-2 w-full">
           <FormField
             control={form.control}
             name="production_system"
-            render={({ field }) => (
+            render={({ field: p }) => (
               <FormItem>
                 <FormLabel>Production System</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={p.onChange} defaultValue={p.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your Pig Finishing Production Sytsem" />
@@ -269,9 +274,9 @@ export function PigFinishingDataPage() {
           <FormField
             control={form.control}
             name="production_cycle"
-            render={({ field }) => (
+            render={({ field: c }) => (
               <FormItem>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={c.onChange} defaultValue={c.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your Sow Production Rhythm" />
@@ -283,21 +288,23 @@ export function PigFinishingDataPage() {
                     <SelectItem value="continuous system">Continuous System</SelectItem>
                   </SelectContent>
                 </Select>
+                <FormMessage />
               </FormItem>
             )}
           />
           <div>
-            <h3 className="text-lg font-medium">Livestock</h3></div>
+            <h3 className="text-lg font-medium">Livestock</h3>
+          </div>
           <FormField
             control={form.control}
             name="animal_places"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Animal Places</FormLabel>
-                <FormDescription>Number of heads</FormDescription>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} value={field.value}/>
                 </FormControl>
+                <FormDescription>Number of heads</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
