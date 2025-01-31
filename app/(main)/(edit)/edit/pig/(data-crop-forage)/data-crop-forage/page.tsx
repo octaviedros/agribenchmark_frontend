@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input"
 
 const acreageFormSchema = z.object({
   db_ids: z.array(z.string().uuid()),
-  acerage_ids: z.array(z.string().uuid()),
+  acreage_ids: z.array(z.string().uuid()),
   acreagedata: z.array(
     z.object({
       general_id: z.string().uuid(),
@@ -34,7 +34,7 @@ const acreageFormSchema = z.object({
 
 export const AcreageDBSchema = z.object({
   id: z.string().uuid(),
-  acerage_id: z.string().uuid(),
+  acreage_id: z.string().uuid(),
   general_id: z.string().uuid(),
   land_type: z.string(),
   own_land: z.number(),
@@ -95,7 +95,7 @@ function dbDataToForm(data: AcreageDBValues[], general_id: string) {
   if (!data || !data.length) return createDefaults(general_id)
   return {
     db_ids: data.map(d => d.id),
-    acerage_ids: data.map(d => d.acerage_id),
+    acreage_ids: data.map(d => d.acreage_id),
     acreagedata: lands.map((land) => {
       return {
         general_id: general_id,
@@ -112,7 +112,7 @@ function formDataToDb(data: AcreageFormValues) {
   return landTypes.map((landType, index) => ({
     general_id: data.acreagedata[0].general_id,
     id: data.db_ids[index],
-    acerage_id: data.acerage_ids[index],
+    acreage_id: data.acreage_ids[index],
     land_type: landType.value,
     own_land: data.acreagedata[0][landType.value as keyof AcreageFormValues["acreagedata"][number]],
     rented_land: data.acreagedata[1][landType.value as keyof AcreageFormValues["acreagedata"][number]],
@@ -125,11 +125,11 @@ function formDataToDb(data: AcreageFormValues) {
 function createDefaults(general_id: string) {
   return {
     db_ids: landTypes.map(() => uuidv4()),
-    acerage_ids: landTypes.map(() => uuidv4()),
+    acreage_ids: landTypes.map(() => uuidv4()),
     acreagedata: lands.map(land => ({
       general_id: general_id,
       id: uuidv4(),
-      acerage_id: uuidv4(),
+      acreage_id: uuidv4(),
       land: land.value,
       cropland: 0,
       grassland: 0,
@@ -146,7 +146,7 @@ export function DataCropFarmPage() {
     error,
     isLoading,
     mutate
-  } = useFarmData("/acerageprices", general_id)
+  } = useFarmData("/acreageprices", general_id)
 
   const farmData = dbDataToForm(data, general_id)
 
@@ -174,7 +174,7 @@ export function DataCropFarmPage() {
         const existingRow = (data as AcreageDBValues[])?.find((r) => r.id === row.id)
         return existingRow ? { ...existingRow, ...row } : row
       })
-      await mutate(Promise.all(mergedData.map((row) => upsert(`/acerageprices`, row))), {
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/acreageprices`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
