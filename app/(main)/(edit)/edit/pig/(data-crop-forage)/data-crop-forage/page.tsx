@@ -1,45 +1,30 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Info } from "lucide-react"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { upsert, del } from "@/lib/api"
+import { upsert } from "@/lib/api"
 import { v4 as uuidv4 } from "uuid"
-import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 
-import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
 import {
   Form,
-  FormControl,
-  FormDescription,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 
 const acreageFormSchema = z.object({
+  db_ids: z.array(z.string().uuid()),
+  acerage_ids: z.array(z.string().uuid()),
   acreagedata: z.array(
     z.object({
       general_id: z.string().uuid(),
-      id: z.string().uuid(),
-      acreage_id: z.string().uuid(),
       land: z.string(),
       cropland: z.coerce.number(),
       grassland: z.coerce.number(),
@@ -49,7 +34,7 @@ const acreageFormSchema = z.object({
 
 export const AcreageDBSchema = z.object({
   id: z.string().uuid(),
-  acreage_id: z.string().uuid(),
+  acerage_id: z.string().uuid(),
   general_id: z.string().uuid(),
   land_type: z.string(),
   own_land: z.number(),
@@ -78,17 +63,6 @@ const landTypes: { name: string; value: string, tooltip?: string }[] = [
   },
 ]
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function dbDataToForm(data: any, general_id: string) {
-  if (!data || !data.length) return createDefaults(general_id)
-  return {
-    acreagedata: data.filter((row: AcreageDBValues) => row.land_type === ""),
-  }
-}
-function formDataToDb(data: AcreageDBValues) {
-  return landTypes.map((landType) => ({
-    
-}
 const lands: { name: string; value: keyof AcreageDBValues, tooltip?: string }[] = [
   {
     name: "Own Land",
@@ -116,12 +90,46 @@ const lands: { name: string; value: keyof AcreageDBValues, tooltip?: string }[] 
     tooltip: "cost per ha",
   },
 ]
+
+function dbDataToForm(data: AcreageDBValues[], general_id: string) {
+  if (!data || !data.length) return createDefaults(general_id)
+  return {
+    db_ids: data.map(d => d.id),
+    acerage_ids: data.map(d => d.acerage_id),
+    acreagedata: lands.map((land) => {
+      return {
+        general_id: general_id,
+        land: land.value,
+        cropland: Number(data?.find(d => d.land_type === "cropland")?.[land.value as keyof AcreageDBValues] ?? 0),
+        grassland: Number(data?.find(d => d.land_type === "grassland")?.[land.value as keyof AcreageDBValues] ?? 0),
+        otherland: Number(data?.find(d => d.land_type === "otherland")?.[land.value as keyof AcreageDBValues] ?? 0),
+      }
+    })
+  }
+}
+
+function formDataToDb(data: AcreageFormValues) {
+  return landTypes.map((landType, index) => ({
+    general_id: data.acreagedata[0].general_id,
+    id: data.db_ids[index],
+    acerage_id: data.acerage_ids[index],
+    land_type: landType.value,
+    own_land: data.acreagedata[0][landType.value as keyof AcreageFormValues["acreagedata"][number]],
+    rented_land: data.acreagedata[1][landType.value as keyof AcreageFormValues["acreagedata"][number]],
+    rent_existing_contracts: data.acreagedata[2][landType.value as keyof AcreageFormValues["acreagedata"][number]],
+    rent_new_contracts: data.acreagedata[3][landType.value as keyof AcreageFormValues["acreagedata"][number]],
+    market_value: data.acreagedata[4][landType.value as keyof AcreageFormValues["acreagedata"][number]],
+  }))
+}
+
 function createDefaults(general_id: string) {
   return {
+    db_ids: landTypes.map(() => uuidv4()),
+    acerage_ids: landTypes.map(() => uuidv4()),
     acreagedata: lands.map(land => ({
       general_id: general_id,
       id: uuidv4(),
-      acreage_id: uuidv4(),
+      acerage_id: uuidv4(),
       land: land.value,
       cropland: 0,
       grassland: 0,
@@ -138,10 +146,10 @@ export function DataCropFarmPage() {
     error,
     isLoading,
     mutate
-  } = useFarmData("/acreage_prices", general_id)
+  } = useFarmData("/acerageprices", general_id)
 
   const farmData = dbDataToForm(data, general_id)
-  console.log(farmData)
+
   const form = useForm<AcreageFormValues>({
     resolver: zodResolver(acreageFormSchema),
     defaultValues: {
@@ -166,8 +174,7 @@ export function DataCropFarmPage() {
         const existingRow = (data as AcreageDBValues[])?.find((r) => r.id === row.id)
         return existingRow ? { ...existingRow, ...row } : row
       })
-      console.log(mergedData)
-      await mutate(Promise.all(mergedData.map((row) => upsert(`/acreageprices`, row))), {
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/acerageprices`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
