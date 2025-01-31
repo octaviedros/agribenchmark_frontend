@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
-
+import { upsert, del } from "@/lib/api"
+import { v4 as uuidv4 } from "uuid"
 import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useState, useEffect } from "react"
@@ -30,6 +31,7 @@ import { Input } from "@/components/ui/input"
 const finishingfeedingFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
+  feed_fin_id: z.string().uuid(),
   proportion_finishing_feed_1: z
     .number({
       required_error: "Please enter a number.",
@@ -58,61 +60,71 @@ const finishingfeedingFormSchema = z.object({
     .number({
       required_error: "Please enter a number.",
     }),
+  year: z.number().int(),
 })
 
 type FinishingFeedingFormValues = z.infer<typeof finishingfeedingFormSchema>
 
-interface FinishingFeedingFormProps {
-  farmData: FinishingFeedingFormValues | undefined
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-export function FinishingFeedingPage({ farmData }: FinishingFeedingFormProps) {
+
+function createDefaults(general_id: string): FinishingFeedingFormValues {
+  return {
+    id: uuidv4(),
+    general_id: general_id,
+    feed_fin_id: uuidv4(),
+    proportion_finishing_feed_1: 0,
+    proportion_finishing_feed_2: 0,
+    proportion_finishing_feed_3: 0,
+    amount_finishing_feed_1: 0,
+    amount_finishing_feed_2: 0,
+    amount_finishing_feed_3: 0,
+    total_amount_feed: 0,
+    year: new Date().getFullYear(),
+  }
+}
+export function FinishingFeedingPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
-  const { data, error, isLoading } = useFarmData("/feedingfinishing", general_id)
-
-  if (!general_id) {
-    return (
-      <div className="p-4">
-        <h2>No farm selected.</h2>
-        <p>Select a farm from the dropdown menu to get started.</p>
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return <div className="p-4">Loading farm data…</div>
-  }
-  if (error) {
-    console.error(error)
-    return <div className="p-4">Failed to load farm data.</div>
-  }
-  const { mutate } = useFarmData("/feedingfinishing", farmData?.general_id?.toString())
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/feedingfinishing", general_id)
+  const farmData = data ? data[0] : null
+  /*let farmData 
+  if (data) { 
+    farmData = data[0]
+  }*/
+  console.log(farmData)
   const form = useForm<FinishingFeedingFormValues>({
     resolver: zodResolver(finishingfeedingFormSchema),
     defaultValues: {
+      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
   })
-
+  // 
   useEffect(() => {
     form.reset({
       ...farmData
     })
-  }, [farmData])
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
   async function onSubmit(data: FinishingFeedingFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,
+        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      await mutate(put(`/feedingfinishing/${farmData?.general_id}`, mergedData), {
+      console.log(mergedData)
+      await mutate(upsert(`/feedingfinishing`, mergedData), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: true
       })
       toast({
         title: "Success",
@@ -126,6 +138,22 @@ export function FinishingFeedingPage({ farmData }: FinishingFeedingFormProps) {
         description: `Failed to save farm data. ${errorMessage}`,
       })
     }
+  }
+
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
+  }
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error && error.status !== 404) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
   }
 
   /*const finishingproportion = ['Finishing Feed 1 (%)', 'Finishing Feed 2 (%)', 'Finishing Feed 3 (%)'];

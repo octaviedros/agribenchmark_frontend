@@ -1,18 +1,14 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
-
-import { put } from "@/lib/api"
+import { upsert, del } from "@/lib/api"
+import { v4 as uuidv4 } from "uuid"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-
-import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -41,62 +37,67 @@ const laborallocationFormSchema = z.object({
   }),
   family_labor_finishing: z.number().min(2, {
     message: "Please enter Family Labor Allocation for Pig Finishing Entperise.",
-  })
+  }),
+  year: z.number().int(),
 })
 
 type LaborAllocationFormValues = z.infer<typeof laborallocationFormSchema>
 
-interface LaborAllocationFormProps {
-  farmData: LaborAllocationFormValues | undefined
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-export function LaborAllocationPage({ farmData }: LaborAllocationFormProps) {
+function createDefaults(general_id: string): LaborAllocationFormValues {
+  return {
+    id: uuidv4(),
+    general_id: general_id,
+    casual_labor_sow: 0,
+    family_labor_sow: 0,
+    casual_labor_finishing: 0,
+    family_labor_finishing: 0,
+    year: new Date().getFullYear(),
+  }
+}
+export function LaborAllocationPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
-  const { data, error, isLoading } = useFarmData("/laborallocsowfinishing", general_id)
-
-  if (!general_id) {
-    return (
-      <div className="p-4">
-        <h2>No farm selected.</h2>
-        <p>Select a farm from the dropdown menu to get started.</p>
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return <div className="p-4">Loading farm data…</div>
-  }
-  if (error) {
-    console.error(error)
-    return <div className="p-4">Failed to load farm data.</div>
-  }
-  const { mutate } = useFarmData("/laborallocsowfinishing", farmData?.general_id?.toString())
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/laborallocsowfinishing", general_id)
+  const farmData = data ? data[0] : null
+/*let farmData 
+if (data) { 
+  farmData = data[0]
+}*/
+  console.log(farmData)
   const form = useForm<LaborAllocationFormValues>({
     resolver: zodResolver(laborallocationFormSchema),
     defaultValues: {
+      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
   })
-
+// 
   useEffect(() => {
     form.reset({
       ...farmData
     })
-  }, [farmData])
-
-  async function onSubmit(data: LaborAllocationFormValues) {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
+async function onSubmit(data: LaborAllocationFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,
+        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      await mutate(put(`/laborallocsowfinishing/${farmData?.general_id}`, mergedData), {
+      console.log(mergedData)
+      await mutate(upsert(`/laborallocsowfinishing`, mergedData), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: true
       })
       toast({
         title: "Success",
@@ -110,6 +111,22 @@ export function LaborAllocationPage({ farmData }: LaborAllocationFormProps) {
         description: `Failed to save farm data. ${errorMessage}`,
       })
     }
+  }
+  
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
+  }
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error && error.status !== 404) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
   }
 
   return (

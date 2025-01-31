@@ -167,7 +167,7 @@ export function FeedPricesPage() {
     }
   }
 
-  const feedpriceTypes: { name: string; value: keyof FeedPriceFormValues["feedprice"][number], tooltip?: string, type?:string }[] = [
+  const feedpriceTypes: { name: string; value: keyof FeedPriceFormValues["feedprice"][number], tooltip?: string, type?: string }[] = [
     {
       name: "Price",
       value: "price_per_tonne",
@@ -210,9 +210,9 @@ export function FeedPricesPage() {
     return <div className="p-4">Failed to load farm data.</div>
   }
 
-function logformerrors(errors) {
-  console.log(errors)
-}
+  function logformerrors(errors) {
+    console.log(errors)
+  }
   return (
     <div className="space-y-6 min">
       <div>
@@ -220,102 +220,102 @@ function logformerrors(errors) {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit,logformerrors)} className="space-y-4 w-full">
+        <form onSubmit={form.handleSubmit(onSubmit, logformerrors)} className="space-y-4 w-full">
           <table className="w-full">
-          <thead>
-            <tr>
-              <th className="text-left pl-2 align-bottom"><FormLabel>Feed Type</FormLabel></th>
-              {feedpriceTypes.map(({ name, tooltip }) => (
-                <th key={name} className="text-left pl-2 align-bottom">
-                  <FormLabel>
-                    {name}
-                    {tooltip &&
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                          <TooltipContent>
-                            <p>{tooltip}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    }
-                  </FormLabel>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {fields.map((field, index) => (
-              <tr key={field.id}>
-                <td className="p-1 min-w-[120px]">
-                  {/* Feed Type */}
-                  <FormField
-                    control={form.control}
-                    name={`feedprice.${index}.feed_type`} // here feed_type instead of name
-                    render={({ field: f }) => (
-                      <FormItem>
-                      <Select onValueChange={f.onChange} defaultValue={f.value}>
-                        <FormControl>
-                          <SelectTrigger> <SelectValue placeholder="Select Type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Finishing feed 1">Finishing Feed 1</SelectItem>
-                          <SelectItem value="Finishing feed 2">Finishing Feed 2</SelectItem>
-                          <SelectItem value="Finishing feed 3">Finishing Feed 3</SelectItem>
-                          <SelectItem value="Gestation feed">Gestation Feed</SelectItem>
-                          <SelectItem value="Lactation feed">Lactation Feed</SelectItem>
-                          <SelectItem value="Piglet feed 1">Piglet Feed 1</SelectItem>
-                          <SelectItem value="Piglet feed 2">Piglet Feed 2</SelectItem>
-                          <SelectItem value="Special boar feed">Special Boar Feed</SelectItem>
-                          <SelectItem value="Special gilt feed">Special Gilt Feed</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                </td>
-                {feedpriceTypes.map(({ value: feedpriceType, type }) => (
-                  <td key={feedpriceType} className="p-1 min-w-[120px]">
-                    {/* feedpriceType might be something like 'price', 'dry_matter', etc. */}
+            <thead>
+              <tr>
+                <th className="text-left pl-2 align-bottom"><FormLabel>Feed Type</FormLabel></th>
+                {feedpriceTypes.map(({ name, tooltip }) => (
+                  <th key={name} className="text-left pl-2 align-bottom">
+                    <FormLabel>
+                      {name}
+                      {tooltip &&
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>{tooltip}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      }
+                    </FormLabel>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {fields.map((field, index) => (
+                <tr key={field.id}>
+                  <td className="p-1 min-w-[120px]">
+                    {/* Feed Type */}
                     <FormField
                       control={form.control}
-                      name={`feedprice.${index}.${feedpriceType as keyof FeedPriceFormValues["feedprice"][number]}`}
-                      render={({ field: ff }) => (
-                        <Input {...ff} className="w-full" type={type=== "checkbox"?"checkbox":"number"} value={ff.value as number} />
+                      name={`feedprice.${index}.feed_type`} // here feed_type instead of name
+                      render={({ field: f }) => (
+                        <FormItem>
+                          <Select onValueChange={f.onChange} defaultValue={f.value}>
+                            <FormControl>
+                              <SelectTrigger> <SelectValue placeholder="Select Type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Finishing feed 1">Finishing Feed 1</SelectItem>
+                              <SelectItem value="Finishing feed 2">Finishing Feed 2</SelectItem>
+                              <SelectItem value="Finishing feed 3">Finishing Feed 3</SelectItem>
+                              <SelectItem value="Gestation feed">Gestation Feed</SelectItem>
+                              <SelectItem value="Lactation feed">Lactation Feed</SelectItem>
+                              <SelectItem value="Piglet feed 1">Piglet Feed 1</SelectItem>
+                              <SelectItem value="Piglet feed 2">Piglet Feed 2</SelectItem>
+                              <SelectItem value="Special boar feed">Special Boar Feed</SelectItem>
+                              <SelectItem value="Special gilt feed">Special Gilt Feed</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
                       )}
                     />
                   </td>
-                ))}
-                <td>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => {
-                      if (farmData.feedprice[index]?.id) {
-                        del(`/feedpricesdrymatter/${farmData.feedprice[index].id}`)
-                      }
-                      remove(index)
-                    }}
-                  >
-                    <Trash2 />
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div>
-          <Button
-            type="button"
-            className="mt-4"
-            onClick={() => append(createDefaults(general_id).feedprice[0])}>Add Row</Button>
-        </div>
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+                  {feedpriceTypes.map(({ value: feedpriceType, type }) => (
+                    <td key={feedpriceType} className="p-1 min-w-[120px]">
+                      {/* feedpriceType might be something like 'price', 'dry_matter', etc. */}
+                      <FormField
+                        control={form.control}
+                        name={`feedprice.${index}.${feedpriceType as keyof FeedPriceFormValues["feedprice"][number]}`}
+                        render={({ field: ff }) => (
+                          <Input {...ff} className="w-full" type={type === "checkbox" ? "checkbox" : "number"} value={ff.value as number} />
+                        )}
+                      />
+                    </td>
+                  ))}
+                  <td>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => {
+                        if (farmData.feedprice[index]?.id) {
+                          del(`/feedpricesdrymatter/${farmData.feedprice[index].id}`)
+                        }
+                        remove(index)
+                      }}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div>
+            <Button
+              type="button"
+              className="mt-4"
+              onClick={() => append(createDefaults(general_id).feedprice[0])}>Add Row</Button>
+          </div>
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
     </div >
   )
 }

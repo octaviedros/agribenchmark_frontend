@@ -53,69 +53,69 @@ const pigfinishingdataFormSchema = z.object({
       required_error: "Please enter Livestock data.",
     }),
   animal_places: z
-    .number().int(),
+    .coerce.number().int(),
   no_sold_pigs_gi_ba: z
-    .number().int(),
+    .coerce.number().int(),
   no_sold_em_ic: z
-    .number().int(),
+    .coerce.number().int(),
   share_gi_pigs: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   stalling_in_weight: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   stalling_in_weight_em_ic_piglets: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   avg_duration_finishing_period: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   cleaning_days_cycle: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   days_without_animals_instable: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   mortality: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   avg_selling_weight_gi_ba: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   carcass_yield_gi_ba: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   index_points_autofom_gi_ba: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   lean_meat_from_gi_ba: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   avg_selling_weight_em_ic: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   carcass_yield_em_ic: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   index_points_autofom_em_ic: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   avg_duration_finishing_period_em_ic: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   year: z.number().int(),
@@ -153,89 +153,90 @@ function createDefaults(general_id: string): PigFinishingDataFormValues {
     year: new Date().getFullYear(),
   }
 }
-  export function PigFinishingDataPage() {
-    const searchParams = useSearchParams()
-    const general_id = searchParams.get("general_id") || ""
-    const {
-      data,
-      error,
-      isLoading,
-      mutate
-    } = useFarmData("/pigfinishing", general_id)
-    const {
-      data: performancepigfinishing,
-      error: performancepigfinishing_error,
-      isLoading: performancepigfinishing_isLoading
-    } = useFarmData("/performancepigfinishing", general_id)
-    const farmData = data ? data[0] : null
-    /*let farmData 
-    if (data) { 
-      farmData = data[0]
-    }*/
-      console.log(farmData)
-      const form = useForm<PigFinishingDataFormValues>({
-        resolver: zodResolver(pigfinishingdataFormSchema),
-        defaultValues: {
-          ...createDefaults(general_id),
-          ...farmData
-        },
-        mode: "onChange",
+export function PigFinishingDataPage() {
+  const searchParams = useSearchParams()
+  const general_id = searchParams.get("general_id") || ""
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/pigfinishing", general_id)
+  const {
+    data: performancepigfinishing,
+    error: performancepigfinishing_error,
+    isLoading: performancepigfinishing_isLoading
+  } = useFarmData("/performancepigfinishing", general_id)
+  const farmData = data ? data[0] : null
+  const performanceData = performancepigfinishing ? performancepigfinishing[0] : null
+  /*let farmData 
+  if (data) { 
+    farmData = data[0]
+  }*/
+  console.log(farmData)
+  const form = useForm<PigFinishingDataFormValues>({
+    resolver: zodResolver(pigfinishingdataFormSchema),
+    defaultValues: {
+      ...createDefaults(general_id),
+      ...farmData
+    },
+    mode: "onChange",
+  })
+  // 
+  useEffect(() => {
+    form.reset({
+      ...farmData
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
+  async function onSubmit(data: PigFinishingDataFormValues) {
+    try {
+      const mergedData = {
+        ...farmData, // overwrite the farmData with the new data
+        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+      }
+      console.log(mergedData)
+      await mutate(upsert(`/pigfinishing`, mergedData), {
+        optimisticData: mergedData,
+        rollbackOnError: true,
+        populateCache: true,
+        revalidate: true
       })
-    // 
-      useEffect(() => {
-        form.reset({
-          ...farmData
-        })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [isLoading])
-    async function onSubmit(data: PigFinishingDataFormValues) {
-        try {
-          const mergedData = {
-            ...farmData, // overwrite the farmData with the new data
-            ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
-          }
-          console.log(mergedData)
-          await mutate(upsert(`/pigfinishing`, mergedData), {
-            optimisticData: mergedData,
-            rollbackOnError: true,
-            populateCache: true,
-            revalidate: true
-          })
-          await mutate(upsert(`/performancepigfinishing`, mergedData), {
-            optimisticData: mergedData,
-            rollbackOnError: true,
-            populateCache: true,
-            revalidate: true
-          })
-          toast({
-            title: "Success",
-            description: "Farm data has been saved successfully.",
-          })
-        } catch (error: unknown) {
-          const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: `Failed to save farm data. ${errorMessage}`,
-          })
-        }
-      }
-      
-      if (!general_id) {
-        return (
-          <div className="p-4">
-            <h2>No farm selected.</h2>
-            <p>Select a farm from the dropdown menu to get started.</p>
-          </div>
-        )
-      }
-      if (isLoading) {
-        return <div className="p-4">Loading farm data…</div>
-      }
-      if (error && error.status !== 404) {
-        console.error(error)
-        return <div className="p-4">Failed to load farm data.</div>
-      }
+      await mutate(upsert(`/performancepigfinishing`, mergedData), {
+        optimisticData: mergedData,
+        rollbackOnError: true,
+        populateCache: true,
+        revalidate: true
+      })
+      toast({
+        title: "Success",
+        description: "Farm data has been saved successfully.",
+      })
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to save farm data. ${errorMessage}`,
+      })
+    }
+  }
+
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
+  }
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error && error.status !== 404) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
+  }
 
   return (
     <div className="space-y-6">
@@ -258,8 +259,8 @@ function createDefaults(general_id: string): PigFinishingDataFormValues {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="normalpigfinishing">Normal Pig Finishing</SelectItem>
-                    <SelectItem value="boarfinishing">Additional Boar Finishing</SelectItem>
+                    <SelectItem value="normal pig finishing">Normal Pig Finishing</SelectItem>
+                    <SelectItem value="additional boar finishing">Additional Boar Finishing</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -277,9 +278,9 @@ function createDefaults(general_id: string): PigFinishingDataFormValues {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="allinalloutbarn">All-In-All-Out by Barn</SelectItem>
-                    <SelectItem value="allinalloutsections">All-In-All-Out by Sections</SelectItem>
-                    <SelectItem value="continuoussystem">Continuous System</SelectItem>
+                    <SelectItem value="all-in all-out by barn">All-In-All-Out by Barn</SelectItem>
+                    <SelectItem value="all-in all-out by sections">All-In-All-Out by Sections</SelectItem>
+                    <SelectItem value="continuous system">Continuous System</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>

@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { z } from "zod"
-
+import { upsert, del } from "@/lib/api"
+import { v4 as uuidv4 } from "uuid"
 import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useState, useEffect } from "react"
@@ -30,6 +31,8 @@ import { Input } from "@/components/ui/input"
 const finishingcostFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
+  var_cost_fin_id: z.string().uuid(),
+  fix_cost_id: z.string().uuid(),
   veterinary_medicine_supplies: z
     .number({
       required_error: "Please enter a number.",
@@ -82,69 +85,88 @@ const finishingcostFormSchema = z.object({
     .number({
       required_error: "Please enter a number.",
     }),
+  year: z.number().int(),
 })
 
 type FinishingCostFormValues = z.infer<typeof finishingcostFormSchema>
 
-interface FinishingCostFormProps {
-  farmData: FinishingCostFormValues | undefined
+function createDefaults(general_id: string): FinishingCostFormValues {
+  return {
+    id: uuidv4(),
+    general_id: general_id,
+    var_cost_fin_id: uuidv4(),
+    fix_cost_id: uuidv4(),
+    veterinary_medicine_supplies: 0,
+    disinfection: 0,
+    energy: 0,
+    water: 0,
+    manure_cost: 0,
+    transport_cost: 0,
+    specialised_pig_advisor: 0,
+    animal_disease_levy: 0,
+    carcass_disposal: 0,
+    maintenance: 0,
+    feed_grinding_preparation: 0,
+    insurance: 0,
+    cleaning: 0,
+    year: new Date().getFullYear(),
+  }
 }
-
-export function FinishingCostPage({ farmData }: FinishingCostFormProps) {
+export function FinishingCostPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
-  const { data, error, isLoading } = useFarmData("/varcostfinishing", general_id)
-  const { data: fixcosts, error: fixcosts_error, isLoading: fixcosts_isLoading } = useFarmData("/fixcosts", general_id)
-
-  if (!general_id) {
-    return (
-      <div className="p-4">
-        <h2>No farm selected.</h2>
-        <p>Select a farm from the dropdown menu to get started.</p>
-      </div>
-    )
-  }
-
-  if (isLoading || fixcosts_isLoading) {
-    return <div className="p-4">Loading farm data…</div>
-  }
-  if (error || fixcosts_error) {
-    console.error(error)
-    return <div className="p-4">Failed to load farm data.</div>
-  }
-  const { mutate } = useFarmData("/varcostfinishing", farmData?.general_id?.toString())
-  const { mutate: fixcosts_mutate } = useFarmData("/fixcosts", farmData?.general_id?.toString())
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/varcostfinishing", general_id)
+  const {
+    data: fixcosts,
+    error: fixcosts_error,
+    isLoading: fixcosts_isLoading,
+    mutate: fixcosts_mutate
+  } = useFarmData("/fixcosts", general_id)
+  const farmData = data ? data[0] : null
+  const fixcostsData = fixcosts ? fixcosts[0] : null
+  /*let farmData 
+  if (data) { 
+    farmData = data[0]
+  }*/
+  console.log(farmData)
   const form = useForm<FinishingCostFormValues>({
     resolver: zodResolver(finishingcostFormSchema),
     defaultValues: {
+      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
   })
-
+  // 
   useEffect(() => {
     form.reset({
       ...farmData
     })
-  }, [farmData])
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
   async function onSubmit(data: FinishingCostFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,
+        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      await mutate(put(`/varcostfinishing/${farmData?.general_id}`, mergedData), {
+      console.log(mergedData)
+      await mutate(upsert(`/varcostfinishing`, mergedData), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: true
       })
-      await fixcosts_mutate(put(`/fixcosts/${farmData?.general_id}`, mergedData), {
+      await fixcosts_mutate(upsert(`/fixcosts`, mergedData), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: true
       })
       toast({
         title: "Success",
@@ -158,6 +180,22 @@ export function FinishingCostPage({ farmData }: FinishingCostFormProps) {
         description: `Failed to save farm data. ${errorMessage}`,
       })
     }
+  }
+
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
+  }
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error && error.status !== 404) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
   }
 
   /*const varcosts = ['Veterenary Medicine & Supplies', 'Disinfection', 'Energy', 'Water', 'Manure Costs', 'Transport Costs', 'Specialised Pig Advisors',

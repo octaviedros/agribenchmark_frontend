@@ -50,29 +50,17 @@ const sowdataFormSchema = z.object({
       required_error: "Please select a production rhythm.",
     }),
   no_sows_mated_gilts: z
-    .coerce.number({
-      required_error: "Please enter Number of Sows and Mated Gilts.",
-    }),
+    .coerce.number().int(),
   no_unserved_gilts: z
-    .coerce.number({
-      required_error: "Please enter Number of Unserved Gilts.",
-    }),
+    .coerce.number().int(),
   no_boars: z
-    .coerce.number({
-      required_error: "Please enter Number of Boars.",
-    }),
+    .coerce.number().int(),
   total_no_sows_gilts: z
-    .coerce.number({
-      required_error: "Please enter Total Number of Sows and Gilts.",
-    }),
+    .coerce.number().int(),
   piglets_born_alive: z
-    .coerce.number({
-      required_error: "Please enter Piglets born Alive.",
-    }),
+    .coerce.number().int(),
   cycles_per_sow_year: z
-    .coerce.number({
-      required_error: "Please enter Cycles born per sow and year.",
-    }),
+    .coerce.number().int(),
   avg_gestation_period: z
     .coerce.number({
       required_error: "Please enter Average time of gestation period.",
@@ -82,9 +70,7 @@ const sowdataFormSchema = z.object({
       required_error: "Please enter Duration of Suckling.",
     }),
   dry_sow_days: z
-    .coerce.number({
-      required_error: "Please enter Number of Dry Sow Days.",
-    }),
+    .coerce.number().int(),
   rate_insuccessful_insemination: z
     .coerce.number({
       required_error: "Please enter Rate in Successful Insemination.",
@@ -149,7 +135,7 @@ const sowdataFormSchema = z.object({
     .coerce.number({
       required_error: "Please enter the Sales Weight of Rearing Piglets.",
     }),
-    year: z.number().int(),
+  year: z.number().int(),
 })
 
 type SowDataFormValues = z.infer<typeof sowdataFormSchema>
@@ -217,25 +203,27 @@ export function SowDataPage() {
     mutate: sowsperformance_mutate
   } = useFarmData("/sowsperformance", general_id)
   const farmData = data ? data[0] : null
+  const salesweightData = salesweight ? salesweight[0] : null
+  const sowsperformanceData = sowsperformance ? sowsperformance[0] : null
 
-    console.log(farmData)
-    const form = useForm<SowDataFormValues>({
-      resolver: zodResolver(sowdataFormSchema),
-      defaultValues: {
-        ...createDefaults(general_id),
-        ...farmData
-      },
-      mode: "onChange",
-    })
+  console.log(farmData)
+  const form = useForm<SowDataFormValues>({
+    resolver: zodResolver(sowdataFormSchema),
+    defaultValues: {
+      ...createDefaults(general_id),
+      ...farmData
+    },
+    mode: "onChange",
+  })
   // 
-    useEffect(() => {
-      form.reset({
-        ...farmData
-      })
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoading])
+  useEffect(() => {
+    form.reset({
+      ...farmData
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
 
-async function onSubmit(data: SowDataFormValues) {
+  async function onSubmit(data: SowDataFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
@@ -272,7 +260,7 @@ async function onSubmit(data: SowDataFormValues) {
         description: `Failed to save farm data. ${errorMessage}`,
       })
     }
-  }    
+  }
   if (!general_id) {
     return (
       <div className="p-4">
@@ -339,9 +327,9 @@ async function onSubmit(data: SowDataFormValues) {
               </FormItem>
             )}
           />
-        </form>
-        <form className="my-2 w-full">
-          <div>
+
+
+          <div className="my-2 w-full">
             <h3 className="mt-6 font-medium">Performance</h3>
             <FormField
               control={form.control}
@@ -400,248 +388,246 @@ async function onSubmit(data: SowDataFormValues) {
               )}
             />
           </div>
-        </form>
-        <form className="my-2">
-          <div><h3 className="mt-6 font-medium">Livestock</h3>
+          <div className="my-2"><h3 className="mt-6 font-medium">Livestock</h3>
+            <FormField
+              control={form.control}
+              name="piglets_born_alive"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Piglets born Alive</FormLabel>
+                  <FormDescription>Number of heads </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cycles_per_sow_year"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cycles born per sow and year</FormLabel>
+                  <FormDescription>Number of heads </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="avg_gestation_period"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Average time of gestation period</FormLabel>
+                  <FormDescription>Days</FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="duration_suckling_per_farrowing"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Duration of Suckling</FormLabel>
+                  <FormDescription>Days </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="dry_sow_days"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Number of Dry Sow Days</FormLabel>
+                  <FormDescription>Days </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="rate_insuccessful_insemination"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Rate of insuccessful Insemination</FormLabel>
+                  <FormDescription>% </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="weaning_weights"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Weaning Weight</FormLabel>
+                  <FormDescription>kg </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cull_rate_sows"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cull Rate Sows</FormLabel>
+                  <FormDescription>% </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cull_rate_boars"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cull Rate Boars</FormLabel>
+                  <FormDescription>% </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="fraction_own_replacement"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fraction of Own Replacement</FormLabel>
+                  <FormDescription>% </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="annual_sow_mortality"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Annual Sow Mortality</FormLabel>
+                  <FormDescription>% </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="annual_boar_mortality"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Annual Boar Mortality</FormLabel>
+                  <FormDescription>% </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="piglet_mortality_weaning"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Piglet Mortality Weaning</FormLabel>
+                  <FormDescription>% </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="piglet_mortality_rearing"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Piglet Mortality Rearing</FormLabel>
+                  <FormDescription>% </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="piglets_weaned"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Piglets Weaned</FormLabel>
+                  <FormDescription>Number of heads </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="avg_duration_piglet_rearing"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Average Piglet Rearing</FormLabel>
+                  <FormDescription>kg </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="reared_piglets"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Reared Piglets</FormLabel>
+                  <FormDescription>Number of heads </FormDescription>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
-          <FormField
-            control={form.control}
-            name="piglets_born_alive"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Piglets born Alive</FormLabel>
-                <FormDescription>Number of heads </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="cycles_per_sow_year"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cycles born per sow and year</FormLabel>
-                <FormDescription>Number of heads </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="avg_gestation_period"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Average time of gestation period</FormLabel>
-                <FormDescription>Days</FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="duration_suckling_per_farrowing"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Duration of Suckling</FormLabel>
-                <FormDescription>Days </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="dry_sow_days"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Number of Dry Sow Days</FormLabel>
-                <FormDescription>Days </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="rate_insuccessful_insemination"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Rate of insuccessful Insemination</FormLabel>
-                <FormDescription>% </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="weaning_weights"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Weaning Weight</FormLabel>
-                <FormDescription>kg </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="cull_rate_sows"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cull Rate Sows</FormLabel>
-                <FormDescription>% </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="cull_rate_boars"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cull Rate Boars</FormLabel>
-                <FormDescription>% </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="fraction_own_replacement"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Fraction of Own Replacement</FormLabel>
-                <FormDescription>% </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="annual_sow_mortality"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Annual Sow Mortality</FormLabel>
-                <FormDescription>% </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="annual_boar_mortality"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Annual Boar Mortality</FormLabel>
-                <FormDescription>% </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="piglet_mortality_weaning"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Piglet Mortality Weaning</FormLabel>
-                <FormDescription>% </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="piglet_mortality_rearing"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Piglet Mortality Rearing</FormLabel>
-                <FormDescription>% </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="piglets_weaned"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Piglets Weaned</FormLabel>
-                <FormDescription>Number of heads </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="avg_duration_piglet_rearing"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Average Piglet Rearing</FormLabel>
-                <FormDescription>kg </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="reared_piglets"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Reared Piglets</FormLabel>
-                <FormDescription>Number of heads </FormDescription>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <div>
             <h3 className="mt-6 font-medium">Sales Weight</h3>
             <FormField

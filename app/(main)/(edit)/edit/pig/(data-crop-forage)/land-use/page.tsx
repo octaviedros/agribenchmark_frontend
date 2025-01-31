@@ -222,7 +222,7 @@ export function LandUseFarmPage() {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
+        <form onSubmit={form.handleSubmit(onSubmit, logformerrors)} className="space-y-4 w-full">
           <table className="w-full my-4">
             <thead>
               <tr>

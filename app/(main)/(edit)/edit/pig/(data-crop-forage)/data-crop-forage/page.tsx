@@ -4,9 +4,10 @@ import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Info } from "lucide-react"
 import { z } from "zod"
-
+import { upsert, del } from "@/lib/api"
+import { v4 as uuidv4 } from "uuid"
 import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useState, useEffect } from "react"
@@ -26,69 +27,121 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-
-
-const lands = ['Own Land', 'Rented Land', 'Rent Price for existing contracts', 'Rent Price for new contracts', 'Market Value'];
-const landTypes = ['Cropland', 'Grassland', 'Other incl. wood']
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const acreageFormSchema = z.object({
+  acreagedata: z.array(
+    z.object({
+      general_id: z.string().uuid(),
+      id: z.string().uuid(),
+      acreage_id: z.string().uuid(),
+      land: z.string(),
+      cropland: z.coerce.number(),
+      grassland: z.coerce.number(),
+      otherland: z.coerce.number(),
+    }))
+})
+
+export const AcreageDBSchema = z.object({
   id: z.string().uuid(),
+  acreage_id: z.string().uuid(),
   general_id: z.string().uuid(),
-  own_land: z.object({
-    cropland: z.string(),
-    grassland: z.string(),
-    other: z.string(),
-  }),
-  rented_land: z.object({
-    cropland: z.string(),
-    grassland: z.string(),
-    other: z.string(),
-  }),
-  rent_existing_contracts: z.object({
-    cropland: z.string(),
-    grassland: z.string(),
-    other: z.string(),
-  }),
-  rent_new_contracts: z.object({
-    cropland: z.string(),
-    grassland: z.string(),
-    other: z.string(),
-  }),
-  market_value: z.object({
-    cropland: z.string(),
-    grassland: z.string(),
-    other: z.string(),
-  }),
+  land_type: z.string(),
+  own_land: z.number(),
+  rented_land: z.number(),
+  rent_existing_contracts: z.number(),
+  rent_new_contracts: z.number(),
+  market_value: z.number(),
+  year: z.number().int(),
 })
 
 type AcreageFormValues = z.infer<typeof acreageFormSchema>
+type AcreageDBValues = z.infer<typeof AcreageDBSchema>
 
-interface AcreageFormProps {
-  farmData: AcreageFormValues | undefined
+const landTypes: { name: string; value: string, tooltip?: string }[] = [
+  {
+    name: "Cropland",
+    value: "cropland",
+  },
+  {
+    name: "Grassland",
+    value: "grassland",
+  },
+  {
+    name: "Other incl. wood",
+    value: "otherland",
+  },
+]
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function dbDataToForm(data: any, general_id: string) {
+  if (!data || !data.length) return createDefaults(general_id)
+  return {
+    acreagedata: data.filter((row: AcreageDBValues) => row.land_type === ""),
+  }
+}
+function formDataToDb(data: AcreageDBValues) {
+  return landTypes.map((landType) => ({
+    
+}
+const lands: { name: string; value: keyof AcreageDBValues, tooltip?: string }[] = [
+  {
+    name: "Own Land",
+    value: "own_land",
+    tooltip: "in ha",
+  },
+  {
+    name: "Rented Land",
+    value: "rented_land",
+    tooltip: "in ha",
+  },
+  {
+    name: "Rent Price for existing contracts",
+    value: "rent_existing_contracts",
+    tooltip: "cost per ha",
+  },
+  {
+    name: "Rent Price for new contracts",
+    value: "rent_new_contracts",
+    tooltip: "cost per ha",
+  },
+  {
+    name: "Market Value",
+    value: "market_value",
+    tooltip: "cost per ha",
+  },
+]
+function createDefaults(general_id: string) {
+  return {
+    acreagedata: lands.map(land => ({
+      general_id: general_id,
+      id: uuidv4(),
+      acreage_id: uuidv4(),
+      land: land.value,
+      cropland: 0,
+      grassland: 0,
+      otherland: 0,
+    }))
+  }
 }
 
-export function DataCropFarmPage({ farmData }: AcreageFormProps) {
+export function DataCropFarmPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
-  const { data, error, isLoading } = useFarmData("/acreageprices", general_id)
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/acreage_prices", general_id)
 
-  if (!general_id) {
-    return (
-      <div className="p-4">
-        <h2>No farm selected.</h2>
-        <p>Select a farm from the dropdown menu to get started.</p>
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return <div className="p-4">Loading farm data…</div>
-  }
-  if (error) {
-    console.error(error)
-    return <div className="p-4">Failed to load farm data.</div>
-  }
-  const { mutate } = useFarmData("/acreageprices", farmData?.general_id?.toString())
+  const farmData = dbDataToForm(data, general_id)
+  console.log(farmData)
   const form = useForm<AcreageFormValues>({
     resolver: zodResolver(acreageFormSchema),
     defaultValues: {
@@ -101,19 +154,24 @@ export function DataCropFarmPage({ farmData }: AcreageFormProps) {
     form.reset({
       ...farmData
     })
-  }, [farmData])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
 
-  async function onSubmit(data: AcreageFormValues) {
+  async function onSubmit(formData: AcreageFormValues) {
     try {
-      const mergedData = {
-        ...farmData, // overwrite the farmData with the new data
-        ...data,
-      }
-      await mutate(put(`/acreageprices/${farmData?.general_id}`, mergedData), {
+      console.log("submit", formData)
+      const updatedData = formDataToDb(formData)
+      // merge with previous farm data
+      const mergedData = updatedData.map((row) => {
+        const existingRow = (data as AcreageDBValues[])?.find((r) => r.id === row.id)
+        return existingRow ? { ...existingRow, ...row } : row
+      })
+      console.log(mergedData)
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/acreageprices`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
-        populateCache: false,
-        revalidate: false
+        populateCache: true,
+        revalidate: false,
       })
       toast({
         title: "Success",
@@ -129,6 +187,26 @@ export function DataCropFarmPage({ farmData }: AcreageFormProps) {
     }
   }
 
+
+ 
+
+
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error && error.status !== 404) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
+  }
   return (
     <div className="space-y-6">
       <div>
@@ -139,23 +217,29 @@ export function DataCropFarmPage({ farmData }: AcreageFormProps) {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.log(error))} className="space-y-8">
           <table className="w-full my-2">
             <thead>
               <tr>
                 <th className="font-medium"></th>
-                {landTypes.map((landType) => (
-                  <th key={landType} className="p-1 font-medium" >{landType}</th>
+                {landTypes.map((landType, index) => (
+                  <th key={index} className="p-1 font-medium" >{landType.name}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {lands.map((land) => (
-                <tr key={land}>
-                  <td className="p-2">{land}</td>
-                  {landTypes.map((landType) => (
-                    <td key={landType}>
-                      <Input type="number" name={`${land}-${landType}`} className="w-full m-2" />
+              {lands.map((land, index) => (
+                <tr key={index}>
+                  <td className="p-2">{land.name}</td>
+                  {landTypes.map((landType, index2) => (
+                    <td key={index + "-" + index2}>
+                      <FormField
+                        control={form.control}
+                        name={`acreagedata.${index}.${landType.value as keyof AcreageFormValues["acreagedata"][number]}`}
+                        render={({ field: ff }) => (
+                          <Input {...ff} className="w-full" type="number" value={ff.value as number} />
+                        )}
+                      />
                     </td>
                   ))}
                 </tr>

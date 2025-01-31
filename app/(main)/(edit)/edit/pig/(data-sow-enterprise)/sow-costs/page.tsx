@@ -93,7 +93,7 @@ const sowcostFormSchema = z.object({
     .number({
       required_error: "Please enter a number.",
     }),
-  others: z .number(),
+  others: z.number(),
   year: z.number().int(),
 })
 
@@ -145,26 +145,27 @@ export function SowCostPage() {
     mutate: fixcosts_mutate
   } = useFarmData("/fixcosts", general_id)
 
-const farmData = data ? data[0] : null
+  const farmData = data ? data[0] : null
+  const fixcostsData = fixcosts ? fixcosts[0] : null
 
-    console.log(farmData)
-    const form = useForm<SowCostFormValues>({
-      resolver: zodResolver(sowcostFormSchema),
-      defaultValues: {
-        ...createDefaults(general_id),
-        ...farmData
-      },
-      mode: "onChange",
-    })
+  console.log(farmData)
+  const form = useForm<SowCostFormValues>({
+    resolver: zodResolver(sowcostFormSchema),
+    defaultValues: {
+      ...createDefaults(general_id),
+      ...farmData
+    },
+    mode: "onChange",
+  })
   // 
-    useEffect(() => {
-      form.reset({
-        ...farmData
-      })
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoading])
+  useEffect(() => {
+    form.reset({
+      ...farmData
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
 
-async function onSubmit(data: SowCostFormValues) {
+  async function onSubmit(data: SowCostFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
@@ -195,7 +196,7 @@ async function onSubmit(data: SowCostFormValues) {
         description: `Failed to save farm data. ${errorMessage}`,
       })
     }
-  }    
+  }
   if (!general_id) {
     return (
       <div className="p-4">

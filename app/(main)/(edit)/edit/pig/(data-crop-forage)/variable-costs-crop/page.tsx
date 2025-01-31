@@ -202,9 +202,9 @@ export function VarCostCropPage() {
     },
   ]
 
-  function logformerrors(errors) {
+  /*function logformerrors(errors) {
     console.log(errors)
-  }
+  }*/
 
   return (
     <div className="space-y-6">
@@ -214,7 +214,7 @@ export function VarCostCropPage() {
       <Separator />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.log(error))} className="space-y-4 w-full">
           <table className="w-full my-4">
             <thead>
               <tr>
