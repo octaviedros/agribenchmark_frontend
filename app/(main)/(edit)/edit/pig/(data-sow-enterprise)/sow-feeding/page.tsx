@@ -1,22 +1,16 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { upsert, del } from "@/lib/api"
+import { upsert } from "@/lib/api"
 import { v4 as uuidv4 } from "uuid"
-import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-
-import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -39,60 +33,56 @@ const sowfeedingFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
   feed_id: z.string().uuid(),
-  sow_id: z.string().uuid(),
+  sows_id: z.string().uuid(),
   finishing_id: z.string().uuid(),
-  sows_gestation_feed: z.number().min(1, {
+  sows_gestation_feed: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  sows_lactation_feed: z.number().min(1, {
+  sows_lactation_feed: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  sows_total_feed_daily: z.number().min(1, {
+  sows_total_feed_daily: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  sows_total_feed_yearly: z.number().min(1, {
+  sows_total_feed_yearly: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  gilts_special_feed: z.string().min(1, {
+  gilts_special_feed: z.string(),
+  gilts_share_gestation_feed: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  gilts_share_gestation_feed: z.number().min(1, {
+  gilts_share_lactation_feed: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  gilts_share_lactation_feed: z.number().min(1, {
+  gilts_feed_quantity_yearly: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  gilts_feed_quantity_yearly: z.number().min(1, {
+  gilts_total_feed_yearly: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  gilts_total_feed_yearly: z.number().min(1, {
+  boars_special_feed: z.string(),
+  boars_share_gestation_feed: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  boars_special_feed: z.string().min(1, {
+  boars_share_lactation_feed: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  boars_share_gestation_feed: z.number().min(1, {
+  boars_feed_quantity_yearly: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  boars_share_lactation_feed: z.number().min(1, {
+  boars_total_feed_yearly: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  boars_feed_quantity_yearly: z.number().min(1, {
+  piglet_feed_1: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  boars_total_feed_yearly: z.number().min(1, {
+  piglet_feed_2: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  piglet_feed_1: z.number().min(1, {
+  piglet_feed_quantity_yearly: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
-  piglet_feed_2: z.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  piglet_feed_quantity_yearly: z.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  piglet_total_feed_yearly: z.number().min(1, {
+  piglet_total_feed_yearly: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
   }),
   year: z.number().int(),
@@ -106,7 +96,7 @@ function createDefaults(general_id: string): SowFeedingFormValues {
   return {
     id: uuidv4(),
     feed_id: uuidv4(),
-    sow_id: uuidv4(),
+    sows_id: uuidv4(),
     finishing_id: uuidv4(),
     general_id: general_id,
     sows_gestation_feed: 0,
@@ -131,6 +121,16 @@ function createDefaults(general_id: string): SowFeedingFormValues {
   }
 }
 
+function mergeData(data: Array<object>, general_id: string): SowFeedingFormValues {
+  if (data) {
+    // @ts-expect-error zod types are not correct
+    return {
+      ...data[0],
+    }
+  }
+  return createDefaults(general_id)
+}
+
 export function SowFeedingPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
@@ -140,35 +140,35 @@ export function SowFeedingPage() {
     isLoading,
     mutate
   } = useFarmData("/feedsows", general_id)
-  const farmData = data ? data[0] : null
-  /*let farmData 
-  if (data) { 
-    farmData = data[0]
-  }*/
-  console.log(farmData)
+
+  const farmData = mergeData(data, general_id)
+
   const form = useForm<SowFeedingFormValues>({
     resolver: zodResolver(sowfeedingFormSchema),
     defaultValues: {
-      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
   })
-  // 
+
   useEffect(() => {
     form.reset({
       ...farmData
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
-  async function onSubmit(data: SowFeedingFormValues) {
+
+  async function onSubmit(updatedData: SowFeedingFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+        ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      console.log(mergedData)
-      await mutate(upsert(`/feedsows`, mergedData), {
+
+      await mutate(upsert(`/feedsows`, {
+        ...mergedData,
+        id: data?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
@@ -211,8 +211,8 @@ export function SowFeedingPage() {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 w-full">
-          <div><h3>Sows</h3></div>
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-1 w-full">
+          <div><h3 className="text-lg font-medium">Sows</h3></div>
           <FormField
             control={form.control}
             name="sows_gestation_feed"
@@ -246,7 +246,7 @@ export function SowFeedingPage() {
             name="sows_total_feed_daily"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Total Amount of Feed per animal and day</FormLabel>
+                <FormLabel>Total Amount of Feed</FormLabel>
                 <FormDescription>kg per animal and day</FormDescription>
                 <FormControl>
                   <Input placeholder="" {...field} />
@@ -260,7 +260,7 @@ export function SowFeedingPage() {
             name="sows_total_feed_yearly"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Total Amount of Feed kg and year</FormLabel>
+                <FormLabel>Total Amount of Feed</FormLabel>
                 <FormDescription>kg per animal and year</FormDescription>
                 <FormControl>
                   <Input placeholder="" {...field} />
@@ -273,10 +273,10 @@ export function SowFeedingPage() {
           <FormField
             control={form.control}
             name="gilts_special_feed"
-            render={({ field }) => (
-              <FormItem>
+            render={({ field: p }) => (
+              <FormItem key={p.value}>
                 <FormLabel>Special Gilt Feed</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={p.onChange} defaultValue={p.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your Gilt Feed" />
@@ -297,6 +297,7 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Share Gestation Feed</FormLabel>
+                <FormDescription>%</FormDescription>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -310,6 +311,7 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Share Lactation Feed</FormLabel>
+                <FormDescription>%</FormDescription>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -322,7 +324,8 @@ export function SowFeedingPage() {
             name="gilts_feed_quantity_yearly"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Feed Quantity (in terms of dry matter)</FormLabel>
+                <FormLabel>Feed Quantity (in terms of fresh matter)</FormLabel>
+                <FormDescription>kg per animal and year</FormDescription>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -335,7 +338,8 @@ export function SowFeedingPage() {
             name="gilts_total_feed_yearly"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Total Amount of Feed kg per year</FormLabel>
+                <FormLabel>Total Amount of Feed</FormLabel>
+                <FormDescription>kg per year </FormDescription>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -343,14 +347,14 @@ export function SowFeedingPage() {
               </FormItem>
             )}
           />
-          <div><h3>Boars</h3></div>
+          <div><h3 className="text-lg font-medium">Boars</h3></div>
           <FormField
             control={form.control}
             name="boars_special_feed"
-            render={({ field }) => (
-              <FormItem>
+            render={({ field: c }) => (
+              <FormItem key={c.value}>
                 <FormLabel>Special Boar Feed</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={c.onChange} defaultValue={c.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your Boar Feed" />
@@ -384,8 +388,8 @@ export function SowFeedingPage() {
             name="boars_share_lactation_feed"
             render={({ field }) => (
               <FormItem>
-                <FormDescription>Share Lactation Feed</FormDescription>
-                <FormLabel>%</FormLabel>
+                <FormLabel>Share Lactation Feed</FormLabel>
+                <FormDescription>%</FormDescription>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -398,8 +402,8 @@ export function SowFeedingPage() {
             name="boars_feed_quantity_yearly"
             render={({ field }) => (
               <FormItem>
-                <FormDescription>Feed Quantity (in terms of dry matter)</FormDescription>
-                <FormLabel>Feed Quantity (in terms of dry matter)</FormLabel>
+                <FormLabel>Feed Quantity (in terms of fresh matter)</FormLabel>
+                <FormDescription>kg per animal and year</FormDescription>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -412,8 +416,8 @@ export function SowFeedingPage() {
             name="boars_total_feed_yearly"
             render={({ field }) => (
               <FormItem>
-                <FormDescription>Total Amount of Feed kg per year</FormDescription>
-                <FormLabel>Total Amount of Feed kg per year</FormLabel>
+                <FormLabel>Total Amount of Feed</FormLabel>
+                <FormDescription>kg per year</FormDescription>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -421,7 +425,7 @@ export function SowFeedingPage() {
               </FormItem>
             )}
           />
-          <div><h3>Piglets</h3></div>
+          <div><h3 className="text-lg font-medium">Piglets</h3></div>
           <FormField
             control={form.control}
             name="piglet_feed_1"
@@ -455,7 +459,8 @@ export function SowFeedingPage() {
             name="piglet_feed_quantity_yearly"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Feed Quantity (in terms of dry matter)</FormLabel>
+                <FormLabel>Feed Quantity (in terms of fresh matter)</FormLabel>
+                <FormDescription>kg per animal per year</FormDescription>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -477,8 +482,6 @@ export function SowFeedingPage() {
               </FormItem>
             )}
           />
-
-
           <Button className="mt-4" type="submit">Submit</Button>
         </form>
       </Form>

@@ -43,7 +43,7 @@ const sowfeedrationFormSchema = z.object({
       crop_name: z.string(),
       produced: z.string(),
       feed_ration_sows_id: z.string().uuid(),
-      feed_id: z.string().uuid(),
+      feeds_id: z.string().uuid(),
       year: z.number().int(),
       gestation_feed: z.coerce.number(),
       lactation_feed: z.coerce.number(),
@@ -61,7 +61,7 @@ const sowfeedrationFormSchema = z.object({
       crop_name: z.string(),
       produced: z.string(),
       feed_ration_sows_id: z.string().uuid(),
-      feed_id: z.string().uuid(),
+      feeds_id: z.string().uuid(),
       year: z.number().int(),
       gestation_feed: z.coerce.number(),
       lactation_feed: z.coerce.number(),
@@ -80,7 +80,7 @@ export const SowFeedRationDBSchema = z.object({
   general_id: z.string().uuid(),
   crop_name: z.string(),
   produced: z.string(),
-  feed_id: z.string().uuid(),
+  feeds_id: z.string().uuid(),
   year: z.number().int(),
   gestation_feed: z.number(),
   lactation_feed: z.number(),
@@ -117,7 +117,7 @@ function createDefaults(general_id: string) {
       general_id: general_id,
       id: uuidv4(),
       feed_ration_sows_id: uuidv4(),
-      feed_id: uuidv4(),
+      feeds_id: uuidv4(),
       crop_name: "",
       produced: "Self Produced",
       gestation_feed: 0,
@@ -132,7 +132,7 @@ function createDefaults(general_id: string) {
     boughtfeed: [{
       general_id: general_id,
       id: uuidv4(),
-      feed_id: uuidv4(),
+      feeds_id: uuidv4(),
       feed_ration_sows_id: uuidv4(),
       crop_name: "",
       produced: "Bought Feed",
@@ -145,7 +145,6 @@ function createDefaults(general_id: string) {
       total_amount_feed_used: 0,
       year: new Date().getFullYear(),
     }],
-
   }
 }
 
@@ -283,7 +282,7 @@ export function SowFeedRationPage() {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit, error =>console.error(error))} className="space-y-4">
           <h3 className="text-lg font-medium">Self Produced Feed</h3>
           <table className="w-full my-4">
             <thead>
@@ -436,7 +435,6 @@ export function SowFeedRationPage() {
               className="mt-4"
               onClick={() => boughtappend(createDefaults(general_id).boughtfeed[0])}>Add Row</Button>
           </div>
-
           <Button type="submit">Submit</Button>
         </form>
       </Form>

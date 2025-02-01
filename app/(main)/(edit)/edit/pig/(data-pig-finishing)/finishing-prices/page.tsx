@@ -1,19 +1,21 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { upsert, del } from "@/lib/api"
+import { upsert } from "@/lib/api"
 import { v4 as uuidv4 } from "uuid"
-import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-
-import { cn } from "@/lib/utils"
+import { Info } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -28,27 +30,27 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-
 const finishingpriceFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
   prices_fin_id: z.string().uuid(),
   buying_f_castpiglets: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   buying_piglets_for_finishing: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   selling_finishing_pigs_gi_ba: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   selling_finishing_pigs_em_ic: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
+  year: z.number(),
 })
 
 type FinishingPriceFormValues = z.infer<typeof finishingpriceFormSchema>
@@ -62,7 +64,18 @@ function createDefaults(general_id: string): FinishingPriceFormValues {
     buying_piglets_for_finishing: 0,
     selling_finishing_pigs_gi_ba: 0,
     selling_finishing_pigs_em_ic: 0,
+    year: new Date().getFullYear(),
   }
+}
+
+function mergeData(data: Array<object>, general_id: string): FinishingPriceFormValues {
+  if (data) {
+    // @ts-expect-error zod types are not correct
+    return {
+      ...data[0],
+    }
+  }
+  return createDefaults(general_id)
 }
 
 export function FinishingPricePage() {
@@ -74,16 +87,12 @@ export function FinishingPricePage() {
     isLoading,
     mutate
   } = useFarmData("/pricesfinishing", general_id)
-  const farmData = data ? data[0] : null
-/*let farmData 
-if (data) { 
-  farmData = data[0]
-}*/
-  console.log(farmData)
+
+const farmData = mergeData(data, general_id)
+
   const form = useForm<FinishingPriceFormValues>({
     resolver: zodResolver(finishingpriceFormSchema),
     defaultValues: {
-      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
@@ -95,14 +104,17 @@ if (data) {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
-async function onSubmit(data: FinishingPriceFormValues) {
+
+async function onSubmit(updatedData: FinishingPriceFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+        ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      console.log(mergedData)
-      await mutate(upsert(`/pricesfinishing`, mergedData), {
+      await mutate(upsert(`/pricesfinishing`,{
+        ...mergedData,
+        id: data?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
@@ -138,13 +150,6 @@ async function onSubmit(data: FinishingPriceFormValues) {
     return <div className="p-4">Failed to load farm data.</div>
   }
 
-  /*const finishingbuying = ['Female & Castrate Piglets', 'Boars Piglets for Finishing'];
-  const finishingbuyingTypes = [''];
- 
-  const finishingselling = ['Finishing Pigs (Female & Castrates)', 'Finishing Pigs (Boars)'];
-  const finishingsellingTypes = [''];*/
-
-
   return (
     <div className="space-y-6">
       <div>
@@ -152,8 +157,8 @@ async function onSubmit(data: FinishingPriceFormValues) {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 w-full">
-          <div><h3 className="space-y- mt-4 text-lg font-medium">Buying</h3>
+        <form onSubmit={form.handleSubmit(onSubmit, error =>console.error(error))} className="space-y-2 w-full">
+          <h3 className="space-y- mt-4 text-lg font-medium">Buying Prices</h3>
             <FormField
               control={form.control}
               name="buying_f_castpiglets"
@@ -182,15 +187,23 @@ async function onSubmit(data: FinishingPriceFormValues) {
                 </FormItem>
               )}
             />
-          </div>
-          <div><h3 className="space-y- mt-6 text-lg font-medium">Selling</h3>
+          
+          <h3 className="space-y- mt-6 text-lg font-medium">Selling Prices</h3>
             <FormField
               control={form.control}
               name="selling_finishing_pigs_gi_ba"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Finishing Pigs (Female & Castrates)</FormLabel>
-                  <FormDescription>per kg CW</FormDescription>
+                  <FormLabel>Finishing Pigs (Female & Castrates)
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per CW</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                  </FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -212,9 +225,7 @@ async function onSubmit(data: FinishingPriceFormValues) {
                 </FormItem>
               )}
             />
-          </div>
-
-          <Button className="mt-4" type="submit">Submit</Button>
+          <Button type="submit">Submit</Button>
         </form>
       </Form>
     </div>

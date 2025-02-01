@@ -42,7 +42,7 @@ const landuseFormSchema = z.object({
       general_id: z.string().uuid(),
       id: z.string().uuid(),
       landuse_id: z.string().uuid(),
-      acerage: z.coerce.number(),
+      acreage: z.coerce.number(),
       net_yield: z.coerce.number(),
       dry_matter: z.coerce.number(),
       price: z.coerce.number(),
@@ -53,8 +53,6 @@ const landuseFormSchema = z.object({
     })
   )
 })
-//landuserow: z.array(z.object({
-//value: z.string()
 
 export const LandUseDBSchema = z.object({
   id: z.string().uuid(),
@@ -62,7 +60,7 @@ export const LandUseDBSchema = z.object({
   general_id: z.string().uuid(),
   crop_id: z.string().uuid(),
   crop_name: z.string(),
-  acerage: z.number(),
+  acreage: z.number(),
   net_yield: z.number(),
   dry_matter: z.number(),
   price: z.number(),
@@ -74,10 +72,6 @@ export const LandUseDBSchema = z.object({
 
 type LandUseFormValues = z.infer<typeof landuseFormSchema>
 type LandUseDBValues = z.infer<typeof LandUseDBSchema>
-
-interface LandUseFormProps {
-  farmData: LandUseFormValues | undefined
-}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dbDataToForm(data: any, general_id: string) {
@@ -100,15 +94,17 @@ function createDefaults(general_id: string) {
       general_id: general_id,
       id: uuidv4(),
       landuse_id: uuidv4(),
+      crop_id: uuidv4(),
       crop_name: "",
       //type: "Crop Name",
-      acerage: 0,
+      acreage: 0,
       net_yield: 0,
       dry_matter: 0,
       price: 0,
       cap_dir_paym: 0,
       other_dir_paym: 0,
       enterprise_code: 0,
+      year: new Date().getFullYear(),
     }],
   }
 }
@@ -177,7 +173,7 @@ export function LandUseFarmPage() {
   const landuseTypes: { name: string; value: keyof LandUseFormValues["landusage"][number], tooltip?: string }[] = [
     {
       name: "Acreage",
-      value: "acerage",
+      value: "acreage",
       tooltip: "in ha"
     },
     {
@@ -211,9 +207,9 @@ export function LandUseFarmPage() {
     },
   ]
 
-  function logformerrors(errors) {
+  /*function logformerrors(errors) {
     console.log(errors)
-  }
+  }*/
 
   return (
     <div className="space-y-6">
@@ -222,7 +218,7 @@ export function LandUseFarmPage() {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, logformerrors)} className="space-y-4 w-full">
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-4 w-full">
           <table className="w-full my-4">
             <thead>
               <tr>

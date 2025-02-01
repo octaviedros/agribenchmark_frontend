@@ -194,10 +194,6 @@ export function DataCropFarmPage() {
     }
   }
 
-
- 
-
-
   if (!general_id) {
     return (
       <div className="p-4">
@@ -230,14 +226,14 @@ export function DataCropFarmPage() {
               <tr>
                 <th className="font-medium"></th>
                 {landTypes.map((landType, index) => (
-                  <th key={index} className="p-1 font-medium" >{landType.name}</th>
+                  <th key={index} className="py-2 font-medium" >{landType.name}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {lands.map((land, index) => (
                 <tr key={index}>
-                  <td className="p-2">{land.name}</td>
+                  <td className="py-4">{land.name}</td>
                   {landTypes.map((landType, index2) => (
                     <td key={index + "-" + index2}>
                       <FormField

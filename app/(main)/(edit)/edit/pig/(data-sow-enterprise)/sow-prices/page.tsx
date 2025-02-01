@@ -1,20 +1,15 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
-import { number, z } from "zod"
-import { upsert, del } from "@/lib/api"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { upsert } from "@/lib/api"
 import { v4 as uuidv4 } from "uuid"
-
-import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
+import {  useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 
-import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -34,35 +29,35 @@ const sowpriceFormSchema = z.object({
   general_id: z.string().uuid(),
   prices_sows_id: z.string().uuid(),
   buying_gilts: z
-  .number({
+  .coerce.number({
     required_error: "Please enter a number.",
   }),
   buying_boars: z
-  .number({
+  .coerce.number({
     required_error: "Please enter a number.",
   }),
   selling_sow: z
-  .number({
+  .coerce.number({
     required_error: "Please enter a number.",
   }),
   selling_boar: z
-  .number({
+  .coerce.number({
     required_error: "Please enter a number.",
   }),
   selling_weaning_piglet: z
-  .number({
+  .coerce.number({
     required_error: "Please enter a number.",
   }),
   selling_rearing_piglet: z
-  .number({
+  .coerce.number({
     required_error: "Please enter a number.",
   }),
-  proportion_weanded_pigs_sold: z
-  .number({
+  proportion_weaned_pigs_sold: z
+  .coerce.number({
     required_error: "Please enter a number.",
   }),
-  no_weanded_pigs_sold: z
-  .number({
+  no_weaned_pigs_sold: z
+  .coerce.number({
     required_error: "Please enter a number.",
   }),
   year: z.number().int(),
@@ -84,11 +79,22 @@ function createDefaults(general_id: string): SowPriceFormValues {
   selling_boar: 0,
   selling_weaning_piglet: 0,
   selling_rearing_piglet: 0,
-  proportion_weanded_pigs_sold: 0,
-  no_weanded_pigs_sold: 0,
+  proportion_weaned_pigs_sold: 0,
+  no_weaned_pigs_sold: 0,
   year: new Date().getFullYear(),
   }
-}    
+}
+
+function mergeData(data: Array<object>, general_id: string): SowPriceFormValues {
+  if (data) {
+    // @ts-expect-error zod types are not correct
+    return {
+      ...data[0],
+    }
+  }
+  return createDefaults(general_id)
+}
+
 export function SowPricePage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
@@ -98,16 +104,15 @@ export function SowPricePage() {
     isLoading,
     mutate
   } = useFarmData("/pricessows", general_id)
-  const farmData = data ? data[0] : null
+  const farmData = mergeData(data, general_id)
 /*let farmData 
 if (data) { 
   farmData = data[0]
 }*/
-  console.log(farmData)
+ 
   const form = useForm<SowPriceFormValues>({
     resolver: zodResolver(sowpriceFormSchema),
     defaultValues: {
-      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
@@ -119,14 +124,17 @@ if (data) {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
-async function onSubmit(data: SowPriceFormValues) {
+async function onSubmit(updatedData: SowPriceFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+        ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      console.log(mergedData)
-      await mutate(upsert(`/pricessows`, mergedData), {
+
+      await mutate(upsert(`/pricessows`, {
+        ...mergedData,
+        id: data?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
@@ -169,7 +177,7 @@ async function onSubmit(data: SowPriceFormValues) {
       </div>
       <Separator />
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 w-full">
+      <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))}  className="space-y-3 w-full">
       <div>
         <h3 className="text-lg font-medium">Buying</h3></div>
       <FormField
@@ -260,11 +268,25 @@ async function onSubmit(data: SowPriceFormValues) {
           />
           <FormField
             control={form.control}
-            name="proportion_weanded_pigs_sold"
+            name="proportion_weaned_pigs_sold"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Proportion of weaned Pigs sold</FormLabel>
                 <FormDescription>Percentage</FormDescription>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="no_weaned_pigs_sold"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of weaned Pigs sold</FormLabel>
+                <FormDescription>Number</FormDescription>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

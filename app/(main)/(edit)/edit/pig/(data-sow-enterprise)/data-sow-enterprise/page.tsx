@@ -1,19 +1,15 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { upsert, del } from "@/lib/api"
+import { upsert } from "@/lib/api"
 import { v4 as uuidv4 } from "uuid"
-import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 
-import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -71,7 +67,7 @@ const sowdataFormSchema = z.object({
     }),
   dry_sow_days: z
     .coerce.number().int(),
-  rate_insuccessful_insemination: z
+  rate_insuccesful_insemination: z
     .coerce.number({
       required_error: "Please enter Rate in Successful Insemination.",
     }),
@@ -161,7 +157,7 @@ function createDefaults(general_id: string): SowDataFormValues {
     avg_gestation_period: 0,
     duration_suckling_per_farrowing: 0,
     dry_sow_days: 0,
-    rate_insuccessful_insemination: 0,
+    rate_insuccesful_insemination: 0,
     weaning_weights: 0,
     cull_rate_sows: 0,
     cull_rate_boars: 0,
@@ -181,6 +177,17 @@ function createDefaults(general_id: string): SowDataFormValues {
   }
 }
 
+function mergeData(data: Array<object>, performanceData: Array<object>, weightData: Array<object>, general_id: string): SowDataFormValues {
+  if (data && performanceData && weightData) {
+    // @ts-expect-error zod types are not correct
+    return {
+      ...data[0],
+      ...weightData[0],
+      ...performanceData[0],
+    }
+  }
+  return createDefaults(general_id)
+}
 export function SowDataPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
@@ -190,59 +197,73 @@ export function SowDataPage() {
     isLoading,
     mutate
   } = useFarmData("/sows", general_id)
+
   const {
     data: salesweight,
     error: salesweight_error,
     isLoading: salesweight_isLoading,
     mutate: salesweight_mutate
   } = useFarmData("/salesweight", general_id)
+
   const {
     data: sowsperformance,
     error: sowsperformance_error,
     isLoading: sowsperformance_isLoading,
     mutate: sowsperformance_mutate
   } = useFarmData("/sowsperformance", general_id)
-  const farmData = data ? data[0] : null
-  const salesweightData = salesweight ? salesweight[0] : null
-  const sowsperformanceData = sowsperformance ? sowsperformance[0] : null
+  const farmData = mergeData(data, salesweight, sowsperformance, general_id)
 
-  console.log(farmData)
+  /*const farmData = data ? data[0] : null
+  const salesweightData = salesweight ? salesweight[0] : null
+  const sowsperformanceData = sowsperformance ? sowsperformance[0] : null*/
+
+  //console.log(farmData)
+
   const form = useForm<SowDataFormValues>({
     resolver: zodResolver(sowdataFormSchema),
     defaultValues: {
-      ...createDefaults(general_id),
+      //...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
   })
-  // 
+
   useEffect(() => {
     form.reset({
       ...farmData
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading])
+  }, [isLoading, salesweight_isLoading, sowsperformance_isLoading])
 
-  async function onSubmit(data: SowDataFormValues) {
+  async function onSubmit(updatedData: SowDataFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+        ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      console.log(mergedData)
-      await mutate(upsert(`/sows`, mergedData), {
+      //console.log(mergedData)
+      await mutate(upsert(`/sows`, {
+        ...mergedData,
+        id: data?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
         revalidate: true
       })
-      await salesweight_mutate(upsert(`/salesweight`, mergedData), {
+      await salesweight_mutate(upsert(`/salesweight`, {
+        ...mergedData,
+        id: salesweight?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
         revalidate: true
       })
-      await sowsperformance_mutate(upsert(`/sowsperformance`, mergedData), {
+      await sowsperformance_mutate(upsert(`/sowsperformance`, {
+        ...mergedData,
+        id: sowsperformance?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
@@ -269,10 +290,10 @@ export function SowDataPage() {
       </div>
     )
   }
-  if (isLoading) {
+  if (isLoading || salesweight_isLoading || sowsperformance_isLoading) {
     return <div className="p-4">Loading farm data…</div>
   }
-  if (error && error.status !== 404) {
+  if ((error && error.status !== 404) || (salesweight_error && salesweight_error.status !== 404) || (sowsperformance_error && sowsperformance_error.status !== 404)) {
     console.error(error)
     return <div className="p-4">Failed to load farm data.</div>
   }
@@ -282,22 +303,22 @@ export function SowDataPage() {
       <h3 className="text-lg font-medium">Livestock and Performance Data for Sow Enterprise</h3>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 w-full">
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-2 w-full">
           <FormField
             control={form.control}
             name="productionsystem"
-            render={({ field }) => (
-              <FormItem>
+            render={({ field: p }) => (
+              <FormItem key={p.value}>
                 <FormLabel>Production System</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={p.onChange} defaultValue={p.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your Sow Production Sytsem" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="system piglet sale ( approx. 8kg)">System Piglet Sale(ca.8kg)</SelectItem>
-                    <SelectItem value="weaner sales ( approx. 25-30kg)">Weaner Sales (approx.25-30kg)</SelectItem>
+                    <SelectItem value="system piglet sales (approx. 8kg)">System Piglet Sale(ca.8kg)</SelectItem>
+                    <SelectItem value="weaner sales (approx. 25-30kg)">Weaner Sales (approx.25-30kg)</SelectItem>
                     <SelectItem value="pure piglet rearing">Pure Piglet Rearing</SelectItem>
                     <SelectItem value="closed system">Closed System</SelectItem>
                   </SelectContent>
@@ -308,9 +329,9 @@ export function SowDataPage() {
           <FormField
             control={form.control}
             name="production_rhythm"
-            render={({ field }) => (
-              <FormItem>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+            render={({ field: c }) => (
+              <FormItem key={c.value}>
+                <Select onValueChange={c.onChange} defaultValue={c.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your Sow Production Rhythm" />
@@ -330,7 +351,8 @@ export function SowDataPage() {
 
 
           <div className="my-2 w-full">
-            <h3 className="mt-6 font-medium">Performance</h3>
+            <h3 className="text-lg font-medium">Performance</h3>
+          </div>
             <FormField
               control={form.control}
               name="no_sows_mated_gilts"
@@ -387,8 +409,8 @@ export function SowDataPage() {
                 </FormItem>
               )}
             />
-          </div>
-          <div className="my-2"><h3 className="mt-6 font-medium">Livestock</h3>
+          <div>
+          <h3 className="text-lg mt-6 font-medium">Livestock</h3></div>
             <FormField
               control={form.control}
               name="piglets_born_alive"
@@ -461,7 +483,7 @@ export function SowDataPage() {
             />
             <FormField
               control={form.control}
-              name="rate_insuccessful_insemination"
+              name="rate_insuccesful_insemination"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Rate of insuccessful Insemination</FormLabel>
@@ -627,9 +649,8 @@ export function SowDataPage() {
                 </FormItem>
               )}
             />
-          </div>
           <div>
-            <h3 className="mt-6 font-medium">Sales Weight</h3>
+            <h3 className="mt-6 text-lg font-medium">Sales Weight</h3></div>
             <FormField
               control={form.control}
               name="sales_weight_sows"
@@ -686,9 +707,6 @@ export function SowDataPage() {
                 </FormItem>
               )}
             />
-          </div>
-
-
           <Button className="mt-4" type="submit">Submit</Button>
         </form>
       </Form>

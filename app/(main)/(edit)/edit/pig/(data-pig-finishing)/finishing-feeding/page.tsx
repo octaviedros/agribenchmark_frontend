@@ -1,19 +1,14 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { upsert, del } from "@/lib/api"
+import { upsert } from "@/lib/api"
 import { v4 as uuidv4 } from "uuid"
-import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-
-import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -33,31 +28,31 @@ const finishingfeedingFormSchema = z.object({
   general_id: z.string().uuid(),
   feed_fin_id: z.string().uuid(),
   proportion_finishing_feed_1: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   proportion_finishing_feed_2: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   proportion_finishing_feed_3: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   amount_finishing_feed_1: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   amount_finishing_feed_2: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   amount_finishing_feed_3: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   total_amount_feed: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   year: z.number().int(),
@@ -83,6 +78,17 @@ function createDefaults(general_id: string): FinishingFeedingFormValues {
     year: new Date().getFullYear(),
   }
 }
+
+function mergeData(data: Array<object>, general_id: string): FinishingFeedingFormValues {
+  if (data) {
+    // @ts-expect-error zod types are not correct
+    return {
+      ...data[0],
+    }
+  }
+  return createDefaults(general_id)
+}
+
 export function FinishingFeedingPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
@@ -92,35 +98,35 @@ export function FinishingFeedingPage() {
     isLoading,
     mutate
   } = useFarmData("/feedingfinishing", general_id)
-  const farmData = data ? data[0] : null
-  /*let farmData 
-  if (data) { 
-    farmData = data[0]
-  }*/
-  console.log(farmData)
+
+  const farmData = mergeData(data, general_id)
+
+
   const form = useForm<FinishingFeedingFormValues>({
     resolver: zodResolver(finishingfeedingFormSchema),
     defaultValues: {
-      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
   })
-  // 
+
   useEffect(() => {
     form.reset({
       ...farmData
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
-  async function onSubmit(data: FinishingFeedingFormValues) {
+  async function onSubmit(updatedData: FinishingFeedingFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+        ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      console.log(mergedData)
-      await mutate(upsert(`/feedingfinishing`, mergedData), {
+
+      await mutate(upsert(`/feedingfinishing`, {
+        ...mergedData,
+        id: data?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
@@ -156,12 +162,6 @@ export function FinishingFeedingPage() {
     return <div className="p-4">Failed to load farm data.</div>
   }
 
-  /*const finishingproportion = ['Finishing Feed 1 (%)', 'Finishing Feed 2 (%)', 'Finishing Feed 3 (%)'];
-  const finishingproportionTypes = [''];
- 
-  const finishingamount = ['Finishing Feed 1 (kg per year)', 'Finishing Feed 2 (kg per year)', 'Finishing Feed 3 (kg per year)', 'Total Amount of Feed (kg per year)'];
-  const finishingamountTypes = [''];*/
-
   return (
     <div className="space-y-6">
       <div>
@@ -169,7 +169,7 @@ export function FinishingFeedingPage() {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y- w-full">
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y- w-full">
           <div>
             <h3 className="text-lg font-medium">Proportion of Finishing Period</h3></div>
           <FormField
@@ -271,8 +271,8 @@ export function FinishingFeedingPage() {
                   <FormMessage />
                 </FormItem>
               )}
-            /> </div>
-
+            />
+          </div>
           <Button className="mt-4" type="submit">Submit</Button>
         </form>
       </Form>

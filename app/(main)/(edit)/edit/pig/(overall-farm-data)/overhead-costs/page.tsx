@@ -112,6 +112,16 @@ function createDefaults(general_id: string): OverheadFormValues {
     year: new Date().getFullYear(),
     others: 0,
   }}
+
+  function mergeData(data: Array<object>, general_id: string): OverheadFormValues {
+    if (data) {
+      // @ts-expect-error zod types are not correct
+      return {
+        ...data[0],
+      }
+    }
+    return createDefaults(general_id)
+  }  
   
   export function OverheadFarmPage() {
     const searchParams = useSearchParams()
@@ -122,16 +132,16 @@ function createDefaults(general_id: string): OverheadFormValues {
       isLoading,
       mutate
     } = useFarmData("/overheadcosts", general_id)
-    const farmData = data ? data[0] : null
+    const farmData = mergeData(data, general_id)
   /*let farmData 
   if (data) { 
     farmData = data[0]
   }*/
-    console.log(farmData)
+    //console.log(farmData)
     const form = useForm<OverheadFormValues>({
       resolver: zodResolver(overheadFormSchema),
       defaultValues: {
-        ...createDefaults(general_id),
+        //...createDefaults(general_id),
         ...farmData
       },
       mode: "onChange",
@@ -143,14 +153,17 @@ function createDefaults(general_id: string): OverheadFormValues {
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoading])
-  async function onSubmit(data: OverheadFormValues) {
+  async function onSubmit(updatedData: OverheadFormValues) {
       try {
         const mergedData = {
           ...farmData, // overwrite the farmData with the new data
-          ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+          ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
         }
-        console.log(mergedData)
-        await mutate(upsert(`/overheadcosts`, mergedData), {
+        //console.log(mergedData)
+        await mutate(upsert(`/overheadcosts`, {
+          ...mergedData,
+          id: data?.[0]?.id || farmData.id
+        }), {
           optimisticData: mergedData,
           rollbackOnError: true,
           populateCache: true,

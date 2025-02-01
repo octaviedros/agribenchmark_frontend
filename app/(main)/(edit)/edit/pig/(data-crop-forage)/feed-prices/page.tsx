@@ -52,6 +52,7 @@ const feedpriceFormSchema = z.object({
       energy_mj: z.coerce.number(),
       protein: z.coerce.number(),
       concentrate: z.boolean().nullable().optional(),
+      year: z.number().int(),
     })
   ),
 
@@ -60,7 +61,7 @@ export const FeedPriceDBSchema = z.object({
   id: z.string().uuid(),
   feed_prices_id: z.string().uuid(),
   general_id: z.string().uuid(),
-  year: z.coerce.number().int(),
+  year: z.number().int(),
   feed_type: z.string(),
   price_per_tonne: z.coerce.number(),
   dry_matter_percent: z.coerce.number(),
@@ -101,6 +102,7 @@ function createDefaults(general_id: string) {
       energy_mj: 0,
       protein: 0,
       concentrate: false,
+      year: new Date().getFullYear(),
     }],
   }
 }
@@ -176,7 +178,7 @@ export function FeedPricesPage() {
     {
       name: "Dry Matter",
       value: "dry_matter_percent",
-      tooltip: "%"
+      tooltip: "%; write 12.34% as 0,1234"
     },
     {
       name: "MJ",
@@ -185,7 +187,7 @@ export function FeedPricesPage() {
     {
       name: "Protein",
       value: "protein",
-      tooltip: "%"
+      tooltip: "%; write 12.34% as 0,1234"
     },
     {
       name: "Feed Concentrate",
@@ -210,9 +212,10 @@ export function FeedPricesPage() {
     return <div className="p-4">Failed to load farm data.</div>
   }
 
-  function logformerrors(errors) {
+  /*function logformerrors(errors) {
     console.log(errors)
-  }
+  }*/
+
   return (
     <div className="space-y-6 min">
       <div>
@@ -220,7 +223,7 @@ export function FeedPricesPage() {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, logformerrors)} className="space-y-4 w-full">
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-4 w-full">
           <table className="w-full">
             <thead>
               <tr>
@@ -284,6 +287,7 @@ export function FeedPricesPage() {
                         name={`feedprice.${index}.${feedpriceType as keyof FeedPriceFormValues["feedprice"][number]}`}
                         render={({ field: ff }) => (
                           <Input {...ff} className="w-full" type={type === "checkbox" ? "checkbox" : "number"} value={ff.value as number} />
+                          
                         )}
                       />
                     </td>

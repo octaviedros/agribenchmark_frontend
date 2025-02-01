@@ -89,6 +89,16 @@ function createDefaults(general_id: string): LiabilitiesFormValues {
     year: new Date().getFullYear(),
   }}
 
+  function mergeData(data: Array<object>, general_id: string): LiabilitiesFormValues {
+    if (data) {
+      // @ts-expect-error zod types are not correct
+      return {
+        ...data[0],
+      }
+    }
+    return createDefaults(general_id)
+  } 
+
 export function LiabilitiesFarmPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
@@ -98,16 +108,12 @@ export function LiabilitiesFarmPage() {
     isLoading,
     mutate
   } = useFarmData("/liabilitiesinterestrates", general_id)
-  const farmData = data ? data[0] : null
-/*let farmData 
-if (data) { 
-  farmData = data[0]
-}*/
-  console.log(farmData)
+
+const farmData = mergeData(data, general_id)
+
   const form = useForm<LiabilitiesFormValues>({
     resolver: zodResolver(liabilitiesFormSchema),
     defaultValues: {
-      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
@@ -119,14 +125,18 @@ if (data) {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
-async function onSubmit(data: LiabilitiesFormValues) {
+
+async function onSubmit(updatedData: LiabilitiesFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+        ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      console.log(mergedData)
-      await mutate(upsert(`/liabilitiesinterestrates`, mergedData), {
+
+      await mutate(upsert(`/liabilitiesinterestrates`,{
+        ...mergedData,
+        id: data?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
@@ -170,7 +180,7 @@ async function onSubmit(data: LiabilitiesFormValues) {
       <Separator
       />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-2">
           <FormField
             control={form.control}
             name="long_term_loans"

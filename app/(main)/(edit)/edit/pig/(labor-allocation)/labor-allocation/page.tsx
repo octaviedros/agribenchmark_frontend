@@ -26,16 +26,16 @@ import { Input } from "@/components/ui/input"
 const laborallocationFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
-  casual_labor_sow: z.number().min(2, {
+  casual_labor_sow: z.coerce.number( {
     message: "Please enter Casual Labor Allocation for Sow Entperise.",
   }),
-  family_labor_sow: z.number().min(2, {
+  family_labor_sow: z.coerce.number( {
     message: "Please enter Family Labor Allocation for Sow Entperise.",
   }),
-  casual_labor_finishing: z.number().min(2, {
+  casual_labor_finishing: z.coerce.number( {
     message: "Please enter Casual Labor Allocation for Pig Finishing Entperise.",
   }),
-  family_labor_finishing: z.number().min(2, {
+  family_labor_finishing: z.coerce.number( {
     message: "Please enter Family Labor Allocation for Pig Finishing Entperise.",
   }),
   year: z.number().int(),
@@ -56,6 +56,17 @@ function createDefaults(general_id: string): LaborAllocationFormValues {
     year: new Date().getFullYear(),
   }
 }
+
+function mergeData(data: Array<object>, general_id: string): LaborAllocationFormValues {
+  if (data) {
+    // @ts-expect-error zod types are not correct
+    return {
+      ...data[0],
+    }
+  }
+  return createDefaults(general_id)
+}
+
 export function LaborAllocationPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
@@ -65,16 +76,12 @@ export function LaborAllocationPage() {
     isLoading,
     mutate
   } = useFarmData("/laborallocsowfinishing", general_id)
-  const farmData = data ? data[0] : null
-/*let farmData 
-if (data) { 
-  farmData = data[0]
-}*/
-  console.log(farmData)
+
+const farmData = mergeData(data, general_id)
+
   const form = useForm<LaborAllocationFormValues>({
     resolver: zodResolver(laborallocationFormSchema),
     defaultValues: {
-      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
@@ -86,14 +93,17 @@ if (data) {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
-async function onSubmit(data: LaborAllocationFormValues) {
+
+async function onSubmit(updatedData: LaborAllocationFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+        ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      console.log(mergedData)
-      await mutate(upsert(`/laborallocsowfinishing`, mergedData), {
+      await mutate(upsert(`/laborallocsowfinishing`, {
+        ...mergedData,
+        id: data?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
@@ -136,7 +146,7 @@ async function onSubmit(data: LaborAllocationFormValues) {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-2">
           <FormField
             control={form.control}
             name="casual_labor_sow"

@@ -34,55 +34,55 @@ const finishingcostFormSchema = z.object({
   var_cost_fin_id: z.string().uuid(),
   fix_cost_id: z.string().uuid(),
   veterinary_medicine_supplies: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   disinfection: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   energy: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   water: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   manure_cost: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   transport_cost: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   specialised_pig_advisor: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   animal_disease_levy: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   carcass_disposal: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   maintenance: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   feed_grinding_preparation: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   insurance: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   cleaning: z
-    .number({
+    .coerce.number({
       required_error: "Please enter a number.",
     }),
   year: z.number().int(),
@@ -112,6 +112,18 @@ function createDefaults(general_id: string): FinishingCostFormValues {
     year: new Date().getFullYear(),
   }
 }
+
+function mergeData(data: Array<object>, fixData: Array<object>, general_id: string): FinishingCostFormValues {
+  if (data && fixData) {
+    // @ts-expect-error zod types are not correct
+    return {
+      ...data[0],
+      ...fixData[0],
+    }
+  }
+  return createDefaults(general_id)
+}
+
 export function FinishingCostPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
@@ -121,48 +133,50 @@ export function FinishingCostPage() {
     isLoading,
     mutate
   } = useFarmData("/varcostfinishing", general_id)
+
   const {
     data: fixcosts,
     error: fixcosts_error,
     isLoading: fixcosts_isLoading,
     mutate: fixcosts_mutate
   } = useFarmData("/fixcosts", general_id)
-  const farmData = data ? data[0] : null
-  const fixcostsData = fixcosts ? fixcosts[0] : null
-  /*let farmData 
-  if (data) { 
-    farmData = data[0]
-  }*/
-  console.log(farmData)
+ 
+const farmData = mergeData(data, fixcosts, general_id)
+
   const form = useForm<FinishingCostFormValues>({
     resolver: zodResolver(finishingcostFormSchema),
     defaultValues: {
-      ...createDefaults(general_id),
       ...farmData
     },
     mode: "onChange",
   })
-  // 
+
   useEffect(() => {
     form.reset({
       ...farmData
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading])
-  async function onSubmit(data: FinishingCostFormValues) {
+  }, [isLoading, fixcosts_isLoading])
+  async function onSubmit(updatedData: FinishingCostFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
-        ...data,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+        ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      console.log(mergedData)
-      await mutate(upsert(`/varcostfinishing`, mergedData), {
+
+      await mutate(upsert(`/varcostfinishing`, {
+        ...mergedData,
+        id: data?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
         revalidate: true
       })
-      await fixcosts_mutate(upsert(`/fixcosts`, mergedData), {
+      await fixcosts_mutate(upsert(`/fixcosts`, {
+        ...mergedData,
+        id: fixcosts?.[0]?.id || farmData.id
+      }), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
@@ -190,20 +204,13 @@ export function FinishingCostPage() {
       </div>
     )
   }
-  if (isLoading) {
+  if (isLoading || fixcosts_isLoading) {
     return <div className="p-4">Loading farm data…</div>
   }
-  if (error && error.status !== 404) {
+  if ((error && error.status !== 404) || (fixcosts_error && fixcosts_error.status !== 404)) {
     console.error(error)
     return <div className="p-4">Failed to load farm data.</div>
   }
-
-  /*const varcosts = ['Veterenary Medicine & Supplies', 'Disinfection', 'Energy', 'Water', 'Manure Costs', 'Transport Costs', 'Specialised Pig Advisors',
-                        'Animal Disease Levy', 'Carcass Disposal', 'Maintenance' ]
-  const varcostTypes = [''];
-
-  const fixedcost = ['Feed Mixing & Preparation', 'Insurance', 'Cleaning']
-  const fixedcostTypes = [''];*/
 
   return (
     <div className="space-y-6">
@@ -212,7 +219,7 @@ export function FinishingCostPage() {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-4">
           <div>
             <h3 className="text-lg font-medium">Variable Costs</h3></div>
           <FormField
@@ -399,8 +406,8 @@ export function FinishingCostPage() {
               </FormItem>
             )}
           />
+          <Button type="submit">Submit</Button>
         </form>
-        <Button type="submit">Submit</Button>
       </Form>
     </div>
   )
