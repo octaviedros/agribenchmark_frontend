@@ -165,12 +165,12 @@ export function PigFinishingDataPage() {
     isLoading,
     mutate
   } = useFarmData("/pigfinishing", general_id)
+
   const {
     data: performancepigfinishing,
     error: performancepigfinishing_error,
     isLoading: performancepigfinishing_isLoading
   } = useFarmData("/performancepigfinishing", general_id)
-  console.log("data", data, "performancepigfinishing", performancepigfinishing)
   const farmData = mergeData(data, performancepigfinishing, general_id)
 
   const form = useForm<PigFinishingDataFormValues>({
@@ -182,7 +182,6 @@ export function PigFinishingDataPage() {
   })
 
   useEffect(() => {
-    console.log("update", farmData)
     form.reset({
       ...farmData
     })
@@ -255,7 +254,7 @@ export function PigFinishingDataPage() {
             control={form.control}
             name="production_system"
             render={({ field: p }) => (
-              <FormItem>
+              <FormItem key={p.value}>
                 <FormLabel>Production System</FormLabel>
                 <Select onValueChange={p.onChange} defaultValue={p.value}>
                   <FormControl>
@@ -275,7 +274,7 @@ export function PigFinishingDataPage() {
             control={form.control}
             name="production_cycle"
             render={({ field: c }) => (
-              <FormItem>
+              <FormItem key={c.value}>
                 <Select onValueChange={c.onChange} defaultValue={c.value}>
                   <FormControl>
                     <SelectTrigger>
