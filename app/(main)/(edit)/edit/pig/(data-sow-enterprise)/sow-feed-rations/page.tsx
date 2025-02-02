@@ -98,8 +98,8 @@ type SowFeedRationDBValues = z.infer<typeof SowFeedRationDBSchema>
 function dbDataToForm(data: any, general_id: string) {
   if (!data || !data.length) return createDefaults(general_id)
   return {
-    selfproduced: data.filter((row: SowFeedRationDBValues) => row.produced === "Self Produced"),
-    boughtfeed: data.filter((row: SowFeedRationDBValues) => row.produced === "Bought Feed"),
+    selfproduced: data.filter((row: SowFeedRationDBValues) => row.produced !== "Bought Feed"),
+    boughtfeed: data.filter((row: SowFeedRationDBValues) => row.produced !== "Self Produced")
   }
 }
 function formDataToDb(data: SowFeedRationFormValues) {

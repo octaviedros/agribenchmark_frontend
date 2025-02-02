@@ -33,7 +33,7 @@ const sowfeedingFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
   feed_id: z.string().uuid(),
-  sows_id: z.string().uuid(),
+  sow_id: z.string().uuid(),
   finishing_id: z.string().uuid(),
   sows_gestation_feed: z.coerce.number().min(1, {
     message: "Must be at least 1 characters.",
@@ -96,7 +96,7 @@ function createDefaults(general_id: string): SowFeedingFormValues {
   return {
     id: uuidv4(),
     feed_id: uuidv4(),
-    sows_id: uuidv4(),
+    sow_id: uuidv4(),
     finishing_id: uuidv4(),
     general_id: general_id,
     sows_gestation_feed: 0,
