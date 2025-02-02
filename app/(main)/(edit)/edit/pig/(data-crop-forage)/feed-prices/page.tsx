@@ -38,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 
 const feedpriceFormSchema = z.object({
   feedprice: z.array(
@@ -190,7 +191,7 @@ export function FeedPricesPage() {
       tooltip: "%; write 12.34% as 0,1234"
     },
     {
-      name: "Feed Concentrate",
+      name: "Concentrate",
       value: "concentrate",
       type: "checkbox",
     },
@@ -227,7 +228,7 @@ export function FeedPricesPage() {
           <table className="w-full">
             <thead>
               <tr>
-                <th className="text-left pl-2 align-bottom"><FormLabel>Feed Type</FormLabel></th>
+                <th className="text-left pl-2 align-bottom"><FormLabel>Type</FormLabel></th>
                 {feedpriceTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
                     <FormLabel>
@@ -286,8 +287,15 @@ export function FeedPricesPage() {
                         control={form.control}
                         name={`feedprice.${index}.${feedpriceType as keyof FeedPriceFormValues["feedprice"][number]}`}
                         render={({ field: ff }) => (
-                          <Input {...ff} className="w-full" type={type === "checkbox" ? "checkbox" : "number"} value={ff.value as number} />
-                          
+                          (type === "checkbox" ?
+                            <div className="w-full flex items-center justify-center">
+                              <Checkbox
+                                checked={ff.value as boolean ?? false}
+                                onCheckedChange={ff.onChange}
+                              />
+                            </div> :
+                            <Input {...ff} className="w-full" type="number" value={ff.value as number} />
+                          )
                         )}
                       />
                     </td>
