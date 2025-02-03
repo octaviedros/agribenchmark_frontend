@@ -1,19 +1,15 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { Info } from "lucide-react"
 import { z } from "zod"
 import { upsert, del } from "@/lib/api"
 import { v4 as uuidv4 } from "uuid"
-import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-
-import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -27,6 +23,12 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const finishingcostFormSchema = z.object({
   id: z.string().uuid(),
@@ -222,13 +224,21 @@ const farmData = mergeData(data, fixcosts, general_id)
         <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-4">
           <div>
             <h3 className="text-lg font-medium">Variable Costs</h3></div>
+            <FormDescription>All Costs accounted as Cost per Head</FormDescription>
           <FormField
             control={form.control}
             name="veterinary_medicine_supplies"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Veterinary Medicine & Supplies</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -242,7 +252,14 @@ const farmData = mergeData(data, fixcosts, general_id)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Disinfection</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -256,7 +273,14 @@ const farmData = mergeData(data, fixcosts, general_id)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Energy</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -270,7 +294,14 @@ const farmData = mergeData(data, fixcosts, general_id)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Water</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -284,7 +315,14 @@ const farmData = mergeData(data, fixcosts, general_id)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Manure Costs</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -298,7 +336,14 @@ const farmData = mergeData(data, fixcosts, general_id)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Transport Costs</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -312,7 +357,14 @@ const farmData = mergeData(data, fixcosts, general_id)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Specialised Pig Advisors</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -326,7 +378,14 @@ const farmData = mergeData(data, fixcosts, general_id)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Animal Disease Levy</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -340,7 +399,14 @@ const farmData = mergeData(data, fixcosts, general_id)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Carcass Disposal</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -354,7 +420,14 @@ const farmData = mergeData(data, fixcosts, general_id)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Maintenance</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -370,7 +443,14 @@ const farmData = mergeData(data, fixcosts, general_id)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Feed Mixing & Preparation</FormLabel>
-                <FormDescription>Cost per enterprise</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per enterprise</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -384,7 +464,14 @@ const farmData = mergeData(data, fixcosts, general_id)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Insurance</FormLabel>
-                <FormDescription>Cost per enterprise</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per enterprise</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -398,7 +485,14 @@ const farmData = mergeData(data, fixcosts, general_id)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Cleaning</FormLabel>
-                <FormDescription>Cost per enterprise</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per enterprise</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

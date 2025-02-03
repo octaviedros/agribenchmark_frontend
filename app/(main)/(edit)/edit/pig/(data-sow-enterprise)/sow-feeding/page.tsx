@@ -11,6 +11,7 @@ import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
+import { Info } from "lucide-react"
 import {
   Form,
   FormControl,
@@ -28,6 +29,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const sowfeedingFormSchema = z.object({
   id: z.string().uuid(),
@@ -219,7 +226,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Gestation Feed</FormLabel>
-                <FormDescription>kg per animal and year</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per animal and year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -233,7 +247,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Lactation Feed</FormLabel>
-                <FormDescription>kg per animal and year</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per animal and year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -247,7 +268,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Total Amount of Feed</FormLabel>
-                <FormDescription>kg per animal and day</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per animal and year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -261,7 +289,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Total Amount of Feed</FormLabel>
-                <FormDescription>kg per animal and year</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per animal and year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -269,7 +304,7 @@ export function SowFeedingPage() {
               </FormItem>
             )}
           />
-          <div><h3>Gilts</h3></div>
+          <div><h3 className="pt-2 text-lg font-medium">Gilts</h3></div>
           <FormField
             control={form.control}
             name="gilts_special_feed"
@@ -297,7 +332,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Share Gestation Feed</FormLabel>
-                <FormDescription>%</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%, e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -311,7 +353,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Share Lactation Feed</FormLabel>
-                <FormDescription>%</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%, e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -325,7 +374,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Feed Quantity (in terms of fresh matter)</FormLabel>
-                <FormDescription>kg per animal and year</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per animal and year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -339,7 +395,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Total Amount of Feed</FormLabel>
-                <FormDescription>kg per year </FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per animal and year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -347,7 +410,7 @@ export function SowFeedingPage() {
               </FormItem>
             )}
           />
-          <div><h3 className="text-lg font-medium">Boars</h3></div>
+          <div><h3 className="pt-2 text-lg font-medium">Boars</h3></div>
           <FormField
             control={form.control}
             name="boars_special_feed"
@@ -375,7 +438,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Share of Gestation Feed</FormLabel>
-                <FormDescription>%</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%, e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -389,7 +459,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Share Lactation Feed</FormLabel>
-                <FormDescription>%</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%, e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -403,7 +480,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Feed Quantity (in terms of fresh matter)</FormLabel>
-                <FormDescription>kg per animal and year</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per animal and year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -417,7 +501,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Total Amount of Feed</FormLabel>
-                <FormDescription>kg per year</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -425,14 +516,21 @@ export function SowFeedingPage() {
               </FormItem>
             )}
           />
-          <div><h3 className="text-lg font-medium">Piglets</h3></div>
+          <div><h3 className="pt-2 text-lg font-medium">Piglets</h3></div>
           <FormField
             control={form.control}
             name="piglet_feed_1"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Piglet Feed 1</FormLabel>
-                <FormDescription>kg per animal</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -446,7 +544,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Piglet Feed 2</FormLabel>
-                <FormDescription>kg per animal</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per animal</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -460,7 +565,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Feed Quantity (in terms of fresh matter)</FormLabel>
-                <FormDescription>kg per animal per year</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per animal and year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -474,7 +586,14 @@ export function SowFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Total Amount of Feed</FormLabel>
-                <FormDescription>kg per year</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>

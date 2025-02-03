@@ -1,18 +1,16 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { Info } from "lucide-react"
 import { z } from "zod"
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-import { upsert, del } from "@/lib/api"
+import { upsert } from "@/lib/api"
 import { v4 as uuidv4 } from "uuid"
 
-import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -26,6 +24,12 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const liabilitiesFormSchema = z.object({
   general_id: z.string().uuid(),
@@ -181,15 +185,21 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
       />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-2">
+        <h3 className="text-lg font-medium">Current Interest Rates</h3>
           <FormField
             control={form.control}
             name="long_term_loans"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Current Interest Rates</FormLabel>
-                <FormDescription>
-                  Long-Term Loans
-                </FormDescription>
+                <FormLabel>Long-Term Loans</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>0.0x</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -202,9 +212,15 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
             name="medium_term_loans"
             render={({ field }) => (
               <FormItem>
-                <FormDescription>
-                  Medium-Term Loans
-                </FormDescription>
+                <FormLabel>Medium-Term Loans</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>0.0x</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -217,9 +233,15 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
             name="short_term_loans"
             render={({ field }) => (
               <FormItem>
-                <FormDescription>
-                  Short-Term Loans
-                </FormDescription>
+                <FormLabel>Short-Term Loans</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>0.0x</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -232,9 +254,15 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
             name="circulating_capital_overdraft"
             render={({ field }) => (
               <FormItem>
-                <FormDescription>
-                  Circulating Capital (Overdraft)
-                </FormDescription>
+                <FormLabel>Circulating Capital (Overdraft)</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>0.0x</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -247,9 +275,15 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
             name="savings"
             render={({ field }) => (
               <FormItem>
-                <FormDescription>
-                  Savings
-                </FormDescription>
+                <FormLabel>Savings</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>0.0x</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -257,15 +291,21 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
               </FormItem>
             )}
           />
+          <h3 className="text-lg font-medium">Liabilities</h3>
           <FormField
             control={form.control}
             name="total_liabilities"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Liabilities</FormLabel>
-                <FormDescription>
-                  Total Liabilities
-                </FormDescription>
+                <FormLabel>Total Liabilities</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount in your currency</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -278,9 +318,15 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
             name="total_long_term_loans"
             render={({ field }) => (
               <FormItem>
-                <FormDescription>
-                  Total Long-Term Loans
-                </FormDescription>
+                <FormLabel>Total Long-Term Loans</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount in your currency</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -293,9 +339,15 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
             name="total_medium_term_loans"
             render={({ field }) => (
               <FormItem>
-                <FormDescription>
-                  Total Medium-Term Loans
-                </FormDescription>
+                <FormLabel>Total Medium-Term Loans</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount in your currency</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -308,9 +360,15 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
             name="total_short_term_loans"
             render={({ field }) => (
               <FormItem>
-                <FormDescription>
-                  Total Short-Term Loans
-                </FormDescription>
+                <FormLabel>Total Short-Term Loans</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount in your currency</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -323,9 +381,15 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
             name="perc_debt_total_assets"
             render={({ field }) => (
               <FormItem>
-                <FormDescription>
-                  Percentage Debt of Total Assets
-                </FormDescription>
+                <FormLabel>Percentage Debt of Total Assets</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>0.0x</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

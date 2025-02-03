@@ -34,16 +34,16 @@ export const allSidebarNavItems: SidebarNavItems = {
         title: "1.5 Liabilities and Interest rates",
         url: "/edit/pig/liabilities-interest-rates",
       },
-      {
+      /*{
         title: "1.6 Profit and Capital Structure",
         url: "/edit/pig/profit-capital-structure",
       },
       {
         title: "1.7 Information on Farm Ownership",
         url: "/edit/pig/farm-ownership",
-      },
+      },*/
       {
-        title: "1.8 Overhead Costs",
+        title: "1.6 Overhead Costs",
         url: "/edit/pig/overhead-costs",
       },
     ],
@@ -64,12 +64,12 @@ export const allSidebarNavItems: SidebarNavItems = {
         title: "2.3 Variable Costs of Crop and Forage Production",
         url: "/edit/pig/variable-costs-crop",
       },
-      {
+      /*{
         title: "2.4 Mineral balance and fertilizer input",
         url: "/edit/pig/mineral-balance",
-      },
+      },*/
       {
-        title: "2.5 Prices for Feed and Dry Matter Content",
+        title: "2.4 Prices for Feed and Dry Matter Content",
         url: "/edit/pig/feed-prices",
       }
     ],

@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid"
 import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { useFarmData } from "@/hooks/use-farm-data"
-
+import { Info } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -30,6 +30,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const pigfinishingdataFormSchema = z.object({
   id: z.string().uuid(),
@@ -300,10 +306,17 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Animal Places</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Number of heads</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input type="number" {...field} value={field.value}/>
                 </FormControl>
-                <FormDescription>Number of heads</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -314,7 +327,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Number of sold Pigs (Female & Castrates)</FormLabel>
-                <FormDescription>Number of heads</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Number of heads</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -328,7 +348,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Number of sold Pigs (Boars)</FormLabel>
-                <FormDescription>Number of heads</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Number of heads</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -342,7 +369,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Share of Female Pigs </FormLabel>
-                <FormDescription>Percentage</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%, e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -358,7 +392,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Stalling-in-Weight</FormLabel>
-                <FormDescription>kg LW per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg LW per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -372,7 +413,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Stalling-in-Weight (Boars)</FormLabel>
-                <FormDescription>kg LW per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg LW per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -386,7 +434,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Average Duration of a finishing Period</FormLabel>
-                <FormDescription>days</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>days</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -400,7 +455,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Cleaning days per Cycle</FormLabel>
-                <FormDescription>days</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>days</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -414,7 +476,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Days without Animals in Stable</FormLabel>
-                <FormDescription>days</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>days</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -428,7 +497,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Mortality</FormLabel>
-                <FormDescription>%</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%, e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -442,7 +518,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Average selling Weight (Female & Castrates)</FormLabel>
-                <FormDescription>kg LW per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg LW per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -456,7 +539,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Carcass yield (Female & Castrates)</FormLabel>
-                <FormDescription>%</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%, e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -470,7 +560,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Lean Meat Content (FOM, Female & Castrates)</FormLabel>
-                <FormDescription>%</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%, e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -484,7 +581,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Index Points (AutoFOM, Female & Castrates)</FormLabel>
-                <FormDescription>%</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%, e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -498,7 +602,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Average selling Weight (Boars)</FormLabel>
-                <FormDescription>kg LW per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg LW per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -512,7 +623,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Carcass yield (Boars)</FormLabel>
-                <FormDescription>%</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%, e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -526,7 +644,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Index Points (AutoFOM, Boars)</FormLabel>
-                <FormDescription>points</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>points</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -540,7 +665,14 @@ export function PigFinishingDataPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Average Duration of a finishing Period (Boars)</FormLabel>
-                <FormDescription>days</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>days</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

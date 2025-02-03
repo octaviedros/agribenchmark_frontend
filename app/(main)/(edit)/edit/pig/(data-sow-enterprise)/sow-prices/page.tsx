@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid"
 import { useFarmData } from "@/hooks/use-farm-data"
 import {  useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-
+import { Info } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -23,6 +23,12 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const sowpriceFormSchema = z.object({
   id: z.string().uuid(),
@@ -186,7 +192,14 @@ async function onSubmit(updatedData: SowPriceFormValues) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Buying Guilt Price</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} /> 
                 </FormControl>
@@ -200,7 +213,14 @@ async function onSubmit(updatedData: SowPriceFormValues) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Buying Boar Price</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} /> 
                 </FormControl>
@@ -216,7 +236,14 @@ async function onSubmit(updatedData: SowPriceFormValues) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Selling Sow Price</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} /> 
                 </FormControl>
@@ -230,7 +257,14 @@ async function onSubmit(updatedData: SowPriceFormValues) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Selling Boar Price</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} /> 
                 </FormControl>
@@ -244,7 +278,14 @@ async function onSubmit(updatedData: SowPriceFormValues) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Selling Weaning Piglet Price</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} /> 
                 </FormControl>
@@ -258,7 +299,14 @@ async function onSubmit(updatedData: SowPriceFormValues) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Selling Rearing Piglet Price</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -272,7 +320,14 @@ async function onSubmit(updatedData: SowPriceFormValues) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Proportion of weaned Pigs sold</FormLabel>
-                <FormDescription>Percentage</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%; e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -286,7 +341,14 @@ async function onSubmit(updatedData: SowPriceFormValues) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Number of weaned Pigs sold</FormLabel>
-                <FormDescription>Number</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Total Amount</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

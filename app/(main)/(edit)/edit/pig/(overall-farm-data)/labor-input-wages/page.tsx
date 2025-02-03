@@ -370,7 +370,7 @@ export function WagesFarmPage() {
           <table className="w-full my-4">
             <thead>
               <tr>
-                <th className="text-left pl-2 align-bottom"><FormLabel>Desc.</FormLabel></th>
+                <th className="text-left pl-2 align-bottom"><FormLabel>Description</FormLabel></th>
                 {costTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
                     <FormLabel>
@@ -448,7 +448,7 @@ export function WagesFarmPage() {
             <thead>
               <tr>
                 <th className="text-left pl-2 align-bottom">
-                  <FormLabel>Desc.</FormLabel>
+                  <FormLabel>Description</FormLabel>
                 </th>
                 {costTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">

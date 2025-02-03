@@ -165,7 +165,14 @@ async function onSubmit(updatedData: FinishingPriceFormValues) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Female & Castrate Piglets</FormLabel>
-                  <FormDescription>per kg LW</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per LW</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -179,7 +186,14 @@ async function onSubmit(updatedData: FinishingPriceFormValues) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Boars Piglets for Finishing</FormLabel>
-                  <FormDescription>per kg LW</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per LW</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -217,7 +231,14 @@ async function onSubmit(updatedData: FinishingPriceFormValues) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Finishing Pigs (Boars)</FormLabel>
-                  <FormDescription>per kg CW</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg per CW</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>

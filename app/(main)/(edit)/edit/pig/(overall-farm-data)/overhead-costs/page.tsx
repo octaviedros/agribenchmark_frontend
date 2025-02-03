@@ -2,17 +2,16 @@
 
 import { Separator } from "@/components/ui/separator"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { Info } from "lucide-react"
 import { z } from "zod"
 
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { upsert, del } from "@/lib/api"
 import { v4 as uuidv4 } from "uuid"
 
-import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -26,6 +25,12 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 
 const overheadFormSchema = z.object({
@@ -213,7 +218,14 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Land Improvements</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year; Drainage etc.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -227,7 +239,14 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Maintenance Machinery</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year; If not known, calculate proxy, e.g. 3 % of the purchase price per annum; avoid double counting!</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -242,7 +261,14 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Maintenance Buildings and Facilities</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year; If not known, calculate proxy, e.g. 3 % of the purchase price per annum; avoid double counting!</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -257,11 +283,17 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Contracted Labor and Machinery Association</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -272,11 +304,17 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Diesel for Vehicles</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year; Includes Pick-up trucks, farm vehicles, NOT tractors for crop and forage production (var. cost per ha!)</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -287,8 +325,14 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Diesel for Heating</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
-
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -302,11 +346,17 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Gasoline</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -317,11 +367,17 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Gas</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -332,11 +388,17 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Electricity</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -347,11 +409,17 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Fresh Water</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year; Water and energy for the farmstead, not for crop production and other enterprises</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -362,11 +430,17 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Farm Insurances</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year; Insurances to cover the farm, e.g. fire insurance, crop insurance under other variable cost crop</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -377,7 +451,14 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Invalidity Insurance</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year; Fees for instutions that provide accident insurances and check safety on the farms</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -392,11 +473,17 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Taxes and Fees</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year; Only farm taxes like ground tax, no personal taxes like income tax!</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -407,7 +494,14 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Advisory Services/Trainings</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year; Costs for advisory/extension services if it cannot be allocated to the enterprises</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -422,7 +516,14 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Accounting</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year; E.g. costs for hiring a person or a company to do the accounting</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -437,7 +538,14 @@ function createDefaults(general_id: string): OverheadFormValues {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Office, Communication, Subscriptions...</FormLabel>
-                  <FormDescription> Amount per year</FormDescription>
+                  <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Amount per year; All kind of materials, hardware and communication expenses</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>

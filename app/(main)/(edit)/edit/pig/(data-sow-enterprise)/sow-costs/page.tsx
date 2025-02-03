@@ -11,7 +11,7 @@ import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-
+import { Info } from "lucide-react"
 import {
   Form,
   FormControl,
@@ -22,6 +22,12 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 
 const sowcostFormSchema = z.object({
@@ -243,6 +249,7 @@ export function SowCostPage() {
         <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-2">
           <div>
             <h3 className="text-lg font-medium">Variable Costs</h3>
+            <FormDescription>All Costs accounted as Cost per Head</FormDescription>
           </div>
           <FormField
             control={form.control}
@@ -250,7 +257,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Veterinary and Medicine Supplies</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -264,7 +278,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Artificial Insemination Costs</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -278,7 +299,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Pregnancy Check</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -292,7 +320,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Disinfection</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -306,7 +341,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Energy</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -320,7 +362,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Water</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -334,7 +383,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Manure Costs</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -348,7 +404,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Transport Costs</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -362,7 +425,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Specialised Advisors</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -376,7 +446,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Animal Disease Levy</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -390,7 +467,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Carcass Disposal</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -404,7 +488,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Sow Planner</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -421,7 +512,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Maintenance</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -435,7 +533,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Feed Grinding & Preparation</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per enterprise</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -449,7 +554,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Insurance</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per enterprise</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -463,7 +575,14 @@ export function SowCostPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Cleaning</FormLabel>
-                <FormDescription>Cost per head</FormDescription>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Cost per enterprise</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

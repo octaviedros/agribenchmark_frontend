@@ -4,13 +4,14 @@ import { Separator } from "@/components/ui/separator"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { upsert, del } from "@/lib/api"
+import { upsert } from "@/lib/api"
 import { v4 as uuidv4 } from "uuid"
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
+import { Info } from "lucide-react"
 
 import {
   Form,
@@ -22,6 +23,12 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const laborallocationFormSchema = z.object({
   id: z.string().uuid(),
@@ -153,6 +160,14 @@ async function onSubmit(updatedData: LaborAllocationFormValues) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Casual Labor Sow Enterprise</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>0,0x</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -166,6 +181,14 @@ async function onSubmit(updatedData: LaborAllocationFormValues) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Family Labor Sow Enterprise</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>0,0x</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -179,6 +202,14 @@ async function onSubmit(updatedData: LaborAllocationFormValues) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Casual Labor Pig Finishing Enterprise</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>0,0x</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -192,6 +223,14 @@ async function onSubmit(updatedData: LaborAllocationFormValues) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Family Labor Pig Finishing Enterprise</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>0,0x</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

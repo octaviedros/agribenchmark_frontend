@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-
+import { Info } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
@@ -30,6 +30,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const sowdataFormSchema = z.object({
   id: z.string().uuid(),
@@ -353,360 +359,535 @@ export function SowDataPage() {
           <div className="my-2 w-full">
             <h3 className="text-lg font-medium">Performance</h3>
           </div>
-            <FormField
-              control={form.control}
-              name="no_sows_mated_gilts"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Number of Sows and Mated Gilts</FormLabel>
-                  <FormDescription>Number of heads </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} value={field.value as number}/>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="no_unserved_gilts"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Number of Unserved Gilts</FormLabel>
-                  <FormDescription>Number of heads </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="no_boars"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Number of Boars</FormLabel>
-                  <FormDescription>Number of heads </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="total_no_sows_gilts"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Total Number of Sows and Gilts</FormLabel>
-                  <FormDescription>Number of heads </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="no_sows_mated_gilts"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of Sows and Mated Gilts</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of heads</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} value={field.value as number} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="no_unserved_gilts"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of Unserved Gilts</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of heads</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="no_boars"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of Boars</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of heads</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="total_no_sows_gilts"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Total Number of Sows and Gilts</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of heads</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div>
-          <h3 className="text-lg mt-6 font-medium">Livestock</h3></div>
-            <FormField
-              control={form.control}
-              name="piglets_born_alive"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Piglets born Alive</FormLabel>
-                  <FormDescription>Number of heads </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="cycles_per_sow_year"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cycles born per sow and year</FormLabel>
-                  <FormDescription>Number of heads </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="avg_gestation_period"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Average time of gestation period</FormLabel>
-                  <FormDescription>Days</FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="duration_suckling_per_farrowing"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Duration of Suckling</FormLabel>
-                  <FormDescription>Days </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="dry_sow_days"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Number of Dry Sow Days</FormLabel>
-                  <FormDescription>Days </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="rate_insuccesful_insemination"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Rate of insuccessful Insemination</FormLabel>
-                  <FormDescription>% </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="weaning_weights"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Weaning Weight</FormLabel>
-                  <FormDescription>kg </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="cull_rate_sows"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cull Rate Sows</FormLabel>
-                  <FormDescription>% </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="cull_rate_boars"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cull Rate Boars</FormLabel>
-                  <FormDescription>% </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="fraction_own_replacement"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fraction of Own Replacement</FormLabel>
-                  <FormDescription>% </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="annual_sow_mortality"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Annual Sow Mortality</FormLabel>
-                  <FormDescription>% </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="annual_boar_mortality"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Annual Boar Mortality</FormLabel>
-                  <FormDescription>% </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="piglet_mortality_weaning"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Piglet Mortality Weaning</FormLabel>
-                  <FormDescription>% </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="piglet_mortality_rearing"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Piglet Mortality Rearing</FormLabel>
-                  <FormDescription>% </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="piglets_weaned"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Piglets Weaned</FormLabel>
-                  <FormDescription>Number of heads </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="avg_duration_piglet_rearing"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Average Piglet Rearing</FormLabel>
-                  <FormDescription>kg </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="reared_piglets"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Reared Piglets</FormLabel>
-                  <FormDescription>Number of heads </FormDescription>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <h3 className="text-lg mt-6 font-medium">Livestock</h3></div>
+          <FormField
+            control={form.control}
+            name="piglets_born_alive"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Piglets born Alive</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of heads</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="cycles_per_sow_year"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cycles born per sow and year</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of heads</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="avg_gestation_period"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Average time of gestation period</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Days</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="duration_suckling_per_farrowing"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Duration of Suckling</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Days</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="dry_sow_days"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of Dry Sow Days</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Days</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="rate_insuccesful_insemination"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Rate of insuccessful Insemination</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%; e.g. 12,34% is 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="weaning_weights"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Weaning Weight</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="cull_rate_sows"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cull Rate Sows</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%; e.g. 12,34% is 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="cull_rate_boars"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cull Rate Boars</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%; e.g. 12,34% is 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="fraction_own_replacement"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Fraction of Own Replacement</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%; e.g. 12,34% is 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="annual_sow_mortality"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Annual Sow Mortality</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%; e.g. 12,34% is 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="annual_boar_mortality"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Annual Boar Mortality</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%; e.g. 12,34% is 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="piglet_mortality_weaning"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Piglet Mortality Weaning</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%; e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="piglet_mortality_rearing"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Piglet Mortality Rearing</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>%; e.g. 12,34% is 0,1234</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="piglets_weaned"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Piglets Weaned</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Number of heads</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="avg_duration_piglet_rearing"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Average Piglet Rearing</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="reared_piglets"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Reared Piglets</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>Number of heads</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div>
             <h3 className="mt-6 text-lg font-medium">Sales Weight</h3></div>
-            <FormField
-              control={form.control}
-              name="sales_weight_sows"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Sows</FormLabel>
-                  <FormDescription>kg CW per head </FormDescription>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="sales_weight_boars"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Boars</FormLabel>
-                  <FormDescription>kg CW per head </FormDescription>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="sales_weight_weaning_piglet"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Weaning Piglets</FormLabel>
-                  <FormDescription>kg CW per head </FormDescription>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="sales_weight_rearing_piglet"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Rearing Piglets</FormLabel>
-                  <FormDescription>kg CW per head </FormDescription>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="sales_weight_sows"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Sows</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg CW per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="sales_weight_boars"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Boars</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg CW per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="sales_weight_weaning_piglet"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Weaning Piglets</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg CW per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="sales_weight_rearing_piglet"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Rearing Piglets</FormLabel>
+                <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent>
+                              <p>kg CW per head</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <Button className="mt-4" type="submit">Submit</Button>
         </form>
       </Form>
