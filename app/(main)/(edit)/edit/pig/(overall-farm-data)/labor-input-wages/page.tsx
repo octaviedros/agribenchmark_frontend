@@ -1,17 +1,16 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Trash2, Info } from "lucide-react"
-import { z } from "zod"
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useEffect } from "react"
+import { del, upsert } from "@/lib/api"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Info, Trash2 } from "lucide-react"
 import { useSearchParams } from "next/navigation"
-import { upsert, del } from "@/lib/api"
+import { useEffect } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
+import { z } from "zod"
 
-import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -29,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { toast } from "@/hooks/use-toast"
 
 import {
   Tooltip,
@@ -79,7 +79,8 @@ const wagesFormSchema = z.object({
   )
 })
 
-export const WagesDBSchema = z.object({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const WagesDBSchema = z.object({
   id: z.string().uuid(),
   labour_id: z.string().uuid(),
   general_id: z.string().uuid(),
@@ -153,7 +154,7 @@ function createDefaults(general_id: string) {
   }
 }
 
-export function WagesFarmPage() {
+export default function WagesFarmPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -525,5 +526,3 @@ export function WagesFarmPage() {
     </div>
   )
 }
-
-export default WagesFarmPage

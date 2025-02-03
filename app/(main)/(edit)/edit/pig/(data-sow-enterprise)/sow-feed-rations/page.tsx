@@ -68,7 +68,8 @@ const sowfeedrationFormSchema = z.object({
   )
 })
 
-export const SowFeedRationDBSchema = z.object({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const SowFeedRationDBSchema = z.object({
   id: z.string().uuid(),
   feed_ration_sows_id: z.string().uuid(),
   general_id: z.string().uuid(),
@@ -142,7 +143,7 @@ function createDefaults(general_id: string) {
   }
 }
 
-export function SowFeedRationPage() {
+export default function SowFeedRationPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -435,4 +436,3 @@ export function SowFeedRationPage() {
     </div>
   )
 }
-export default SowFeedRationPage

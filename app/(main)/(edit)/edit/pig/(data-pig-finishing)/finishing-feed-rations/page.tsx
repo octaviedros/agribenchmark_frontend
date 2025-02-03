@@ -59,7 +59,8 @@ const finishingfeedrationFormSchema = z.object({
     })
   )
 })
-export const FinishingFeedRationDBSchema = z.object({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const FinishingFeedRationDBSchema = z.object({
   id: z.string().uuid(),
   feed_ration_finishing_id: z.string().uuid(),
   general_id: z.string().uuid(),
@@ -125,7 +126,7 @@ function createDefaults(general_id: string) {
   }
 }
 
-export function FinishingFeedRationPage() {
+export default function FinishingFeedRationPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -398,4 +399,3 @@ export function FinishingFeedRationPage() {
     </div>
   )
 }
-export default FinishingFeedRationPage

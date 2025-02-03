@@ -12,27 +12,27 @@ import {
 import { toast } from "@/hooks/use-toast"
 
 const overheadFormSchema = z.object({
-    
+
+})
+
+type OverheadFormValues = z.infer<typeof overheadFormSchema>
+
+export default function OwnershipFarmPage() {
+  const form = useForm<OverheadFormValues>({
+    resolver: zodResolver(overheadFormSchema),
+    defaultValues: {},
   })
-  
-  type OverheadFormValues = z.infer<typeof overheadFormSchema>
-  
-  export function OwnershipFarmPage() {
-    const form = useForm<OverheadFormValues>({
-      resolver: zodResolver(overheadFormSchema),
-      defaultValues: { },  
-    }) 
-  
-    function onSubmit(data: OverheadFormValues) {
-      toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-      })
-    }
+
+  function onSubmit(data: OverheadFormValues) {
+    toast({
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -41,13 +41,11 @@ const overheadFormSchema = z.object({
       </div>
       <Separator />
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8"> 
-        
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
     </div>
   )
 }
-
-export default OwnershipFarmPage 

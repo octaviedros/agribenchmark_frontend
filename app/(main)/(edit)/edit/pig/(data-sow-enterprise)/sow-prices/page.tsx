@@ -100,7 +100,7 @@ function mergeData(data: Array<object>, general_id: string): SowPriceFormValues 
   return createDefaults(general_id)
 }
 
-export function SowPricePage() {
+export default function SowPricePage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -361,5 +361,3 @@ async function onSubmit(updatedData: SowPriceFormValues) {
     </div>
   )
 }
-
-export default SowPricePage

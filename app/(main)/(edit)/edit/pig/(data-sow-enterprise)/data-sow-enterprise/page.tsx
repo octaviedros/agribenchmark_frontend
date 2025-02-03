@@ -193,7 +193,7 @@ function mergeData(data: Array<object>, performanceData: Array<object>, weightDa
   }
   return createDefaults(general_id)
 }
-export function SowDataPage() {
+export default function SowDataPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -893,5 +893,3 @@ export function SowDataPage() {
     </div>
   )
 }
-
-export default SowDataPage

@@ -137,7 +137,7 @@ function mergeData(data: Array<object>, general_id: string): SowFeedingFormValue
   return createDefaults(general_id)
 }
 
-export function SowFeedingPage() {
+export default function SowFeedingPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -606,5 +606,3 @@ export function SowFeedingPage() {
     </div>
   )
 }
-
-export default SowFeedingPage

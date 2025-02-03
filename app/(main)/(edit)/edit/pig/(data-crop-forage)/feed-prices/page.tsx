@@ -56,7 +56,8 @@ const feedpriceFormSchema = z.object({
   ),
 
 })
-export const FeedPriceDBSchema = z.object({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const FeedPriceDBSchema = z.object({
   id: z.string().uuid(),
   feed_prices_id: z.string().uuid(),
   general_id: z.string().uuid(),
@@ -106,7 +107,7 @@ function createDefaults(general_id: string) {
   }
 }
 
-export function FeedPricesPage() {
+export default function FeedPricesPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -329,5 +330,3 @@ export function FeedPricesPage() {
     </div >
   )
 }
-
-export default FeedPricesPage

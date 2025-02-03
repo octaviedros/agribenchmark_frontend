@@ -73,7 +73,7 @@ function mergeData(data: Array<object>, general_id: string): LaborAllocationForm
   return createDefaults(general_id)
 }
 
-export function LaborAllocationPage() {
+export default function LaborAllocationPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -244,5 +244,3 @@ async function onSubmit(updatedData: LaborAllocationFormValues) {
     </div>
   )
 }
-
-export default LaborAllocationPage 

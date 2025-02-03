@@ -102,7 +102,7 @@ function createDefaults(general_id: string): LiabilitiesFormValues {
     return createDefaults(general_id)
   } 
 
-export function LiabilitiesFarmPage() {
+export default function LiabilitiesFarmPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -402,5 +402,3 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
     </div>
   )
 }
-
-export default LiabilitiesFarmPage 

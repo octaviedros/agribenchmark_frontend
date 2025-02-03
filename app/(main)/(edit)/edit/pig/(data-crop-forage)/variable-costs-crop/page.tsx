@@ -45,7 +45,8 @@ const varcostcropFormSchema = z.object({
     })
   )
 })
-export const VarCostCropDBSchema = z.object({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const VarCostCropDBSchema = z.object({
   id: z.string().uuid(),
   var_cost_crop_id: z.string().uuid(),
   general_id: z.string().uuid(),
@@ -96,7 +97,7 @@ function createDefaults(general_id: string) {
   }
 }
 
-export function VarCostCropPage() {
+export default function VarCostCropPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -287,5 +288,3 @@ export function VarCostCropPage() {
     </div>
   )
 }
-
-export default VarCostCropPage

@@ -47,7 +47,8 @@ const landuseFormSchema = z.object({
   )
 })
 
-export const LandUseDBSchema = z.object({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const LandUseDBSchema = z.object({
   id: z.string().uuid(),
   landuse_id: z.string().uuid(),
   general_id: z.string().uuid(),
@@ -102,7 +103,7 @@ function createDefaults(general_id: string) {
   }
 }
 
-export function LandUseFarmPage() {
+export default function LandUseFarmPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -291,5 +292,3 @@ export function LandUseFarmPage() {
     </div>
   )
 }
-
-export default LandUseFarmPage

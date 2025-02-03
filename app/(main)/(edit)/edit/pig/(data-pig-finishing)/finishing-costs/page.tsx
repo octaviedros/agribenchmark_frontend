@@ -126,7 +126,7 @@ function mergeData(data: Array<object>, fixData: Array<object>, general_id: stri
   return createDefaults(general_id)
 }
 
-export function FinishingCostPage() {
+export default function FinishingCostPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -506,5 +506,3 @@ const farmData = mergeData(data, fixcosts, general_id)
     </div>
   )
 }
-
-export default FinishingCostPage;

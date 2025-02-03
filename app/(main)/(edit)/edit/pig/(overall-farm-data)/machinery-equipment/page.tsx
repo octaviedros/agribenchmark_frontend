@@ -1,17 +1,16 @@
 "use client"
 
-import { useSearchParams } from "next/navigation"
 import { Separator } from "@/components/ui/separator"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Trash2 } from "lucide-react"
-import { z } from "zod"
-import { upsert, del } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
+import { del, upsert } from "@/lib/api"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Trash2 } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 import { useEffect } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
+import { z } from "zod"
 
-import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -23,6 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { toast } from "@/hooks/use-toast"
 
 const machineryFormSchema = z.object({
   general_id: z.string().uuid(),
@@ -46,7 +46,8 @@ const machineryFormSchema = z.object({
   )
 })
 
-export const MachinesDBSchema = z.object({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const MachinesDBSchema = z.object({
   id: z.string().uuid(),
   machines_id: z.string().uuid(),
   general_id: z.string().uuid(),
@@ -107,7 +108,7 @@ function createDefaults(general_id: string) {
   }
 }
 
-export function MachineryFarmPage() {
+export default function MachineryFarmPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -317,5 +318,3 @@ export function MachineryFarmPage() {
     </div>
   )
 }
-
-export default MachineryFarmPage

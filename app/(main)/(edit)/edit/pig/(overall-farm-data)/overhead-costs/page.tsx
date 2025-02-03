@@ -115,450 +115,448 @@ function createDefaults(general_id: string): OverheadFormValues {
     office_communication_subs: 0,
     year: new Date().getFullYear(),
     others: 0,
-  }}
+  }
+}
 
-  function mergeData(data: Array<object>, general_id: string): OverheadFormValues {
-    if (data) {
-      // @ts-expect-error zod types are not correct
-      return {
-        ...data[0],
-      }
+function mergeData(data: Array<object>, general_id: string): OverheadFormValues {
+  if (data) {
+    // @ts-expect-error zod types are not correct
+    return {
+      ...data[0],
     }
-    return createDefaults(general_id)
-  }  
-  
-  export function OverheadFarmPage() {
-    const searchParams = useSearchParams()
-    const general_id = searchParams.get("general_id") || ""
-    const {
-      data,
-      error,
-      isLoading,
-      mutate
-    } = useFarmData("/overheadcosts", general_id)
-    const farmData = mergeData(data, general_id)
+  }
+  return createDefaults(general_id)
+}
+
+export default function OverheadFarmPage() {
+  const searchParams = useSearchParams()
+  const general_id = searchParams.get("general_id") || ""
+  const {
+    data,
+    error,
+    isLoading,
+    mutate
+  } = useFarmData("/overheadcosts", general_id)
+  const farmData = mergeData(data, general_id)
   /*let farmData 
   if (data) { 
     farmData = data[0]
   }*/
-    //console.log(farmData)
-    const form = useForm<OverheadFormValues>({
-      resolver: zodResolver(overheadFormSchema),
-      defaultValues: {
-        //...createDefaults(general_id),
-        ...farmData
-      },
-      mode: "onChange",
-    })
+  //console.log(farmData)
+  const form = useForm<OverheadFormValues>({
+    resolver: zodResolver(overheadFormSchema),
+    defaultValues: {
+      //...createDefaults(general_id),
+      ...farmData
+    },
+    mode: "onChange",
+  })
   // 
-    useEffect(() => {
-      form.reset({
-        ...farmData
-      })
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoading])
+  useEffect(() => {
+    form.reset({
+      ...farmData
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
   async function onSubmit(updatedData: OverheadFormValues) {
-      try {
-        const mergedData = {
-          ...farmData, // overwrite the farmData with the new data
-          ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
-        }
-        //console.log(mergedData)
-        await mutate(upsert(`/overheadcosts`, {
-          ...mergedData,
-          id: data?.[0]?.id || farmData.id
-        }), {
-          optimisticData: mergedData,
-          rollbackOnError: true,
-          populateCache: true,
-          revalidate: true
-        })
-        toast({
-          title: "Success",
-          description: "Farm data has been saved successfully.",
-        })
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: `Failed to save farm data. ${errorMessage}`,
-        })
+    try {
+      const mergedData = {
+        ...farmData, // overwrite the farmData with the new data
+        ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
+      //console.log(mergedData)
+      await mutate(upsert(`/overheadcosts`, {
+        ...mergedData,
+        id: data?.[0]?.id || farmData.id
+      }), {
+        optimisticData: mergedData,
+        rollbackOnError: true,
+        populateCache: true,
+        revalidate: true
+      })
+      toast({
+        title: "Success",
+        description: "Farm data has been saved successfully.",
+      })
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to save farm data. ${errorMessage}`,
+      })
     }
-    
-    if (!general_id) {
-      return (
-        <div className="p-4">
-          <h2>No farm selected.</h2>
-          <p>Select a farm from the dropdown menu to get started.</p>
-        </div>
-      )
-    }
-    if (isLoading) {
-      return <div className="p-4">Loading farm data…</div>
-    }
-    if (error && error.status !== 404) {
-      console.error(error)
-      return <div className="p-4">Failed to load farm data.</div>
-    }
+  }
 
+  if (!general_id) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h3 className="text-lg font-medium">Overhead Costs</h3>
-        </div>
-        <Separator />
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-            <FormField
-              control={form.control}
-              name="land_improvements"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Land Improvements</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year; Drainage etc.</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="maintenance_machinery"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Maintenance Machinery</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year; If not known, calculate proxy, e.g. 3 % of the purchase price per annum; avoid double counting!</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="maintenance_buildings"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Maintenance Buildings and Facilities</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year; If not known, calculate proxy, e.g. 3 % of the purchase price per annum; avoid double counting!</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="contracted_labour_machinery_association"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contracted Labor and Machinery Association</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="diesel_vehicles"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Diesel for Vehicles</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year; Includes Pick-up trucks, farm vehicles, NOT tractors for crop and forage production (var. cost per ha!)</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="diesel_heating_irrigation"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Diesel for Heating</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="gasoline"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Gasoline</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="gas"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Gas</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="electricity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Electricity</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="water_fresh_waste_water_fees"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fresh Water</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year; Water and energy for the farmstead, not for crop production and other enterprises</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="farm_insurance"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Farm Insurances</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year; Insurances to cover the farm, e.g. fire insurance, crop insurance under other variable cost crop</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="invalidity_insurance"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Invalidity Insurance</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year; Fees for instutions that provide accident insurances and check safety on the farms</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="taxes_fees"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Taxes and Fees</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year; Only farm taxes like ground tax, no personal taxes like income tax!</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="advisory_services_trainings"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Advisory Services/Trainings</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year; Costs for advisory/extension services if it cannot be allocated to the enterprises</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="accounting"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Accounting</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year; E.g. costs for hiring a person or a company to do the accounting</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="office_communication_subs"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Office, Communication, Subscriptions...</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount per year; All kind of materials, hardware and communication expenses</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button className="mt-4" type="submit">Submit</Button>
-          </form>
-        </Form>
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
       </div>
     )
   }
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error && error.status !== 404) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
+  }
 
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-medium">Overhead Costs</h3>
+      </div>
+      <Separator />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          <FormField
+            control={form.control}
+            name="land_improvements"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Land Improvements</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year; Drainage etc.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="maintenance_machinery"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Maintenance Machinery</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year; If not known, calculate proxy, e.g. 3 % of the purchase price per annum; avoid double counting!</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
 
-  export default OverheadFarmPage 
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="maintenance_buildings"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Maintenance Buildings and Facilities</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year; If not known, calculate proxy, e.g. 3 % of the purchase price per annum; avoid double counting!</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="contracted_labour_machinery_association"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Contracted Labor and Machinery Association</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="diesel_vehicles"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Diesel for Vehicles</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year; Includes Pick-up trucks, farm vehicles, NOT tractors for crop and forage production (var. cost per ha!)</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="diesel_heating_irrigation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Diesel for Heating</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="gasoline"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gasoline</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="gas"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gas</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="electricity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Electricity</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="water_fresh_waste_water_fees"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Fresh Water</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year; Water and energy for the farmstead, not for crop production and other enterprises</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="farm_insurance"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Farm Insurances</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year; Insurances to cover the farm, e.g. fire insurance, crop insurance under other variable cost crop</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="invalidity_insurance"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Invalidity Insurance</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year; Fees for instutions that provide accident insurances and check safety on the farms</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="taxes_fees"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Taxes and Fees</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year; Only farm taxes like ground tax, no personal taxes like income tax!</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="advisory_services_trainings"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Advisory Services/Trainings</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year; Costs for advisory/extension services if it cannot be allocated to the enterprises</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="accounting"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Accounting</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year; E.g. costs for hiring a person or a company to do the accounting</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="office_communication_subs"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Office, Communication, Subscriptions...</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount per year; All kind of materials, hardware and communication expenses</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button className="mt-4" type="submit">Submit</Button>
+        </form>
+      </Form>
+    </div>
+  )
+}

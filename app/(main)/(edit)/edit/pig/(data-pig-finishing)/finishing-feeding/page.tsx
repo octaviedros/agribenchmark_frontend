@@ -89,7 +89,7 @@ function mergeData(data: Array<object>, general_id: string): FinishingFeedingFor
   return createDefaults(general_id)
 }
 
-export function FinishingFeedingPage() {
+export default function FinishingFeedingPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -279,5 +279,3 @@ export function FinishingFeedingPage() {
     </div>
   )
 }
-
-export default FinishingFeedingPage

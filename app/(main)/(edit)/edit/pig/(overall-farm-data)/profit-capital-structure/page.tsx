@@ -12,27 +12,27 @@ import {
 import { toast } from "@/hooks/use-toast"
 
 const profitFormSchema = z.object({
-    
+
+})
+
+type ProfitFormValues = z.infer<typeof profitFormSchema>
+
+export default function ProfitFarmPage() {
+  const form = useForm<ProfitFormValues>({
+    resolver: zodResolver(profitFormSchema),
+    defaultValues: {},
   })
-  
-  type ProfitFormValues = z.infer<typeof profitFormSchema>
-  
-  export function ProfitFarmPage() {
-    const form = useForm<ProfitFormValues>({
-      resolver: zodResolver(profitFormSchema),
-      defaultValues: { },  
-    }) 
-  
-    function onSubmit(data: ProfitFormValues) {
-      toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-      })
-    }
+
+  function onSubmit(data: ProfitFormValues) {
+    toast({
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -41,13 +41,11 @@ const profitFormSchema = z.object({
       </div>
       <Separator />
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8"> 
-        
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
     </div>
   )
 }
-
-export default ProfitFarmPage 

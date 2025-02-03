@@ -2,16 +2,16 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 
-import { useState, useEffect } from "react"
+import { useFarmData } from "@/hooks/use-farm-data"
+import { put } from "@/lib/api"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { put } from "@/lib/api"
-import { useFarmData } from "@/hooks/use-farm-data"
 
-import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Combobox } from "@/components/ui/combobox"
 import {
   Form,
   FormControl,
@@ -21,10 +21,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Combobox } from "@/components/ui/combobox"
 import { Input } from "@/components/ui/input"
 import countries from "@/data/countries.json"
 import currencies from "@/data/currencies.json"
+import { toast } from "@/hooks/use-toast"
 
 const CountriesEnum = z.enum(countries.map((country) => country.alpha3) as [string, ...string[]])
 const CurrenciesEnum = z.enum(currencies.map((curr) => curr.code) as [string, ...string[]])

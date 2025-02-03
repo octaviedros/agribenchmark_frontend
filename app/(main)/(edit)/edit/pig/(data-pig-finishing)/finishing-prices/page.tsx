@@ -77,7 +77,7 @@ function mergeData(data: Array<object>, general_id: string): FinishingPriceFormV
   return createDefaults(general_id)
 }
 
-export function FinishingPricePage() {
+export default function FinishingPricePage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -251,5 +251,3 @@ async function onSubmit(updatedData: FinishingPriceFormValues) {
     </div>
   )
 }
-
-export default FinishingPricePage

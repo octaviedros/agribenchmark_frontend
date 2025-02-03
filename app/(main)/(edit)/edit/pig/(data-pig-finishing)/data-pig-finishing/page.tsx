@@ -161,7 +161,7 @@ function mergeData(data: Array<object>, performanceData: Array<object>, general_
   return createDefaults(general_id)
 }
 
-export function PigFinishingDataPage() {
+export default function PigFinishingDataPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -685,5 +685,3 @@ export function PigFinishingDataPage() {
     </div>
   )
 }
-
-export default PigFinishingDataPage

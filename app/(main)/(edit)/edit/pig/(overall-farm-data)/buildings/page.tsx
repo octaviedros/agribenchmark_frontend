@@ -1,16 +1,5 @@
 "use client"
 
-import { Separator } from "@/components/ui/separator"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Trash2 } from "lucide-react"
-import { z } from "zod"
-import { useFarmData } from "@/hooks/use-farm-data"
-import { useEffect } from "react"
-import { useSearchParams } from "next/navigation"
-import { upsert, del } from "@/lib/api"
-import { v4 as uuidv4 } from "uuid"
-import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -22,6 +11,17 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
+import { useFarmData } from "@/hooks/use-farm-data"
+import { toast } from "@/hooks/use-toast"
+import { del, upsert } from "@/lib/api"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Trash2 } from "lucide-react"
+import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { v4 as uuidv4 } from "uuid"
+import { z } from "zod"
 
 //const buildings = [''];
 //const costTypes = ['Purchase Year', 'Purchase Price', 'Utilization Period', 'Replacement Value', 'Enterprise Codes'];
@@ -48,7 +48,8 @@ const buildingsFormSchema = z.object({
   )
 })
 
-export const BuildingsDBSchema = z.object({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const BuildingsDBSchema = z.object({
   id: z.string().uuid(),
   buildings_id: z.string().uuid(),
   general_id: z.string().uuid(),
@@ -109,7 +110,7 @@ function createDefaults(general_id: string) {
   }
 }
 
-export function BuildingsFarmPage() {
+export default function BuildingsFarmPage() {
   const searchParams = useSearchParams()
   const general_id = searchParams.get("general_id") || ""
   const {
@@ -318,5 +319,3 @@ export function BuildingsFarmPage() {
     </div>
   )
 }
-
-export default BuildingsFarmPage 
