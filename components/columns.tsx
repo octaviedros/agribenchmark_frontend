@@ -1,16 +1,15 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Pencil } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { navData } from "@/data/nav-data"
-import { labels, priorities } from "../data/data"
+import { flagmoji } from "@algoflows/flagmoji"
+import { labels } from "../data/data"
 import { Farm } from "../data/schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { DataTableRowActions } from "./data-table-row-actions"
-import { flagmoji } from "@algoflows/flagmoji";
 
 export const columns: ColumnDef<Farm>[] = [
   {
@@ -69,6 +68,7 @@ export const columns: ColumnDef<Farm>[] = [
     ),
     cell: ({ row }) => {
       const networks = navData.networks
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               .filter(network => (row.original as any)["network_" + network.value])
               .map(network => network.value)
       

@@ -1,27 +1,30 @@
 "use client"
 
-import { useContext, useState } from "react"
+import { columns } from "@/components/columns"
+import { DataTable } from "@/components/data-table"
 import { NetworkContext } from "@/context/NetworkContext"
+import { Farm } from "@/data/schema"
 import { useFarmData } from "@/hooks/use-farm-data"
 import Image from "next/image"
-import { DataTable } from "@/components/data-table"
-import { columns } from "@/components/columns"
-import { Farm } from "@/data/schema"
+import { useContext, useState } from "react"
 
 interface FarmData {
   data: Farm[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: any,
   isLoading: boolean
 }
 
 export function DashboardClient() {
-  let { data: farms, error, isLoading } = useFarmData("/generalfarm") as FarmData
+  let { data: farms } = useFarmData("/generalfarm") as FarmData
   if (!farms) farms = [] as Farm[]
   const { activeNetwork } = useContext(NetworkContext)
   const filteredFarms = farms.filter(farm => 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (farm as any)["network_" + activeNetwork.value]
   )
-  const [selectedFarms, setSelectedFarms] = useState<any[]>([])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+  const [selectedFarms, setSelectedFarms] = useState<Farm[]>([])
 
   return (
     <>

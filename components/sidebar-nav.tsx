@@ -1,7 +1,7 @@
 "use client"
 
-import { usePathname } from "next/navigation"
 import { ChevronRight } from "lucide-react"
+import { usePathname } from "next/navigation"
 
 import {
   Sidebar,
@@ -10,9 +10,9 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuSub,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
   SidebarRail,
 } from "@/components/ui/sidebar"
 
@@ -33,14 +33,14 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   }[]
 }
 
-export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
+export function SidebarNav({ items, ...props }: SidebarNavProps) {
   const pathname = usePathname()
 
   return (
     <Sidebar {...props} id="agribenchmark-page-content-sidebar" variant="inset" collapsible="none" side="right" className="bg-background w-full z-0 sticky top-12 max-h-[calc(100vh-8rem)] overflow-y-auto">
       <SidebarContent className="gap-0">
         {/* We create a collapsible SidebarGroup for each parent. */}
-        {items.map((item, i) => (
+        {items.map((item) => (
           <Collapsible
             key={item.title}
             title={item.title}

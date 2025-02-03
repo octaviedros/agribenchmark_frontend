@@ -11,10 +11,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import {
-  Dialog,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import { ProfileForm } from "./add-farm-dialog"
 
 export function NavActions({

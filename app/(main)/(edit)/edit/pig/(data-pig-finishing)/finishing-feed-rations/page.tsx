@@ -1,26 +1,22 @@
 "use client"
 
-import { Separator } from "@/components/ui/separator"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Info, Trash2 } from "lucide-react"
-import { z } from "zod"
-import { upsert, del } from "@/lib/api"
-import { v4 as uuidv4 } from "uuid"
-import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
-import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { useFarmData } from "@/hooks/use-farm-data"
+import { toast } from "@/hooks/use-toast"
+import { del, upsert } from "@/lib/api"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Info, Trash2 } from "lucide-react"
+import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { v4 as uuidv4 } from "uuid"
+import { z } from "zod"
 
 import {
   Form,
-  FormControl,
-  FormDescription,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  FormLabel
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 

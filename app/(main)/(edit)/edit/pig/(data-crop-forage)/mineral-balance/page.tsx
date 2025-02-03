@@ -1,38 +1,24 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Info, Trash2 } from "lucide-react"
-import { z } from "zod"
-import { upsert, del } from "@/lib/api"
-import { v4 as uuidv4 } from "uuid"
-import { put } from "@/lib/api"
 import { useFarmData } from "@/hooks/use-farm-data"
-import { useState, useEffect } from "react"
+import { upsert } from "@/lib/api"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Trash2 } from "lucide-react"
 import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { v4 as uuidv4 } from "uuid"
+import { z } from "zod"
 
-import { cn } from "@/lib/utils"
-import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import {
   Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  FormField
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { toast } from "@/hooks/use-toast"
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 
 const mineralbalanceFormSchema = z.object({
   fertilizerusage: z.array(
@@ -103,7 +89,6 @@ export function MineralBalancePage() {
   const general_id = searchParams.get("general_id") || ""
   const {
     data,
-    error,
     isLoading,
     mutate
   } = useFarmData("/fertilizer", general_id)
@@ -130,13 +115,13 @@ export function MineralBalancePage() {
     name: "fertilizerusage",
   })
 
-  async function onSubmit(formData: FeedPriceFormValues) {
+  async function onSubmit(formData: MineralBalanceValues) {
     try {
       console.log("submit", formData)
       const updatedData = formDataToDb(formData)
       // merge with previous farm data
       const mergedData = updatedData.map((row) => {
-        const existingRow = (data as FeedPriceDBValues[])?.find((r) => r.id === row.id)
+        const existingRow = (data as MineralBalanceDBValues[])?.find((r) => r.id === row.id)
         return existingRow ? { ...existingRow, ...row } : row
       })
       console.log(mergedData)
@@ -234,7 +219,7 @@ export function MineralBalancePage() {
                       {minerals.map((mineral) => (
                         <tr key={mineral}>
                           <td className="p-2 min-w-[120px] ">{mineral}
-                            <Input type="text" name={`${mineral}-name`} />
+                            <Input type="text" name={`${mineral}-name`} {...field} />
                           </td>
                           {mineralTypes.map((mineralType) => (
                             <td key={mineralType} className="p-2 min-w-[120px]">

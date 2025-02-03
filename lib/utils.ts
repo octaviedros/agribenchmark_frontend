@@ -1,8 +1,7 @@
-import { useEffect } from "react"
+import { navData } from "@/data/nav-data"
+import { get } from "@/lib/api"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { get } from "@/lib/api"
-import { navData } from "@/data/nav-data"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
