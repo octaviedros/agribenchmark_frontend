@@ -15,11 +15,11 @@ import { z } from "zod"
 
 import {
   Form,
-  FormItem,
   FormControl,
   FormField,
-  FormMessage,
-  FormLabel
+  FormItem,
+  FormLabel,
+  FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
@@ -250,7 +250,7 @@ export default function FinishingFeedRationPage() {
                     <FormField
                       control={form.control}
                       name={`rations.${index}.finishing_produced`}
-                      render={({ field: f }) => (
+                      render={() => (
                         <td>
                           <FormField
                             control={form.control}

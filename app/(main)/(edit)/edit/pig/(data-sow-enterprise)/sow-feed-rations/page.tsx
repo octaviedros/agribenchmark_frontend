@@ -1,7 +1,9 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useFarmData } from "@/hooks/use-farm-data"
+import { toast } from "@/hooks/use-toast"
 import { del, upsert } from "@/lib/api"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Info, Trash2 } from "lucide-react"
@@ -10,25 +12,17 @@ import { useEffect } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
 import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { toast } from "@/hooks/use-toast"
 
 import {
   Form,
-  FormItem,
-  FormMessage,
   FormControl,
   FormField,
-  FormLabel
+  FormItem,
+  FormLabel,
+  FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import {
   Select,
   SelectContent,
@@ -36,6 +30,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const sowfeedrationFormSchema = z.object({
   general_id: z.string().uuid(),
@@ -275,7 +275,7 @@ export default function SowFeedRationPage() {
                     <FormField
                       control={form.control}
                       name={`rations.${index}.sows_produced`}
-                      render={({ field: f }) => (
+                      render={() => (
                         <td>
                           <FormField
                             control={form.control}
