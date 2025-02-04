@@ -3,8 +3,8 @@
 import { Row } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
 
-import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,6 +47,7 @@ export function DataTableRowActions<TData>({
         <DropdownMenuContent align="end" className="w-[160px]">
           <DropdownMenuItem>Edit</DropdownMenuItem>
           <DropdownMenuItem>Make a copy</DropdownMenuItem>
+          <a href={`${process.env.NEXT_PUBLIC_API}/export/farm/${farm.general_id}?format=xlsx`}><DropdownMenuItem>Export as Excel</DropdownMenuItem></a>
           <DropdownMenuSeparator />
           {/* <DropdownMenuSub>
           <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
