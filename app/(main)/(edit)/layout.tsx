@@ -1,7 +1,7 @@
-import { Metadata } from "next"
 import { NetworkProvider } from "@/context/NetworkContext"
+import { Metadata } from "next"
+import { Suspense } from "react"
 import { EditLayoutContent } from "../(edit)/LayoutContent"
-
 export const metadata: Metadata = {
   title: "Edit | agribenchmark",
   description: "Edit a farm",
@@ -13,10 +13,12 @@ interface EditLayoutProps {
 
 export default async function EditLayout({ children }: EditLayoutProps) {
   return (
-    <NetworkProvider>
-      <EditLayoutContent>
-        {children}
-      </EditLayoutContent>
-    </NetworkProvider>
+    <Suspense>
+      <NetworkProvider>
+        <EditLayoutContent>
+          {children}
+        </EditLayoutContent>
+      </NetworkProvider>
+    </Suspense>
   )
 }

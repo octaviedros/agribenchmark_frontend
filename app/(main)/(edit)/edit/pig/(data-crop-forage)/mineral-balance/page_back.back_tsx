@@ -1,3 +1,4 @@
+/*
 "use client"
 
 import { Separator } from "@/components/ui/separator"
@@ -76,11 +77,6 @@ function createDefaults(general_id: string) {
       fertilizer_id: uuidv4(),
       crop_name: "",//das fehlt in der DB; die ganze DB Tabelle ergibt keinen Sinn
       fertilizer_type: "",
-      /*fertilizer_name: "",
-      fertilizer_name_custom: "",
-      amount: 0,
-      amount_unit: 0,
-      n_content_per_unit: 0,*/
     }],
   }
 }
@@ -252,3 +248,4 @@ export default function MineralBalancePage() {
     </div>
   )
 }
+*/

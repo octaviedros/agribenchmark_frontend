@@ -1,12 +1,12 @@
+import { DestructiveDialog } from "@/components/ui/destructive-dialog"
 import {
   Dialog,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { DestructiveDialog } from "@/components/ui/destructive-dialog"
 import type { Farm } from "@/data/schema"
+import { useFarmData } from "@/hooks/use-farm-data"
 import { toast } from "@/hooks/use-toast"
 import { del } from "@/lib/api"
-import { useFarmData } from "@/hooks/use-farm-data"
 import { KeyedMutator } from "swr"
 
 interface DeleteFarmProps {
@@ -42,6 +42,7 @@ export function DeleteFarmContent({
       await mutate(
         Promise.all(farms.map(farm => del(`/generalfarm/${farm.id}`))),
         {
+          // @ts-expect-error bla bla fix later
           optimisticData: allFarms.filter(f => !farms.some(farm => farm.id === f.id)),
           rollbackOnError: true,
           populateCache: false,

@@ -1,5 +1,6 @@
 
 import { NetworkProvider } from "@/context/NetworkContext"
+import { Suspense } from "react"
 import { LayoutContent } from "./LayoutContent"
 
 const data = {
@@ -16,10 +17,12 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <NetworkProvider>
-      <LayoutContent userData={data}>
-        {children}
-      </LayoutContent>
-    </NetworkProvider>
+    <Suspense>
+      <NetworkProvider>
+        <LayoutContent userData={data}>
+          {children}
+        </LayoutContent>
+      </NetworkProvider>
+    </Suspense>
   )
 }
