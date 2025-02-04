@@ -75,6 +75,16 @@ export const allSidebarNavItems: SidebarNavItems = {
     ],
   },
   {
+    title: "3 Data on Feed Production",
+    url: "",
+    items: [
+      {
+        title: "3.1 Feed Production",
+        url: "/edit/pig/feed-production",
+      }
+    ],
+  },
+  {
     title: "10 Data for the Sow Enterprise",
     url: "",
     items: [

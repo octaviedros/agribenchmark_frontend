@@ -15,7 +15,10 @@ import { z } from "zod"
 
 import {
   Form,
+  FormItem,
+  FormControl,
   FormField,
+  FormMessage,
   FormLabel
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -27,47 +30,40 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 const finishingfeedrationFormSchema = z.object({
-  selfproduced: z.array(
+  general_id: z.string().uuid(),
+  total_amount_feed_used: z.coerce.number(),
+  rations: z.array(
     z.object({
-      general_id: z.string().uuid(),
       id: z.string().uuid(),
+      feed_ration_sows_id: z.string().uuid(),
+      feeds_id: z.string().uuid(),
       crop_name: z.string(),
-      produced: z.string(),
-      feed_ration_finishing_id: z.string().uuid(),
-      feed_id: z.string().uuid(),
-      year: z.number().int(),
+      finishing_produced: z.string(),
       finishing_feed_1: z.coerce.number(),
       finishing_feed_2: z.coerce.number(),
       finishing_feed_3: z.coerce.number(),
       total_amount_feed_used: z.coerce.number(),
-    })
-  ),
-  boughtfeed: z.array(
-    z.object({
-      general_id: z.string().uuid(),
-      id: z.string().uuid(),
-      crop_name: z.string(),
-      produced: z.string(),
-      feed_ration_finishing_id: z.string().uuid(),
-      feed_id: z.string().uuid(),
-      year: z.number().int(),
-      finishing_feed_1: z.coerce.number(),
-      finishing_feed_2: z.coerce.number(),
-      finishing_feed_3: z.coerce.number(),
-      total_amount_feed_used: z.number(),
     })
   )
 })
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const FinishingFeedRationDBSchema = z.object({
   id: z.string().uuid(),
-  feed_ration_finishing_id: z.string().uuid(),
+  feed_ration_sows_id: z.string().uuid(),
   general_id: z.string().uuid(),
-  crop_name: z.string(),
-  produced: z.string(),
-  feed_id: z.string().uuid(),
+  feeds_id: z.string().uuid(),
   year: z.number().int(),
+  finishing_produced: z.string(),
+  crop_name: z.string(), 
   finishing_feed_1: z.coerce.number(),
   finishing_feed_2: z.coerce.number(),
   finishing_feed_3: z.coerce.number(),
@@ -76,53 +72,62 @@ const FinishingFeedRationDBSchema = z.object({
 
 type FinishingFeedRationFormValues = z.infer<typeof finishingfeedrationFormSchema>
 type FinishingFeedRationDBValues = z.infer<typeof FinishingFeedRationDBSchema>
-
+const feedTypes: { name: string; value: string, tooltip?: string }[] = [
+  {
+    name: "Crop Name",
+    value: "crop_name",
+  },
+  {
+    name: "Finishing Feed 1",
+    value: "finishing_feed_1",
+    tooltip: "Share",
+  },
+  {
+    name: "Finishing Feed 2",
+    value: "finishing_feed_2",
+    tooltip: "Share",
+  },
+  {
+    name: "Finishing Feed 3",
+    value: "finishing_feed_3",
+    tooltip: "Share",
+  },
+]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dbDataToForm(data: any, general_id: string) {
   if (!data || !data.length) return createDefaults(general_id)
-  return {
-    selfproduced: data.filter((row: FinishingFeedRationDBValues) => row.produced !== "Bought Feed"),
-    boughtfeed: data.filter((row: FinishingFeedRationDBValues) => row.produced !== "Self Produced")
-  }
+    return {
+      id: data[0].id,
+      general_id: data[0].general_id,
+      rations: data
+    }
 }
 function formDataToDb(data: FinishingFeedRationFormValues) {
   return [
-    ...data.selfproduced,
-    ...data.boughtfeed,
+    ...data.rations,
   ].map((worker) => ({
     ...worker,
+    total_amount_feed_used: data.total_amount_feed_used,
   }))
 }
 
 function createDefaults(general_id: string) {
   return {
-    selfproduced: [{
-      general_id: general_id,
+    general_id: general_id,
+    total_amount_feed_used: 0,
+    rations: [{
       id: uuidv4(),
-      feed_ration_finishing_id: uuidv4(),
-      feed_id: uuidv4(),
+      general_id: general_id,
+      feed_ration_sows_id: uuidv4(),
+      feeds_id: uuidv4(),
+      year: new Date().getFullYear(),
+      finishing_produced: "",
       crop_name: "",
-      produced: "Self Produced",
       finishing_feed_1: 0,
       finishing_feed_2: 0,
       finishing_feed_3: 0,
       total_amount_feed_used: 0,
-      year: new Date().getFullYear(),
-    }],
-    boughtfeed: [{
-      general_id: general_id,
-      id: uuidv4(),
-      feed_id: uuidv4(),
-      feed_ration_finishing_id: uuidv4(),
-      crop_name: "",
-      produced: "Bought Feed",
-      finishing_feed_1: 0,
-      finishing_feed_2: 0,
-      finishing_feed_3: 0,
-      total_amount_feed_used: 0,
-      year: new Date().getFullYear(),
-    }],
-
+    }]
   }
 }
 
@@ -155,12 +160,7 @@ export default function FinishingFeedRationPage() {
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "selfproduced",
-  })
-
-  const { fields: boughtfields, append: boughtappend, remove: boughtremove } = useFieldArray({
-    control: form.control,
-    name: "boughtfeed",
+    name: "rations",
   })
 
   async function onSubmit(formData: FinishingFeedRationFormValues) {
@@ -192,28 +192,6 @@ export default function FinishingFeedRationPage() {
       })
     }
   }
-  const costTypes: { name: string; value: keyof FinishingFeedRationFormValues["selfproduced"][number], tooltip?: string }[] = [
-    {
-      name: "Finishing Feed 1",
-      value: "finishing_feed_1",
-      tooltip: "Share",
-    },
-    {
-      name: "Finishing Feed 2",
-      value: "finishing_feed_2",
-      tooltip: "Share",
-    },
-    {
-      name: "Finishing Feed 3",
-      value: "finishing_feed_3",
-      tooltip: "Share",
-    },
-    {
-      name: "Total Amount Feed Used",
-      value: "total_amount_feed_used",
-      tooltip: "Total Amount Feed Used",
-    },
-  ]
 
   if (!general_id) {
     return (
@@ -240,12 +218,12 @@ export default function FinishingFeedRationPage() {
       <Separator />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <h3 className="text-lg font-medium">Self Produced Feed</h3>
+        <h3 className="text-lg font-medium">Feed Rations</h3>
           <table className="w-full my-4">
             <thead>
               <tr>
-                <th className="text-left pl-2 align-bottom"><FormLabel>Crop Name</FormLabel></th>
-                {costTypes.map(({ name, tooltip }) => (
+                <th className="text-left pl-2 align-bottom"><FormLabel>Production Type</FormLabel></th>
+                {feedTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
                     <FormLabel>
                       {name}
@@ -271,20 +249,43 @@ export default function FinishingFeedRationPage() {
                     {/* Self Produced Feed */}
                     <FormField
                       control={form.control}
-                      name={`selfproduced.${index}.crop_name`}
+                      name={`rations.${index}.finishing_produced`}
                       render={({ field: f }) => (
-                        <Input {...f} className="w-full" />
+                        <td>
+                          <FormField
+                            control={form.control}
+                            name={`rations.${index}.finishing_produced`}
+                            render={({ field: f }) => (
+                              <FormItem>
+                                <Select onValueChange={f.onChange} defaultValue={f.value}>
+                                  <FormControl>
+                                    <SelectTrigger> <SelectValue placeholder="Select Prod." />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="selfproduced">Self Produced</SelectItem>
+                                    <SelectItem value="boughtfeed">Bought Feed</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </td>
                       )}
                     />
                   </td>
-                  {costTypes.map(({ value: selfcostType }) => (
+                  {feedTypes.map(({ value: selfcostType }) => (
                     <td key={selfcostType} className="p-1 min-w-[120px]">
-                      {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
                       <FormField
                         control={form.control}
-                        name={`selfproduced.${index}.${selfcostType as keyof FinishingFeedRationFormValues["selfproduced"][number]}`}
+                        name={`rations.${index}.${selfcostType as keyof FinishingFeedRationFormValues["rations"][number]}`}
                         render={({ field: ff }) => (
-                          <Input {...ff} className="w-full" type="number" value={ff.value as number} />
+                          <Input {...ff}
+                            className="w-full"
+                            type={selfcostType === 'crop_name' ? 'text' : 'number'}
+                            value={ff.value}
+                          />
                         )}
                       />
                     </td>
@@ -295,8 +296,8 @@ export default function FinishingFeedRationPage() {
                       variant="destructive"
                       size="icon"
                       onClick={() => {
-                        if (farmData.selfproduced[index]?.id) {
-                          del(`/feedrationsows/${farmData.selfproduced[index].id}`)
+                        if (farmData.rations[index]?.id) {
+                          del(`/feedrationsows/${farmData.rations[index].id}`)
                         }
                         remove(index)
                       }}
@@ -311,89 +312,23 @@ export default function FinishingFeedRationPage() {
           <div>
             <Button
               type="button"
-              className="mt-4"
-              onClick={() => append(createDefaults(general_id).selfproduced[0])}>Add Row</Button>
+              className="mt-4 mb-4"
+              onClick={() => append(createDefaults(general_id).rations[0])}>Add Row</Button>
           </div>
-          <br />
-          <br />
-          <h3 className="text-lg font-medium">Bought Feed</h3>
-          <table className="w-full my-4">
-            <thead>
-              <tr>
-                <th className="text-left pl-2 align-bottom">
-                  <FormLabel>Crop Name</FormLabel>
-                </th>
-                {costTypes.map(({ name, tooltip }) => (
-                  <th key={name} className="text-left pl-2 align-bottom">
-                    <FormLabel>
-                      {name}
-                      {tooltip &&
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>{tooltip}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      }
-                    </FormLabel>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {boughtfields.map((field, index) => (
-                <tr key={field.id}>
-                  <td className="p-1 min-w-[120px]">
-                    {/* Bought Feed*/}
-                    <FormField
-                      control={form.control}
-                      name={`boughtfeed.${index}.crop_name`}
-                      render={({ field: f }) => (
-                        <Input {...f} className="w-full" />
-                      )}
-                    />
-                  </td>
-                  {costTypes.map(({ value: boughtcostType }) => (
-                    <td key={boughtcostType} className="p-1 min-w-[120px]">
-                      {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
-                      <FormField
-                        control={form.control}
-                        name={`boughtfeed.${index}.${boughtcostType as keyof FinishingFeedRationFormValues["boughtfeed"][number]}`}
-                        render={({ field: ff }) => (
-                          <Input {...ff} className="w-full" type="number" value={ff.value as number} />
-                        )}
-                      />
-                    </td>
-                  ))}
-                  <td>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => {
-                        if (farmData.boughtfeed[index]?.id) {
-                          del(`/feedrationsows/${farmData.boughtfeed[index].id}`)
-                        }
-                        boughtremove(index)
-                      }}
-                    >
-                      <Trash2 />
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div>
-            <Button
-              type="button"
-              className="mt-4"
-              onClick={() => boughtappend(createDefaults(general_id).boughtfeed[0])}>Add Row</Button>
-          </div>
-
-        <Button type="submit">Submit</Button>
+          <FormField
+            control={form.control}
+            name="total_amount_feed_used"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Total Amount of Feed Used</FormLabel>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">Submit</Button>
         </form>
       </Form>
     </div>
