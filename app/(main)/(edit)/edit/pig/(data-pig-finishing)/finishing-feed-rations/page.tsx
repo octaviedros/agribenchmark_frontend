@@ -245,13 +245,12 @@ export default function FinishingFeedRationPage() {
             <tbody>
               {fields.map((field, index) => (
                 <tr key={field.id}>
-                  <td className="p-1 min-w-[120px]">
+                  <td className="p-1 min-w-[130px]">
                     {/* Self Produced Feed */}
                     <FormField
                       control={form.control}
                       name={`rations.${index}.finishing_produced`}
                       render={() => (
-                        <td>
                           <FormField
                             control={form.control}
                             name={`rations.${index}.finishing_produced`}
@@ -271,12 +270,11 @@ export default function FinishingFeedRationPage() {
                               </FormItem>
                             )}
                           />
-                        </td>
                       )}
                     />
                   </td>
                   {feedTypes.map(({ value: selfcostType }) => (
-                    <td key={selfcostType} className="p-1 min-w-[120px]">
+                    <td key={selfcostType} className="p-1 min-w-[140px]">
                       <FormField
                         control={form.control}
                         name={`rations.${index}.${selfcostType as keyof FinishingFeedRationFormValues["rations"][number]}`}

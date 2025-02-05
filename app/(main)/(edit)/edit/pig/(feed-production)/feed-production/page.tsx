@@ -43,7 +43,7 @@ const feedproductionFormSchema = z.object({
             id: z.string().uuid(),
             general_id: z.string().uuid(),
             feeds_id: z.string().uuid(),
-            production: z.string(), // Own Production or Bought Feed
+            production_type: z.string(), // Own Production or Bought Feed
             feed_name: z.string(), // Name of Feed should be maybe crop_name as in feed-ration or cereal_type (without enum) typed in by user connection to then feed-rations table to only use these feeds
             dry_matter: z.coerce.number(),
             xp: z.coerce.number(),
@@ -62,6 +62,9 @@ const FeedProductionDBSchema = z.object({
     dry_matter: z.number(),
     xp: z.number(),
     energy: z.number(),
+    feed_ration_sows_id: z.string().uuid(),
+    feed_ration_finishing_id: z.string().uuid(),
+    cereal_type: z.string(),
 })
 
 type FeedProductionFormValues = z.infer<typeof feedproductionFormSchema>
@@ -88,7 +91,8 @@ function createDefaults(general_id: string) {
             general_id: general_id,
             id: uuidv4(),
             feeds_id: uuidv4(),
-            production: "",
+            feed_ration_sows_id: uuidv4(),
+            production_type: "",
             feed_name: "",
             dry_matter: 0,
             xp: 0,
@@ -235,7 +239,7 @@ export default function FeedProductionPage() {
                                             {/* Permanent Worker */}
                                             <FormField
                                                 control={form.control}
-                                                name={`production.${index}.production`}
+                                                name={`production.${index}.production_type`}
                                                 render={({ field: f }) => (
                                                     <FormItem>
                                                         <Select onValueChange={f.onChange} defaultValue={f.value}>
@@ -261,7 +265,9 @@ export default function FeedProductionPage() {
                                                     name={`production.${index}.${permanentcostType as keyof FeedProductionFormValues["production"][number]}`}
                                                     render={({ field: ff }) => (
                                                         <FormItem>
-                                                            <Input {...ff} className="w-full" type="number" value={ff.value as number} />
+                                                            <Input {...ff} className="w-full"
+                                                                type={permanentcostType === 'feed_name' ? 'text' : 'number'}
+                                                                value={ff.value} />
                                                             <FormMessage />
                                                         </FormItem>
                                                     )}

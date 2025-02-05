@@ -276,32 +276,30 @@ export default function SowFeedRationPage() {
                       control={form.control}
                       name={`rations.${index}.sows_produced`}
                       render={() => (
-                        <td>
-                          <FormField
-                            control={form.control}
-                            name={`rations.${index}.sows_produced`}
-                            render={({ field: f }) => (
-                              <FormItem>
-                                <Select onValueChange={f.onChange} defaultValue={f.value}>
-                                  <FormControl>
-                                    <SelectTrigger> <SelectValue placeholder="Select Prod." />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="selfproduced">Self Produced</SelectItem>
-                                    <SelectItem value="boughtfeed">Bought Feed</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </td>
+                        <FormField
+                          control={form.control}
+                          name={`rations.${index}.sows_produced`}
+                          render={({ field: f }) => (
+                            <FormItem>
+                              <Select onValueChange={f.onChange} defaultValue={f.value}>
+                                <FormControl>
+                                  <SelectTrigger> <SelectValue placeholder="Select Prod." />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="selfproduced">Self Produced</SelectItem>
+                                  <SelectItem value="boughtfeed">Bought Feed</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       )}
                     />
                   </td>
                   {feedTypes.map(({ value: selfcostType }) => (
-                    <td key={selfcostType} className="p-1 min-w-[120px]">
+                    <td key={selfcostType} className="p-1 min-w-[125px]">
                       <FormField
                         control={form.control}
                         name={`rations.${index}.${selfcostType as keyof SowFeedRationFormValues["rations"][number]}`}
