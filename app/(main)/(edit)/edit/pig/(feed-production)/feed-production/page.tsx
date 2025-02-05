@@ -44,7 +44,7 @@ const feedproductionFormSchema = z.object({
             general_id: z.string().uuid(),
             feeds_id: z.string().uuid(),
             production_type: z.string(), // Own Production or Bought Feed
-            feed_name: z.string(), // Name of Feed should be maybe crop_name as in feed-ration or cereal_type (without enum) typed in by user connection to then feed-rations table to only use these feeds
+            crop_name: z.string(), // Name of Feed should be maybe crop_name as in feed-ration or cereal_type (without enum) typed in by user connection to then feed-rations table to only use these feeds
             dry_matter: z.coerce.number(),
             xp: z.coerce.number(),
             energy: z.coerce.number(),
@@ -58,7 +58,7 @@ const FeedProductionDBSchema = z.object({
     general_id: z.string().uuid(),
     feeds_id: z.string().uuid(),
     production: z.string(),
-    feed_name: z.string(),
+    crop_name: z.string(),
     dry_matter: z.number(),
     xp: z.number(),
     energy: z.number(),
@@ -74,15 +74,15 @@ type FeedProductionDBValues = z.infer<typeof FeedProductionDBSchema>
 function dbDataToForm(data: any, general_id: string) {
     if (!data || !data.length) return createDefaults(general_id)
     return {
-        production: data.filter((row: FeedProductionDBValues) => row.feed_name),
+        id: data[0].id,
+        general_id: data[0].general_id,
+        production: data
     }
 }
 function formDataToDb(data: FeedProductionFormValues) {
-    return [
-        ...data.production,
-    ].map((worker) => ({
-        ...worker,
-    }))
+    return data.production.map((varcostcrops) => ({
+        ...varcostcrops,
+      }))
 }
 
 function createDefaults(general_id: string) {
@@ -93,7 +93,7 @@ function createDefaults(general_id: string) {
             feeds_id: uuidv4(),
             feed_ration_sows_id: uuidv4(),
             production_type: "",
-            feed_name: "",
+            crop_name: "",
             dry_matter: 0,
             xp: 0,
             energy: 0,
@@ -165,7 +165,7 @@ export default function FeedProductionPage() {
     const cropTypes: { name: string; value: keyof FeedProductionFormValues["production"][number], tooltip?: string }[] = [
         {
             name: "Crop Name",
-            value: "feed_name",
+            value: "crop_name",
         },
         {
             name: "Dry Matter",
@@ -266,7 +266,7 @@ export default function FeedProductionPage() {
                                                     render={({ field: ff }) => (
                                                         <FormItem>
                                                             <Input {...ff} className="w-full"
-                                                                type={permanentcostType === 'feed_name' ? 'text' : 'number'}
+                                                                type={permanentcostType === 'crop_name' ? 'text' : 'number'}
                                                                 value={ff.value} />
                                                             <FormMessage />
                                                         </FormItem>
