@@ -26,6 +26,7 @@ export function Combobox({
   placeholder = "Search option...",
   noOptionText = "No option found.",
   isDialog = false,
+  width = "200",
 }: {
   valueState: [string, React.Dispatch<React.SetStateAction<string>>]
   options: { value: string; label: string }[],
@@ -33,6 +34,7 @@ export function Combobox({
   placeholder?: string,
   noOptionText?: string,
   isDialog?: boolean,
+  width?: string,
 }) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = valueState
@@ -44,7 +46,7 @@ export function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className={`w-[${width}px] justify-between`}
         >
           <span className="max-w-[176px] overflow-hidden whitespace-nowrap overflow-ellipsis">
             {value

@@ -8,11 +8,11 @@ import { del, upsert } from "@/lib/api"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Info, Trash2 } from "lucide-react"
 import { useSearchParams } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
 import { z } from "zod"
-
+import { Combobox } from "@/components/ui/combobox"
 import {
   Form,
   FormControl,
@@ -22,14 +22,6 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Tooltip,
   TooltipContent,
@@ -43,10 +35,11 @@ const sowfeedrationFormSchema = z.object({
   rations: z.array(
     z.object({
       id: z.string().uuid(),
+      general_id: z.string().uuid(),
       feed_ration_sows_id: z.string().uuid(),
       feeds_id: z.string().uuid(),
       crop_name: z.string(),
-      sows_produced: z.string(),
+      
       gestation_feed: z.coerce.number(),
       lactation_feed: z.coerce.number(),
       special_gilt_feed: z.coerce.number(),
@@ -64,7 +57,7 @@ const SowFeedRationDBSchema = z.object({
   general_id: z.string().uuid(),
   feeds_id: z.string().uuid(),
   year: z.number().int(),
-  sows_produced: z.string(),
+  
   crop_name: z.string(),  // In DB ENUM Gesattion, lactation,... but are in excel columns individually
   gestation_feed: z.number(),
   lactation_feed: z.number(),
@@ -78,11 +71,19 @@ const SowFeedRationDBSchema = z.object({
 type SowFeedRationFormValues = z.infer<typeof sowfeedrationFormSchema>
 type SowFeedRationDBValues = z.infer<typeof SowFeedRationDBSchema>
 
+interface FeedOption {
+  value: string;
+  label: string;
+}
+
+interface FeedData {
+  id: string;
+  crop_name: string;
+  production_type: string;
+}
+
 const feedTypes: { name: string; value: string, tooltip?: string }[] = [
-  {
-    name: "Crop Name",
-    value: "crop_name",
-  },
+  
   {
     name: "Gestation Feed",
     value: "gestation_feed",
@@ -119,8 +120,8 @@ const feedTypes: { name: string; value: string, tooltip?: string }[] = [
 function dbDataToForm(data: any, general_id: string) {
   if (!data || !data.length) return createDefaults(general_id)
   return {
-    id: data[0].id,
     general_id: data[0].general_id,
+    total_amount_feed_used: data[0].total_amount_feed_used,
     rations: data
   }
 }
@@ -141,9 +142,8 @@ function createDefaults(general_id: string) {
       id: uuidv4(),
       general_id: general_id,
       feed_ration_sows_id: uuidv4(),
-      feeds_id: uuidv4(),
+      feeds_id: "",
       year: new Date().getFullYear(),
-      sows_produced: "",
       crop_name: "",
       gestation_feed: 0,
       lactation_feed: 0,
@@ -165,9 +165,21 @@ export default function SowFeedRationPage() {
     mutate
   } = useFarmData("/feedrationsows", general_id)
 
+  const {
+    data: feedData,
+    error: feedError,
+    isLoading: feedIsLoading
+  } = useFarmData("/feeds", general_id)
+  
+
+  const feedOptions: FeedOption[] = (feedData as FeedData[] | undefined)?.map((feed: FeedData) => ({
+    value: feed.id,
+    label: feed.crop_name + " (" + feed.production_type + ")",
+  })) || []
+
   const farmData = dbDataToForm(data, general_id)
 
-  console.log(farmData)
+ 
   const form = useForm<SowFeedRationFormValues>({
     resolver: zodResolver(sowfeedrationFormSchema),
     defaultValues: {
@@ -227,10 +239,10 @@ export default function SowFeedRationPage() {
     )
   }
 
-  if (isLoading) {
+  if (isLoading || feedIsLoading) {
     return <div className="p-4">Loading farm data…</div>
   }
-  if (error && error.status !== 404) {
+  if ((error && error.status !== 404) || (feedError && feedError.status !== 404)) {
     console.error(error)
     return <div className="p-4">Failed to load farm data.</div>
   }
@@ -242,12 +254,12 @@ export default function SowFeedRationPage() {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error, form.getValues()))} className="space-y-4">
           <h3 className="text-lg font-medium">Feed Rations</h3>
           <table className="w-full my-4">
             <thead>
               <tr>
-                <th className="text-left pl-2 align-bottom"><FormLabel>Production Type</FormLabel></th>
+                <th className="text-left pl-2 align-bottom"><FormLabel>Feed</FormLabel></th>
                 {feedTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
                     <FormLabel>
@@ -270,32 +282,39 @@ export default function SowFeedRationPage() {
             <tbody>
               {fields.map((field, index) => (
                 <tr key={field.id}>
-                  <td className="p-1 min-w-[120px]">
+                  <td className="p-1 min-w-[80px]">
                     {/* Self Produced Feed */}
                     <FormField
                       control={form.control}
-                      name={`rations.${index}.sows_produced`}
-                      render={() => (
-                        <FormField
-                          control={form.control}
-                          name={`rations.${index}.sows_produced`}
-                          render={({ field: f }) => (
-                            <FormItem>
-                              <Select onValueChange={f.onChange} defaultValue={f.value}>
-                                <FormControl>
-                                  <SelectTrigger> <SelectValue placeholder="Select Prod." />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="selfproduced">Self Produced</SelectItem>
-                                  <SelectItem value="boughtfeed">Bought Feed</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      )}
+                      name={`rations.${index}.feeds_id`}
+                      render={({ field }) => {
+                        const [feedValue, setfeedValue] = useState<string>(field.value)
+                        
+                        useEffect(() => {
+                          setfeedValue(field.value)
+                        }, [field.value])
+
+                        useEffect(() => {
+                          field.onChange(feedValue)
+                        }, [feedValue])
+                        
+                        return (
+                          <FormItem>
+                            <FormControl>
+                              <Combobox
+                                valueState={[feedValue, setfeedValue]}
+                                options={feedOptions}
+                                selectText="Select feed..."
+                                placeholder="Search feeds..."
+                                noOptionText="No feed found."
+                                isDialog={true}
+                                width={"150"}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )
+                      }}
                     />
                   </td>
                   {feedTypes.map(({ value: selfcostType }) => (

@@ -10,7 +10,7 @@ import { useEffect } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
 import { z } from "zod"
-
+import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -38,16 +38,19 @@ import {
 } from "@/components/ui/tooltip"
 
 const feedproductionFormSchema = z.object({
+    general_id: z.string().uuid(),
     production: z.array(
         z.object({
             id: z.string().uuid(),
             general_id: z.string().uuid(),
-            feeds_id: z.string().uuid(),
             production_type: z.string(), // Own Production or Bought Feed
-            crop_name: z.string(), // Name of Feed should be maybe crop_name as in feed-ration or cereal_type (without enum) typed in by user connection to then feed-rations table to only use these feeds
+            crop_name: z.string(), 
             dry_matter: z.coerce.number(),
             xp: z.coerce.number(),
             energy: z.coerce.number(),
+            price: z.coerce.number(),
+            concentrate: z.boolean(),
+            protein: z.coerce.number(),
         })
     )
 })
@@ -56,15 +59,14 @@ const feedproductionFormSchema = z.object({
 const FeedProductionDBSchema = z.object({
     id: z.string().uuid(),
     general_id: z.string().uuid(),
-    feeds_id: z.string().uuid(),
-    production: z.string(),
+    production_type: z.string(),
     crop_name: z.string(),
     dry_matter: z.number(),
     xp: z.number(),
     energy: z.number(),
-    feed_ration_sows_id: z.string().uuid(),
-    feed_ration_finishing_id: z.string().uuid(),
-    cereal_type: z.string(),
+    price: z.number(),
+    concentrate: z.boolean(),
+    protein: z.number(),
 })
 
 type FeedProductionFormValues = z.infer<typeof feedproductionFormSchema>
@@ -74,7 +76,6 @@ type FeedProductionDBValues = z.infer<typeof FeedProductionDBSchema>
 function dbDataToForm(data: any, general_id: string) {
     if (!data || !data.length) return createDefaults(general_id)
     return {
-        id: data[0].id,
         general_id: data[0].general_id,
         production: data
     }
@@ -82,21 +83,23 @@ function dbDataToForm(data: any, general_id: string) {
 function formDataToDb(data: FeedProductionFormValues) {
     return data.production.map((varcostcrops) => ({
         ...varcostcrops,
-      }))
+    }))
 }
 
 function createDefaults(general_id: string) {
     return {
+        general_id: general_id,
         production: [{
             general_id: general_id,
             id: uuidv4(),
-            feeds_id: uuidv4(),
-            feed_ration_sows_id: uuidv4(),
             production_type: "",
             crop_name: "",
             dry_matter: 0,
             xp: 0,
             energy: 0,
+            price: 0,
+            concentrate: false,
+            protein: 0,
         }],
     }
 }
@@ -112,7 +115,7 @@ export default function FeedProductionPage() {
     } = useFarmData("/feeds", general_id)
 
     const farmData = dbDataToForm(data, general_id)
-    console.log(farmData)
+    console.log("hallo", farmData)
     const form = useForm<FeedProductionFormValues>({
         resolver: zodResolver(feedproductionFormSchema),
         defaultValues: {
@@ -162,9 +165,9 @@ export default function FeedProductionPage() {
             })
         }
     }
-    const cropTypes: { name: string; value: keyof FeedProductionFormValues["production"][number], tooltip?: string }[] = [
+    const cropTypes: { name: string; value: keyof FeedProductionFormValues["production"][number], tooltip?: string, type?: string }[] = [
         {
-            name: "Crop Name",
+            name: "Name",
             value: "crop_name",
         },
         {
@@ -181,6 +184,16 @@ export default function FeedProductionPage() {
             name: "Energy",
             value: "energy",
             tooltip: "Energy content of the feed in MJ/kg",
+        },
+        {
+            name: "Price",
+            value: "price",
+            tooltip: "Price of the feed per tonne",
+        },
+        {
+            name: "Concentrate",
+            value: "concentrate",
+            type: "checkbox",
         },
     ]
 
@@ -203,11 +216,11 @@ export default function FeedProductionPage() {
 
     return (
         <div className="space-y-6">
-            <div><h3 className="text-lg font-medium">Data on Feed Production</h3></div>
+            <div><h3 className="text-lg font-medium">Data on Feed</h3></div>
             <Separator />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit, error => console.log(error))} className="space-y-8">
-                    <h3 className="text-lg font-medium">Feed Production</h3>
+                    <h3 className="text-lg font-medium">Feed Components</h3>
                     <div>
                         <table className="w-full my-4">
                             <thead>
@@ -257,19 +270,22 @@ export default function FeedProductionPage() {
                                                 )}
                                             />
                                         </td>
-                                        {cropTypes.map(({ value: permanentcostType }) => (
+                                        {cropTypes.map(({ value: permanentcostType, type }) => (
                                             <td key={permanentcostType} className="p-1 min-w-[120px]">
                                                 {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
                                                 <FormField
                                                     control={form.control}
                                                     name={`production.${index}.${permanentcostType as keyof FeedProductionFormValues["production"][number]}`}
                                                     render={({ field: ff }) => (
-                                                        <FormItem>
-                                                            <Input {...ff} className="w-full"
-                                                                type={permanentcostType === 'crop_name' ? 'text' : 'number'}
-                                                                value={ff.value} />
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        (type === "checkbox" ?
+                                                            <div className="w-full flex items-center justify-center">
+                                                                <Checkbox
+                                                                    checked={ff.value as boolean ?? false}
+                                                                    onCheckedChange={ff.onChange}
+                                                                />
+                                                            </div> :
+                                                            <Input {...ff} className="w-full" type={permanentcostType === 'crop_name' ? 'text' : 'number'}  value={ff.value as number} />
+                                                        )
                                                     )}
                                                 />
                                             </td>

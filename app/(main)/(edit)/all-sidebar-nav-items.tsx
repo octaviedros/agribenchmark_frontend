@@ -75,12 +75,12 @@ export const allSidebarNavItems: SidebarNavItems = {
     ],
   },
   {
-    title: "3 Data on Feed Production",
+    title: "3 Data on Feed",
     url: "",
     items: [
       {
-        title: "3.1 Feed Production",
-        url: "/edit/pig/feed-production",
+        title: "3.1 Feed Components",
+        url: "/edit/pig/feed-components",
       }
     ],
   },

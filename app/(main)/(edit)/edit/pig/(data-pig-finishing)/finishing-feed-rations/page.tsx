@@ -8,11 +8,11 @@ import { del, upsert } from "@/lib/api"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Info, Trash2 } from "lucide-react"
 import { useSearchParams } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
 import { z } from "zod"
-
+import { Combobox } from "@/components/ui/combobox"
 import {
   Form,
   FormControl,
@@ -30,24 +30,16 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
 const finishingfeedrationFormSchema = z.object({
   general_id: z.string().uuid(),
   total_amount_feed_used: z.coerce.number(),
   rations: z.array(
     z.object({
       id: z.string().uuid(),
-      feed_ration_sows_id: z.string().uuid(),
+      general_id: z.string().uuid(),
+      feed_ration_finishing_id: z.string().uuid(),
       feeds_id: z.string().uuid(),
       crop_name: z.string(),
-      finishing_produced: z.string(),
       finishing_feed_1: z.coerce.number(),
       finishing_feed_2: z.coerce.number(),
       finishing_feed_3: z.coerce.number(),
@@ -58,12 +50,12 @@ const finishingfeedrationFormSchema = z.object({
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const FinishingFeedRationDBSchema = z.object({
   id: z.string().uuid(),
-  feed_ration_sows_id: z.string().uuid(),
+  feed_ration_finishing_id: z.string().uuid(),
   general_id: z.string().uuid(),
   feeds_id: z.string().uuid(),
   year: z.number().int(),
-  finishing_produced: z.string(),
-  crop_name: z.string(), 
+
+  crop_name: z.string(),
   finishing_feed_1: z.coerce.number(),
   finishing_feed_2: z.coerce.number(),
   finishing_feed_3: z.coerce.number(),
@@ -72,11 +64,19 @@ const FinishingFeedRationDBSchema = z.object({
 
 type FinishingFeedRationFormValues = z.infer<typeof finishingfeedrationFormSchema>
 type FinishingFeedRationDBValues = z.infer<typeof FinishingFeedRationDBSchema>
+
+interface FeedOption {
+  value: string;
+  label: string;
+}
+
+interface FeedData {
+  id: string;
+  crop_name: string;
+  production_type: string;
+}
+
 const feedTypes: { name: string; value: string, tooltip?: string }[] = [
-  {
-    name: "Crop Name",
-    value: "crop_name",
-  },
   {
     name: "Finishing Feed 1",
     value: "finishing_feed_1",
@@ -96,11 +96,11 @@ const feedTypes: { name: string; value: string, tooltip?: string }[] = [
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dbDataToForm(data: any, general_id: string) {
   if (!data || !data.length) return createDefaults(general_id)
-    return {
-      id: data[0].id,
-      general_id: data[0].general_id,
-      rations: data
-    }
+  return {
+    general_id: data[0].general_id,
+    total_amount_feed_used: data[0].total_amount_feed_used,
+    rations: data
+  }
 }
 function formDataToDb(data: FinishingFeedRationFormValues) {
   return [
@@ -118,10 +118,9 @@ function createDefaults(general_id: string) {
     rations: [{
       id: uuidv4(),
       general_id: general_id,
-      feed_ration_sows_id: uuidv4(),
-      feeds_id: uuidv4(),
+      feed_ration_finishing_id: uuidv4(),
+      feeds_id: "",
       year: new Date().getFullYear(),
-      finishing_produced: "",
       crop_name: "",
       finishing_feed_1: 0,
       finishing_feed_2: 0,
@@ -141,8 +140,20 @@ export default function FinishingFeedRationPage() {
     mutate
   } = useFarmData("/feedrationfinishing", general_id)
 
+  const {
+    data: feedData,
+    error: feedError,
+    isLoading: feedIsLoading
+  } = useFarmData("/feeds", general_id)
+
+
+  const feedOptions: FeedOption[] = (feedData as FeedData[] | undefined)?.map((feed: FeedData) => ({
+    value: feed.id,
+    label: feed.crop_name + " (" + feed.production_type + ")",
+  })) || []
+
   const farmData = dbDataToForm(data, general_id)
-  console.log(farmData)
+
   const form = useForm<FinishingFeedRationFormValues>({
     resolver: zodResolver(finishingfeedrationFormSchema),
     defaultValues: {
@@ -218,11 +229,11 @@ export default function FinishingFeedRationPage() {
       <Separator />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <h3 className="text-lg font-medium">Feed Rations</h3>
+          <h3 className="text-lg font-medium">Feed Rations</h3>
           <table className="w-full my-4">
             <thead>
               <tr>
-                <th className="text-left pl-2 align-bottom"><FormLabel>Production Type</FormLabel></th>
+                <th className="text-left pl-2 align-bottom"><FormLabel>Feed</FormLabel></th>
                 {feedTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
                     <FormLabel>
@@ -249,28 +260,35 @@ export default function FinishingFeedRationPage() {
                     {/* Self Produced Feed */}
                     <FormField
                       control={form.control}
-                      name={`rations.${index}.finishing_produced`}
-                      render={() => (
-                          <FormField
-                            control={form.control}
-                            name={`rations.${index}.finishing_produced`}
-                            render={({ field: f }) => (
-                              <FormItem>
-                                <Select onValueChange={f.onChange} defaultValue={f.value}>
-                                  <FormControl>
-                                    <SelectTrigger> <SelectValue placeholder="Select Prod." />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="selfproduced">Self Produced</SelectItem>
-                                    <SelectItem value="boughtfeed">Bought Feed</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                      )}
+                      name={`rations.${index}.feeds_id`}
+                      render={({ field }) => {
+                        const [feedValue, setfeedValue] = useState<string>(field.value)
+
+                        useEffect(() => {
+                          setfeedValue(field.value)
+                        }, [field.value])
+
+                        useEffect(() => {
+                          field.onChange(feedValue)
+                        }, [feedValue])
+
+                        return (
+                          <FormItem>
+                            <FormControl>
+                              <Combobox
+                                valueState={[feedValue, setfeedValue]}
+                                options={feedOptions}
+                                selectText="Select feed..."
+                                placeholder="Search feeds..."
+                                noOptionText="No feed found."
+                                isDialog={true}
+                                width={"150"}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )
+                      }}
                     />
                   </td>
                   {feedTypes.map(({ value: selfcostType }) => (
