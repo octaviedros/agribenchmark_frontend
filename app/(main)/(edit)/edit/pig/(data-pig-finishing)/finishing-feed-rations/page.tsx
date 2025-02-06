@@ -1,6 +1,16 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { Combobox } from "@/components/ui/combobox"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { toast } from "@/hooks/use-toast"
@@ -12,16 +22,6 @@ import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
 import { z } from "zod"
-import { Combobox } from "@/components/ui/combobox"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 
 import {
   Tooltip,
@@ -213,10 +213,10 @@ export default function FinishingFeedRationPage() {
     )
   }
 
-  if (isLoading) {
+  if (isLoading || feedIsLoading) {
     return <div className="p-4">Loading farm data…</div>
   }
-  if (error && error.status !== 404) {
+  if ((error && error.status !== 404 ) || (feedError && feedError.status !== 404)) {
     console.error(error)
     return <div className="p-4">Failed to load farm data.</div>
   }
@@ -262,14 +262,18 @@ export default function FinishingFeedRationPage() {
                       control={form.control}
                       name={`rations.${index}.feeds_id`}
                       render={({ field }) => {
+                        // eslint-disable-next-line react-hooks/rules-of-hooks
                         const [feedValue, setfeedValue] = useState<string>(field.value)
 
+                        // eslint-disable-next-line react-hooks/rules-of-hooks
                         useEffect(() => {
                           setfeedValue(field.value)
                         }, [field.value])
 
+                        // eslint-disable-next-line react-hooks/rules-of-hooks
                         useEffect(() => {
                           field.onChange(feedValue)
+                        // eslint-disable-next-line react-hooks/exhaustive-deps
                         }, [feedValue])
 
                         return (
