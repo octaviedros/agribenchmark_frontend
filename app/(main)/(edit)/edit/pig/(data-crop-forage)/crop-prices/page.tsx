@@ -12,9 +12,8 @@ import { v4 as uuidv4 } from "uuid"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
-import { toast } from "@/hooks/use-toast"
-import { Combobox } from "@/components/ui/combobox"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Combobox } from "@/components/ui/combobox"
 import {
   Form,
   FormControl,
@@ -25,18 +24,12 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { toast } from "@/hooks/use-toast"
 
 const feedpriceFormSchema = z.object({
   feedprice: z.array(
@@ -232,7 +225,7 @@ export default function FeedPricesPage() {
   if (isLoading || feedIsLoading) {
     return <div className="p-4">Loading farm data…</div>
   }
-  if (error && error.status !== 404) {
+  if ((error && error.status !== 404) || (feedError && feedError.status !== 404)) {
     console.error(error)
     return <div className="p-4">Failed to load farm data.</div>
   }
