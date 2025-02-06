@@ -69,8 +69,8 @@ export const allSidebarNavItems: SidebarNavItems = {
         url: "/edit/pig/mineral-balance",
       },*/
       {
-        title: "2.4 Prices for Feed and Dry Matter Content",
-        url: "/edit/pig/feed-prices",
+        title: "2.4 Prices for Crop and Dry Matter Content",
+        url: "/edit/pig/crop-prices",
       }
     ],
   },

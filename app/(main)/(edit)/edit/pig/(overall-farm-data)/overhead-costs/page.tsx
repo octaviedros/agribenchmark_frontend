@@ -165,7 +165,7 @@ export default function OverheadFarmPage() {
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
       //console.log(mergedData)
-      await mutate(upsert(`/overheadcosts/`, {
+      await mutate(upsert(`/overheadcosts`, {
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {

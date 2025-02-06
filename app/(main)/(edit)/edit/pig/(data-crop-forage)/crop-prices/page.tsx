@@ -6,14 +6,14 @@ import { del, upsert } from "@/lib/api"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Info, Trash2 } from "lucide-react"
 import { useSearchParams } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
 import { toast } from "@/hooks/use-toast"
-
+import { Combobox } from "@/components/ui/combobox"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
@@ -44,6 +44,7 @@ const feedpriceFormSchema = z.object({
       general_id: z.string().uuid(),
       id: z.string().uuid(),
       feed_prices_id: z.string().uuid(),
+      land_use_id: z.string().uuid(),
       //name: z.string(),
       feed_type: z.string(),
       price_per_tonne: z.coerce.number(),
@@ -60,6 +61,7 @@ const feedpriceFormSchema = z.object({
 const FeedPriceDBSchema = z.object({
   id: z.string().uuid(),
   feed_prices_id: z.string().uuid(),
+  land_use_id: z.string().uuid(),
   general_id: z.string().uuid(),
   year: z.number().int(),
   feed_type: z.string(),
@@ -72,6 +74,43 @@ const FeedPriceDBSchema = z.object({
 
 type FeedPriceFormValues = z.infer<typeof feedpriceFormSchema>
 type FeedPriceDBValues = z.infer<typeof FeedPriceDBSchema>
+
+interface FeedOption {
+  value: string;
+  label: string;
+}
+
+interface FeedData {
+  id: string;
+  crop_name: string;
+}
+
+const feedpriceTypes: { name: string; value: keyof FeedPriceFormValues["feedprice"][number], tooltip?: string, type?: string }[] = [
+  {
+    name: "Price",
+    value: "price_per_tonne",
+    tooltip: "per tonne"
+  },
+  {
+    name: "Dry Matter",
+    value: "dry_matter_percent",
+    tooltip: "%; write 12.34% as 0,1234"
+  },
+  {
+    name: "MJ",
+    value: "energy_mj",
+  },
+  {
+    name: "Protein",
+    value: "protein",
+    tooltip: "%; write 12.34% as 0,1234"
+  },
+  {
+    name: "Concentrate",
+    value: "concentrate",
+    type: "checkbox",
+  },
+]
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dbDataToForm(data: any, general_id: string) {
@@ -95,6 +134,7 @@ function createDefaults(general_id: string) {
       general_id: general_id,
       id: uuidv4(),
       feed_prices_id: uuidv4(),
+      land_use_id: "",
       //name: "",
       feed_type: "",
       price_per_tonne: 0,
@@ -116,6 +156,18 @@ export default function FeedPricesPage() {
     isLoading,
     mutate
   } = useFarmData("/feedpricesdrymatter", general_id)
+
+  const {
+    data: feedData,
+    error: feedError,
+    isLoading: feedIsLoading,
+  } = useFarmData("/landuse", general_id)
+
+  const feedOptions: FeedOption[] = (feedData as FeedData[] | undefined)?.map((feed: FeedData) => ({
+    value: feed.id,
+    label: feed.crop_name
+  })) || []
+
 
   const farmData = dbDataToForm(data, general_id)
   console.log(farmData)
@@ -149,7 +201,7 @@ export default function FeedPricesPage() {
         return existingRow ? { ...existingRow, ...row } : row
       })
       console.log(mergedData)
-      await mutate(Promise.all(mergedData.map((row) => upsert(`/feedpricesdrymatter/`, row))), {
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/feedpricesdrymatter`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
@@ -169,33 +221,6 @@ export default function FeedPricesPage() {
     }
   }
 
-  const feedpriceTypes: { name: string; value: keyof FeedPriceFormValues["feedprice"][number], tooltip?: string, type?: string }[] = [
-    {
-      name: "Price",
-      value: "price_per_tonne",
-      tooltip: "per tonne"
-    },
-    {
-      name: "Dry Matter",
-      value: "dry_matter_percent",
-      tooltip: "%; write 12.34% as 0,1234"
-    },
-    {
-      name: "MJ",
-      value: "energy_mj",
-    },
-    {
-      name: "Protein",
-      value: "protein",
-      tooltip: "%; write 12.34% as 0,1234"
-    },
-    {
-      name: "Concentrate",
-      value: "concentrate",
-      type: "checkbox",
-    },
-  ]
-
   if (!general_id) {
     return (
       <div className="p-4">
@@ -204,7 +229,7 @@ export default function FeedPricesPage() {
       </div>
     )
   }
-  if (isLoading) {
+  if (isLoading || feedIsLoading) {
     return <div className="p-4">Loading farm data…</div>
   }
   if (error && error.status !== 404) {
@@ -219,7 +244,7 @@ export default function FeedPricesPage() {
   return (
     <div className="space-y-6 min">
       <div>
-        <h3 className="text-lg font-medium">Prices for Feed and Dry Matter Content</h3>
+        <h3 className="text-lg font-medium">Prices for Crop and Dry Matter Content</h3>
       </div>
       <Separator />
       <Form {...form}>
@@ -227,7 +252,7 @@ export default function FeedPricesPage() {
           <table className="w-full">
             <thead>
               <tr>
-                <th className="text-left pl-2 align-bottom"><FormLabel>Type</FormLabel></th>
+                <th className="text-left pl-2 align-bottom"><FormLabel>Name</FormLabel></th>
                 {feedpriceTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
                     <FormLabel>
@@ -254,30 +279,41 @@ export default function FeedPricesPage() {
                     {/* Feed Type */}
                     <FormField
                       control={form.control}
-                      name={`feedprice.${index}.feed_type`} // here feed_type instead of name
-                      render={({ field: f }) => (
-                        <FormItem>
-                          <Select onValueChange={f.onChange} defaultValue={f.value}>
+                      name={`feedprice.${index}.land_use_id`}
+                      render={({ field }) => {
+                        // eslint-disable-next-line react-hooks/rules-of-hooks
+                        const [feedValue, setfeedValue] = useState<string>(field.value)
+
+                        // eslint-disable-next-line react-hooks/rules-of-hooks
+                        useEffect(() => {
+                          setfeedValue(field.value)
+                        }, [field.value])
+
+                        // eslint-disable-next-line react-hooks/rules-of-hooks
+                        useEffect(() => {
+                          field.onChange(feedValue)
+                          // eslint-disable-next-line react-hooks/exhaustive-deps
+                        }, [feedValue])
+
+                        return (
+                          <FormItem>
                             <FormControl>
-                              <SelectTrigger> <SelectValue placeholder="Select Type" />
-                              </SelectTrigger>
+                              <Combobox
+                                valueState={[feedValue, setfeedValue]}
+                                options={feedOptions}
+                                selectText="Select feed..."
+                                placeholder="Search feeds..."
+                                noOptionText="No feed found."
+                                isDialog={true}
+                                width={"150"}
+                              />
                             </FormControl>
-                            <SelectContent>
-                              <SelectItem value="Finishing feed 1">Finishing Feed 1</SelectItem>
-                              <SelectItem value="Finishing feed 2">Finishing Feed 2</SelectItem>
-                              <SelectItem value="Finishing feed 3">Finishing Feed 3</SelectItem>
-                              <SelectItem value="Gestation feed">Gestation Feed</SelectItem>
-                              <SelectItem value="Lactation feed">Lactation Feed</SelectItem>
-                              <SelectItem value="Piglet feed 1">Piglet Feed 1</SelectItem>
-                              <SelectItem value="Piglet feed 2">Piglet Feed 2</SelectItem>
-                              <SelectItem value="Special boar feed">Special Boar Feed</SelectItem>
-                              <SelectItem value="Special gilt feed">Special Gilt Feed</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                            <FormMessage />
+                          </FormItem>
+                        )
+                      }}
                     />
+
                   </td>
                   {feedpriceTypes.map(({ value: feedpriceType, type }) => (
                     <td key={feedpriceType} className="p-1 min-w-[120px]">

@@ -151,7 +151,7 @@ export default function BuildingsFarmPage() {
         return existingRow ? { ...existingRow, ...row } : row
       })
       console.log(mergedData)
-      await mutate(Promise.all(mergedData.map((row) => upsert(`/buildings/`, row))), {
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/buildings`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,

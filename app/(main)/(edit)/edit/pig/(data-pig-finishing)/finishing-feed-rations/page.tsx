@@ -184,7 +184,7 @@ export default function FinishingFeedRationPage() {
         return existingRow ? { ...existingRow, ...row } : row
       })
       console.log(mergedData)
-      await mutate(Promise.all(mergedData.map((row) => upsert(`/feedrationfinishing/`, row))), {
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/feedrationfinishing`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,

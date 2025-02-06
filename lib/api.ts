@@ -32,6 +32,6 @@ export const upsert = async (url: string, data: { id: string | number }) => {
       throw err
     }
     // If HEAD fails with 404, doc doesn't exist:
-    return post(url, data)
+    return post(url + "/", data)
   }
 }

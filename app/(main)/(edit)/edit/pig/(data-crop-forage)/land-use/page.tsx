@@ -30,11 +30,12 @@ import {
 } from "@/components/ui/tooltip"
 
 const landuseFormSchema = z.object({
+  general_id: z.string().uuid(),
   landusage: z.array(
     z.object({
       general_id: z.string().uuid(),
       id: z.string().uuid(),
-      landuse_id: z.string().uuid(),
+      land_use_id: z.string().uuid(),
       acreage: z.coerce.number(),
       net_yield: z.coerce.number(),
       dry_matter: z.coerce.number(),
@@ -50,7 +51,7 @@ const landuseFormSchema = z.object({
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LandUseDBSchema = z.object({
   id: z.string().uuid(),
-  landuse_id: z.string().uuid(),
+  land_use_id: z.string().uuid(),
   general_id: z.string().uuid(),
   crop_id: z.string().uuid(),
   crop_name: z.string(),
@@ -67,11 +68,49 @@ const LandUseDBSchema = z.object({
 type LandUseFormValues = z.infer<typeof landuseFormSchema>
 type LandUseDBValues = z.infer<typeof LandUseDBSchema>
 
+
+const landuseTypes: { name: string; value: keyof LandUseFormValues["landusage"][number], tooltip?: string }[] = [
+  {
+    name: "Acreage",
+    value: "acreage",
+    tooltip: "in ha"
+  },
+  {
+    name: "Net Yield",
+    value: "net_yield",
+    tooltip: "in t/ha"
+  },
+  {
+    name: "Dry Matter",
+    value: "dry_matter",
+    tooltip: "in 0,0x"
+  },
+  {
+    name: "Price",
+    value: "price",
+    tooltip: "per tonne"
+  },
+  {
+    name: "CAP dir. payments",
+    value: "cap_dir_paym",
+    tooltip: "per ha"
+  },
+  {
+    name: "Other dir. payments",
+    value: "other_dir_paym",
+    tooltip: "per ha"
+  },
+  {
+    name: "Enterprise codes",
+    value: "enterprise_code",
+  },
+]
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dbDataToForm(data: any, general_id: string) {
   if (!data || !data.length) return createDefaults(general_id)
   return {
-    id: data[0].id,
+    //id: data[0].id,
     general_id: data[0].general_id,
     landusage: data
   }
@@ -84,10 +123,11 @@ function formDataToDb(data: LandUseFormValues) {
 
 function createDefaults(general_id: string) {
   return {
+    general_id: general_id,
     landusage: [{
       general_id: general_id,
       id: uuidv4(),
-      landuse_id: uuidv4(),
+      land_use_id: uuidv4(),
       crop_id: uuidv4(),
       crop_name: "",
       //type: "Crop Name",
@@ -108,6 +148,7 @@ export default function LandUseFarmPage() {
   const general_id = searchParams.get("general_id") || ""
   const {
     data,
+    error,
     isLoading,
     mutate
   } = useFarmData("/landuse", general_id)
@@ -144,7 +185,7 @@ export default function LandUseFarmPage() {
         return existingRow ? { ...existingRow, ...row } : row
       })
       console.log(mergedData)
-      await mutate(Promise.all(mergedData.map((row) => upsert(`/landuse/`, row))), {
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/landuse`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
@@ -163,42 +204,22 @@ export default function LandUseFarmPage() {
       })
     }
   }
-  const landuseTypes: { name: string; value: keyof LandUseFormValues["landusage"][number], tooltip?: string }[] = [
-    {
-      name: "Acreage",
-      value: "acreage",
-      tooltip: "in ha"
-    },
-    {
-      name: "Net Yield",
-      value: "net_yield",
-      tooltip: "in t/ha"
-    },
-    {
-      name: "Dry Matter",
-      value: "dry_matter",
-      tooltip: "in 0,0x"
-    },
-    {
-      name: "Price",
-      value: "price",
-      tooltip: "per tonne"
-    },
-    {
-      name: "CAP dir. payments",
-      value: "cap_dir_paym",
-      tooltip: "per ha"
-    },
-    {
-      name: "Other dir. payments",
-      value: "other_dir_paym",
-      tooltip: "per ha"
-    },
-    {
-      name: "Enterprise codes",
-      value: "enterprise_code",
-    },
-  ]
+  if (!general_id) {
+    return (
+      <div className="p-4">
+        <h2>No farm selected.</h2>
+        <p>Select a farm from the dropdown menu to get started.</p>
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return <div className="p-4">Loading farm data…</div>
+  }
+  if (error && error.status !== 404) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
+  }
 
   /*function logformerrors(errors) {
     console.log(errors)

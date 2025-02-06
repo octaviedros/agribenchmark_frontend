@@ -136,7 +136,7 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
 
-      await mutate(upsert(`/liabilitiesinterestrates/`,{
+      await mutate(upsert(`/liabilitiesinterestrates`,{
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {

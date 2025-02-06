@@ -10,14 +10,18 @@ import { z } from "zod"
 
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useSearchParams } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
   Form,
+  FormItem,
+  FormControl,
+  FormMessage,
   FormField,
   FormLabel
 } from "@/components/ui/form"
+import { Combobox } from "@/components/ui/combobox"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
 
@@ -29,11 +33,13 @@ import {
 } from "@/components/ui/tooltip"
 
 const varcostcropFormSchema = z.object({
+  general_id: z.string().uuid(),
   varcostcrop: z.array(
     z.object({
       general_id: z.string().uuid(),
       id: z.string().uuid(),
       var_cost_crop_id: z.string().uuid(),
+      land_use_id: z.string().uuid(),
       crop_name: z.string(),
       seeds: z.coerce.number(),
       fertilizer: z.coerce.number(),
@@ -45,10 +51,12 @@ const varcostcropFormSchema = z.object({
     })
   )
 })
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const VarCostCropDBSchema = z.object({
   id: z.string().uuid(),
   var_cost_crop_id: z.string().uuid(),
+  land_use_id: z.string().uuid(),
   general_id: z.string().uuid(),
   crop_id: z.string().uuid(),
   seeds: z.coerce.number(),
@@ -64,11 +72,59 @@ const VarCostCropDBSchema = z.object({
 type VarCostCropFormValues = z.infer<typeof varcostcropFormSchema>
 type VarCostCropDBValues = z.infer<typeof VarCostCropDBSchema>
 
+interface FeedOption {
+  value: string;
+  label: string;
+}
+
+interface FeedData {
+  id: string;
+  crop_name: string;
+}
+
+const varcostcropTypes: { name: string; value: keyof VarCostCropFormValues["varcostcrop"][number], tooltip?: string }[] = [
+  {
+    name: "Seeds",
+    value: "seeds",
+    tooltip: "price per ha"
+  },
+  {
+    name: "Fertilizer",
+    value: "fertilizer",
+    tooltip: "price per ha"
+  },
+  {
+    name: "Herbicide",
+    value: "herbicides",
+    tooltip: "price per ha"
+  },
+  {
+    name: "Fungicide/Insecticide",
+    value: "fungicide",
+    tooltip: "price per ha"
+  },
+  {
+    name: "Contract labor",
+    value: "contract_labor",
+    tooltip: "price per ha"
+  },
+  {
+    name: "Energy",
+    value: "energy",
+    tooltip: "price per ha"
+  },
+  {
+    name: "Other",
+    value: "other",
+    tooltip: "price per ha"
+  },
+]
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dbDataToForm(data: any, general_id: string) {
   if (!data || !data.length) return createDefaults(general_id)
   return {
-    id: data[0].id,
+    //id: data[0].id,
     general_id: data[0].general_id,
     varcostcrop: data
   }
@@ -81,10 +137,12 @@ function formDataToDb(data: VarCostCropFormValues) {
 
 function createDefaults(general_id: string) {
   return {
+    general_id: general_id,
     varcostcrop: [{
       general_id: general_id,
       id: uuidv4(),
       var_cost_crop_id: uuidv4(),
+      land_use_id: "",
       crop_name: "",
       seeds: 0,
       fertilizer: 0,
@@ -102,9 +160,22 @@ export default function VarCostCropPage() {
   const general_id = searchParams.get("general_id") || ""
   const {
     data,
+    error,
     isLoading,
     mutate
   } = useFarmData("/varcostcrop", general_id)
+
+  const {
+    data: feedData,
+    error: feedError,
+    isLoading: feedIsLoading
+  } = useFarmData("/landuse", general_id)
+
+  const feedOptions: FeedOption[] = (feedData as FeedData[] | undefined)?.map((feed: FeedData) => ({
+    value: feed.id,
+    label: feed.crop_name
+  })) || []
+
 
   const farmData = dbDataToForm(data, general_id)
   console.log(farmData)
@@ -138,7 +209,7 @@ export default function VarCostCropPage() {
         return existingRow ? { ...existingRow, ...row } : row
       })
       console.log(mergedData)
-      await mutate(Promise.all(mergedData.map((row) => upsert(`/varcostcrop/`, row))), {
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/varcostcrop`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,
@@ -157,43 +228,22 @@ export default function VarCostCropPage() {
       })
     }
   }
-  const varcostcropTypes: { name: string; value: keyof VarCostCropFormValues["varcostcrop"][number], tooltip?: string }[] = [
-    {
-      name: "Seeds",
-      value: "seeds",
-      tooltip: "price per ha"
-    },
-    {
-      name: "Fertilizer",
-      value: "fertilizer",
-      tooltip: "price per ha"
-    },
-    {
-      name: "Herbicide",
-      value: "herbicides",
-      tooltip: "price per ha"
-    },
-    {
-      name: "Fungicide/Insecticide",
-      value: "fungicide",
-      tooltip: "price per ha"
-    },
-    {
-      name: "Contract labor",
-      value: "contract_labor",
-      tooltip: "price per ha"
-    },
-    {
-      name: "Energy",
-      value: "energy",
-      tooltip: "price per ha"
-    },
-    {
-      name: "Other",
-      value: "other",
-      tooltip: "price per ha"
-    },
-  ]
+  if (!general_id) {
+    return (
+        <div className="p-4">
+            <h2>No farm selected.</h2>
+            <p>Select a farm from the dropdown menu to get started.</p>
+        </div>
+    )
+}
+
+if (isLoading || feedIsLoading) {
+    return <div className="p-4">Loading farm data…</div>
+}
+if ((error && error.status !== 404) || (feedError && feedError.status !== 404)) {
+    console.error(error)
+    return <div className="p-4">Failed to load farm data.</div>
+}
 
   /*function logformerrors(errors) {
     console.log(errors)
@@ -211,7 +261,7 @@ export default function VarCostCropPage() {
           <table className="w-full my-4">
             <thead>
               <tr>
-                <th className="text-left pl-2 align-bottom"><FormLabel>Crop Name</FormLabel></th>
+                <th className="text-left pl-2 align-bottom"><FormLabel>Name</FormLabel></th>
                 {varcostcropTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
                     <FormLabel>
@@ -238,10 +288,39 @@ export default function VarCostCropPage() {
                     {/* Casual Worker */}
                     <FormField
                       control={form.control}
-                      name={`varcostcrop.${index}.crop_name`}
-                      render={({ field: f }) => (
-                        <Input {...f} className="w-full" />
-                      )}
+                      name={`varcostcrop.${index}.land_use_id`}
+                      render={({ field }) => {
+                        // eslint-disable-next-line react-hooks/rules-of-hooks
+                        const [feedValue, setfeedValue] = useState<string>(field.value)
+
+                        // eslint-disable-next-line react-hooks/rules-of-hooks
+                        useEffect(() => {
+                          setfeedValue(field.value)
+                        }, [field.value])
+
+                        // eslint-disable-next-line react-hooks/rules-of-hooks
+                        useEffect(() => {
+                          field.onChange(feedValue)
+                          // eslint-disable-next-line react-hooks/exhaustive-deps
+                        }, [feedValue])
+
+                        return (
+                          <FormItem>
+                            <FormControl>
+                              <Combobox
+                                valueState={[feedValue, setfeedValue]}
+                                options={feedOptions}
+                                selectText="Select Crop..."
+                                placeholder="Search Crop..."
+                                noOptionText="No Crop found."
+                                isDialog={true}
+                                width={"120"}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )
+                      }}
                     />
                   </td>
                   {varcostcropTypes.map(({ value: varcostcropType }) => (

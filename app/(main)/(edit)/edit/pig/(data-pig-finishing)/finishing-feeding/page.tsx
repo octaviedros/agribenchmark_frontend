@@ -11,7 +11,13 @@ import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-
+import { Info } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import {
   Form,
   FormControl,
@@ -123,7 +129,7 @@ export default function FinishingFeedingPage() {
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
 
-      await mutate(upsert(`/feedingfinishing/`, {
+      await mutate(upsert(`/feedingfinishing`, {
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {
@@ -178,7 +184,14 @@ export default function FinishingFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Finishing Feed 1</FormLabel>
-                <FormDescription>%</FormDescription>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -192,7 +205,14 @@ export default function FinishingFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Finishing Feed 2</FormLabel>
-                <FormDescription>%</FormDescription>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -206,7 +226,14 @@ export default function FinishingFeedingPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Finishing Feed 3</FormLabel>
-                <FormDescription>%</FormDescription>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -222,7 +249,14 @@ export default function FinishingFeedingPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Finishing Feed 3</FormLabel>
-                  <FormDescription>kg per year</FormDescription>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                      <TooltipContent>
+                        <p>%</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -236,7 +270,14 @@ export default function FinishingFeedingPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Finishing Feed 2</FormLabel>
-                  <FormDescription>kg per year</FormDescription>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                      <TooltipContent>
+                        <p>%</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -250,7 +291,14 @@ export default function FinishingFeedingPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Finishing Feed 3</FormLabel>
-                  <FormDescription>kg per year</FormDescription>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                      <TooltipContent>
+                        <p>%</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -263,8 +311,16 @@ export default function FinishingFeedingPage() {
               name="total_amount_feed"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Total Amount of Feed</FormLabel>
-                  <FormDescription>kg per year</FormDescription>
+                  <FormLabel>Total Amount of Feed</FormLabel>                
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                      <TooltipContent>
+                        <p>kg per xear</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
                   <FormControl>
                     <Input {...field} />
                   </FormControl>

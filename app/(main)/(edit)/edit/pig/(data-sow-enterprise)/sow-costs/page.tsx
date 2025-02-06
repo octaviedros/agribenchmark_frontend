@@ -185,7 +185,7 @@ export default function SowCostPage() {
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
       console.log(mergedData)
-      await mutate(upsert(`/variablecostssows/`, {
+      await mutate(upsert(`/variablecostssows`, {
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {
@@ -194,7 +194,7 @@ export default function SowCostPage() {
         populateCache: true,
         revalidate: true
       })
-      await fixcosts_mutate(upsert(`/fixcosts/`, {
+      await fixcosts_mutate(upsert(`/fixcosts`, {
         ...mergedData,
         id: fixcosts?.[0]?.id || farmData.id
       }), {

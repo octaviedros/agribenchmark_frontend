@@ -247,7 +247,7 @@ export default function SowDataPage() {
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
       //console.log(mergedData)
-      await mutate(upsert(`/sows/`, {
+      await mutate(upsert(`/sows`, {
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {
@@ -256,7 +256,7 @@ export default function SowDataPage() {
         populateCache: true,
         revalidate: true
       })
-      await salesweight_mutate(upsert(`/salesweight/`, {
+      await salesweight_mutate(upsert(`/salesweight`, {
         ...mergedData,
         id: salesweight?.[0]?.id || farmData.id
       }), {
@@ -265,7 +265,7 @@ export default function SowDataPage() {
         populateCache: true,
         revalidate: true
       })
-      await sowsperformance_mutate(upsert(`/sowsperformance/`, {
+      await sowsperformance_mutate(upsert(`/sowsperformance`, {
         ...mergedData,
         id: sowsperformance?.[0]?.id || farmData.id
       }), {
