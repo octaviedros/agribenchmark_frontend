@@ -149,7 +149,7 @@ export default function FeedPricesPage() {
         return existingRow ? { ...existingRow, ...row } : row
       })
       console.log(mergedData)
-      await mutate(Promise.all(mergedData.map((row) => upsert(`/feedpricesdrymatter`, row))), {
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/feedpricesdrymatter/`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,

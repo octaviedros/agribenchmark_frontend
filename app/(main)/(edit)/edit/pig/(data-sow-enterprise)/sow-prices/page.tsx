@@ -136,7 +136,7 @@ async function onSubmit(updatedData: SowPriceFormValues) {
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
 
-      await mutate(upsert(`/pricessows`, {
+      await mutate(upsert(`/pricessows/`, {
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {

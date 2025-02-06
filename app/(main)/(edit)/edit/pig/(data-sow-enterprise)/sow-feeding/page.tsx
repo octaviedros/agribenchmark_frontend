@@ -171,7 +171,7 @@ export default function SowFeedingPage() {
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
 
-      await mutate(upsert(`/feedsows`, {
+      await mutate(upsert(`/feedsows/`, {
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {

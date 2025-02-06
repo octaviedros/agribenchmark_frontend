@@ -175,7 +175,7 @@ export default function DataCropFarmPage() {
         const existingRow = (data as AcreageDBValues[])?.find((r) => r.id === row.id)
         return existingRow ? { ...existingRow, ...row } : row
       })
-      await mutate(Promise.all(mergedData.map((row) => upsert(`/acreageprices`, row))), {
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/acreageprices/`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,

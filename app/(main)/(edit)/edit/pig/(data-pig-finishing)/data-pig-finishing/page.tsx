@@ -199,7 +199,7 @@ export default function PigFinishingDataPage() {
         ...farmData, // overwrite the farmData with the new data
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      await mutate(upsert(`/pigfinishing`, {
+      await mutate(upsert(`/pigfinishing/`, {
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {
@@ -208,7 +208,7 @@ export default function PigFinishingDataPage() {
         populateCache: true,
         revalidate: true
       })
-      await mutate(upsert(`/performancepigfinishing`, {
+      await mutate(upsert(`/performancepigfinishing/`, {
         ...mergedData,
         id: performancepigfinishing?.[0]?.id || farmData.id
       }), {

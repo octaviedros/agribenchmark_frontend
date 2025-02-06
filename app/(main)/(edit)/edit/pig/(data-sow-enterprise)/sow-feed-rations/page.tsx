@@ -210,7 +210,7 @@ export default function SowFeedRationPage() {
         return existingRow ? { ...existingRow, ...row } : row
       })
       console.log(mergedData)
-      await mutate(Promise.all(mergedData.map((row) => upsert(`/feedrationsows`, row))), {
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/feedrationsows/`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,

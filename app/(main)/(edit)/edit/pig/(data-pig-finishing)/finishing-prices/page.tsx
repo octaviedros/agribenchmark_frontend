@@ -110,7 +110,7 @@ async function onSubmit(updatedData: FinishingPriceFormValues) {
         ...farmData, // overwrite the farmData with the new data
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      await mutate(upsert(`/pricesfinishing`,{
+      await mutate(upsert(`/pricesfinishing/`,{
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {

@@ -138,7 +138,7 @@ export default function VarCostCropPage() {
         return existingRow ? { ...existingRow, ...row } : row
       })
       console.log(mergedData)
-      await mutate(Promise.all(mergedData.map((row) => upsert(`/varcostcrop`, row))), {
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/varcostcrop/`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,

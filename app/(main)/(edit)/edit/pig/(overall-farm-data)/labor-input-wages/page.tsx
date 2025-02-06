@@ -205,7 +205,7 @@ export default function WagesFarmPage() {
         return existingRow ? { ...existingRow, ...row } : row
       })
       console.log(mergedData)
-      await mutate(Promise.all(mergedData.map((row) => upsert(`/labour`, row))), {
+      await mutate(Promise.all(mergedData.map((row) => upsert(`/labour/`, row))), {
         optimisticData: mergedData,
         rollbackOnError: true,
         populateCache: true,

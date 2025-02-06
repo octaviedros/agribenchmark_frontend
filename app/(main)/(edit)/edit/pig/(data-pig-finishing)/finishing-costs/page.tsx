@@ -166,7 +166,7 @@ const farmData = mergeData(data, fixcosts, general_id)
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
 
-      await mutate(upsert(`/varcostfinishing`, {
+      await mutate(upsert(`/varcostfinishing/`, {
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {
@@ -175,7 +175,7 @@ const farmData = mergeData(data, fixcosts, general_id)
         populateCache: true,
         revalidate: true
       })
-      await fixcosts_mutate(upsert(`/fixcosts`, {
+      await fixcosts_mutate(upsert(`/fixcosts/`, {
         ...mergedData,
         id: fixcosts?.[0]?.id || farmData.id
       }), {

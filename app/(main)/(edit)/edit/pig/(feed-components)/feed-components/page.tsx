@@ -146,7 +146,7 @@ export default function FeedProductionPage() {
                 return existingRow ? { ...existingRow, ...row } : row
             })
             console.log(mergedData)
-            await mutate(Promise.all(mergedData.map((row) => upsert(`/feeds`, row))), {
+            await mutate(Promise.all(mergedData.map((row) => upsert(`/feeds/`, row))), {
                 optimisticData: mergedData,
                 rollbackOnError: true,
                 populateCache: true,

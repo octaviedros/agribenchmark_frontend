@@ -81,7 +81,7 @@ export default function LaborAllocationPage() {
     error,
     isLoading,
     mutate
-  } = useFarmData("/laborallocsowfinishing", general_id)
+  } = useFarmData("/laborallocsowfinishing/", general_id)
 
 const farmData = mergeData(data, general_id)
 

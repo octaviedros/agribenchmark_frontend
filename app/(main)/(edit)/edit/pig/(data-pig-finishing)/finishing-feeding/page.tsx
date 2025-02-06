@@ -123,7 +123,7 @@ export default function FinishingFeedingPage() {
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
 
-      await mutate(upsert(`/feedingfinishing`, {
+      await mutate(upsert(`/feedingfinishing/`, {
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {
