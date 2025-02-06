@@ -2,24 +2,29 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
 "use client"
-import { useState, useContext, useEffect, ComponentType } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { v4 as uuidv4 } from "uuid"
 import { NetworkContext } from "@/context/NetworkContext"
 import { navData } from "@/data/nav-data"
 import { useFarmData } from "@/hooks/use-farm-data"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { ComponentType, useContext, useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
 import { KeyedMutator } from "swr"
+import { v4 as uuidv4 } from "uuid"
+import { z } from "zod"
 
-import {
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import countries from "@/data/countries.json"
-import currencies from "@/data/currencies.json"
-import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Combobox } from "@/components/ui/combobox"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   Form,
   FormControl,
@@ -30,18 +35,13 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Combobox } from "@/components/ui/combobox"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogClose,
-  DialogFooter,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar"
+import countries from "@/data/countries.json"
+import currencies from "@/data/currencies.json"
+import { toast } from "@/hooks/use-toast"
 import { post } from "@/lib/api"
 
 const CountriesEnum = z.enum(countries.map((country) => country.alpha3) as [string, ...string[]])
@@ -82,7 +82,7 @@ const profileFormSchema = z.object({
   network_poultry: z.boolean().optional(),
 })
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>
+export type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 interface ProfileFormProps {
   item: {

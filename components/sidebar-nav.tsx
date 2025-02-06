@@ -1,7 +1,7 @@
 "use client"
 
 import { ChevronRight } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 
 import {
   Sidebar,
@@ -36,6 +36,8 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
 export function SidebarNav({ items, ...props }: SidebarNavProps) {
   const pathname = usePathname()
 
+  const searchParams = useSearchParams()
+
   return (
     <Sidebar {...props} id="agribenchmark-page-content-sidebar" variant="inset" collapsible="none" side="right" className="bg-background w-full z-0 sticky top-12 max-h-[calc(100vh-8rem)] overflow-y-auto">
       <SidebarContent className="gap-0">
@@ -65,7 +67,7 @@ export function SidebarNav({ items, ...props }: SidebarNavProps) {
                         {item.items && item.items.map((item) => (
                           <SidebarMenuItem key={item.title} >
                             <SidebarMenuButton asChild isActive={pathname === item.url} className="pt-8 pb-8">
-                              <a href={item.url}>{item.title}</a>
+                              <a href={item.url + (searchParams.get("general_id") ? `?general_id=${searchParams.get("general_id")}` : "")}>{item.title}</a>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                         ))}

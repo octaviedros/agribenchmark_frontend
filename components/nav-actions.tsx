@@ -12,6 +12,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { ProfileForm } from "./add-farm-dialog"
+import { AddScenarioDialog } from "./add-scenario-dialog"
 
 export function NavActions({
   actions,
@@ -31,6 +32,10 @@ export function NavActions({
           if (item.name === "Add Farm") {
             return (
               <ProfileForm item={item} key={item.name} />
+            )
+          } else if (item.name === "Add Scenario") {
+            return (
+              <AddScenarioDialog item={item} key={item.name} />
             )
           } else {
             return (

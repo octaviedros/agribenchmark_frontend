@@ -2,15 +2,15 @@
 /* eslint-disable prefer-const */
 "use client"
 
-import { useContext, useState, useEffect } from "react"
+import { allSidebarNavItems } from "@/app/(main)/(edit)/all-sidebar-nav-items"
+import { SidebarNav } from "@/components/sidebar-nav"
+import { Combobox } from "@/components/ui/combobox"
+import { Separator } from "@/components/ui/separator"
 import { NetworkContext } from "@/context/NetworkContext"
+import { Farm } from "@/data/schema"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { useSearchParams } from 'next/navigation'
-import { Separator } from "@/components/ui/separator"
-import { SidebarNav } from "@/components/sidebar-nav"
-import { allSidebarNavItems } from "@/app/(main)/(edit)/all-sidebar-nav-items"
-import { Combobox } from "@/components/ui/combobox"
-import { Farm } from "@/data/schema"
+import { useContext, useEffect, useState } from "react"
 
 interface EditLayoutProps {
   children: React.ReactNode
@@ -29,6 +29,7 @@ export function EditLayoutContent({ children }: EditLayoutProps) {
     isLoading 
   } = useFarmData("/generalfarm") as FarmData
   if (!farms) farms = [] as Farm[] 
+  const uniqueFarms = [...new Set(farms.map(f => f.farm_id))]
   const { activeNetwork } = useContext(NetworkContext)
   // Use the active network to determine which sidebar nav items to show
   // E.g. pig related feeding etc.
@@ -114,9 +115,9 @@ export function EditLayoutContent({ children }: EditLayoutProps) {
             Select a farm and edit its data.
           </p>
           <div className="pt-2 flex items-center space-x-4">
-            <Combobox valueState={[selectedFarm, setSelectedFarm]} options={farms.map(f => ({
-              value: f.farm_id,
-              label: f.farm_id,
+            <Combobox valueState={[selectedFarm, setSelectedFarm]} options={uniqueFarms.map(farm_id => ({
+              value: farm_id,
+              label: farm_id,
             }))} />
             <Combobox valueState={[selectedYear, setSelectedYear]} options={availableYears} />
             <Combobox valueState={[selectedScenario, setSelectedScenario]} options={availableScenarios} />

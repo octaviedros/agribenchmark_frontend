@@ -1,8 +1,5 @@
 "use client"
 
-import { Row } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import {
@@ -18,6 +15,9 @@ import {
   //DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Row } from "@tanstack/react-table"
+import { MoreHorizontal } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { DeleteFarmContent } from "./delete-farm"
 
 // import { labels } from "../data/data"
@@ -30,6 +30,7 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
+  const router = useRouter();
   const farm = farmSchema.parse(row.original)
 
   return (
@@ -45,8 +46,8 @@ export function DataTableRowActions<TData>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/edit/pig/basic-information?general_id=" + farm.general_id)}>Edit</DropdownMenuItem>
+          <DropdownMenuItem>Add a Scenario</DropdownMenuItem>
           <a href={`${process.env.NEXT_PUBLIC_API}/export/farm/${farm.general_id}?format=xlsx`}><DropdownMenuItem>Export as Excel</DropdownMenuItem></a>
           <DropdownMenuSeparator />
           {/* <DropdownMenuSub>
