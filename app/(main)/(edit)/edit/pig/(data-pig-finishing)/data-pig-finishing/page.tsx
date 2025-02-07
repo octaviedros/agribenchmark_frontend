@@ -306,15 +306,15 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Animal Places</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Number of heads</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of heads</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input type="number" {...field} value={field.value}/>
+                  <Input type="number" {...field} value={field.value} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -327,13 +327,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Number of sold Pigs (Female & Castrates)</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Number of heads</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of heads</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -348,13 +348,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Number of sold Pigs (Boars)</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Number of heads</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of heads</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -369,13 +369,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Share of Female Pigs </FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>%, e.g. 12,34% is 0,1234</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -392,13 +392,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Stalling-in-Weight</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg LW per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg LW per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -413,13 +413,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Stalling-in-Weight (Boars)</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg LW per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg LW per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -434,13 +434,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Average Duration of a finishing Period</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>days</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>days</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -455,13 +455,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Cleaning days per Cycle</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>days</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>days</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -476,13 +476,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Days without Animals in Stable</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>days</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>days</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -497,13 +497,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Mortality</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>%, e.g. 12,34% is 0,1234</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -518,13 +518,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Average selling Weight (Female & Castrates)</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg LW per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg LW per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -539,13 +539,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Carcass yield (Female & Castrates)</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>%, e.g. 12,34% is 0,1234</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -560,13 +560,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Lean Meat Content (FOM, Female & Castrates)</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>%, e.g. 12,34% is 0,1234</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -581,13 +581,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Index Points (AutoFOM, Female & Castrates)</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>%, e.g. 12,34% is 0,1234</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -602,13 +602,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Average selling Weight (Boars)</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg LW per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg LW per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -623,13 +623,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Carcass yield (Boars)</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>%, e.g. 12,34% is 0,1234</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -644,13 +644,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Index Points (AutoFOM, Boars)</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>points</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>points</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -665,13 +665,13 @@ export default function PigFinishingDataPage() {
               <FormItem>
                 <FormLabel>Average Duration of a finishing Period (Boars)</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>days</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>days</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

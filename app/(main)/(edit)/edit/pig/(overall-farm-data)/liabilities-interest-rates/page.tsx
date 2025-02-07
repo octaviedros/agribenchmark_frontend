@@ -90,17 +90,18 @@ function createDefaults(general_id: string): LiabilitiesFormValues {
     perc_debt_total_assets: 0,
     total_liabilities: 0,
     year: new Date().getFullYear(),
-  }}
+  }
+}
 
-  function mergeData(data: Array<object>, general_id: string): LiabilitiesFormValues {
-    if (data) {
-      // @ts-expect-error zod types are not correct
-      return {
-        ...data[0],
-      }
+function mergeData(data: Array<object>, general_id: string): LiabilitiesFormValues {
+  if (data) {
+    // @ts-expect-error zod types are not correct
+    return {
+      ...data[0],
     }
-    return createDefaults(general_id)
-  } 
+  }
+  return createDefaults(general_id)
+}
 
 export default function LiabilitiesFarmPage() {
   const searchParams = useSearchParams()
@@ -112,7 +113,7 @@ export default function LiabilitiesFarmPage() {
     mutate
   } = useFarmData("/liabilitiesinterestrates", general_id)
 
-const farmData = mergeData(data, general_id)
+  const farmData = mergeData(data, general_id)
 
   const form = useForm<LiabilitiesFormValues>({
     resolver: zodResolver(liabilitiesFormSchema),
@@ -121,7 +122,7 @@ const farmData = mergeData(data, general_id)
     },
     mode: "onChange",
   })
-// 
+  // 
   useEffect(() => {
     form.reset({
       ...farmData
@@ -129,14 +130,14 @@ const farmData = mergeData(data, general_id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
 
-async function onSubmit(updatedData: LiabilitiesFormValues) {
+  async function onSubmit(updatedData: LiabilitiesFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
 
-      await mutate(upsert(`/liabilitiesinterestrates`,{
+      await mutate(upsert(`/liabilitiesinterestrates`, {
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {
@@ -158,7 +159,7 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
       })
     }
   }
-  
+
   if (!general_id) {
     return (
       <div className="p-4">
@@ -184,7 +185,7 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
       />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-2">
-        <h3 className="text-lg font-medium">Current Interest Rates</h3>
+          <h3 className="text-lg font-medium">Current Interest Rates</h3>
           <FormField
             control={form.control}
             name="long_term_loans"
@@ -192,13 +193,13 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
               <FormItem>
                 <FormLabel>Long-Term Loans</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>0.0x</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -213,13 +214,13 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
               <FormItem>
                 <FormLabel>Medium-Term Loans</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>0.0x</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -234,13 +235,13 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
               <FormItem>
                 <FormLabel>Short-Term Loans</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>0.0x</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -255,13 +256,13 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
               <FormItem>
                 <FormLabel>Circulating Capital (Overdraft)</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>0.0x</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -276,13 +277,13 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
               <FormItem>
                 <FormLabel>Savings</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>0.0x</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -298,13 +299,13 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
               <FormItem>
                 <FormLabel>Total Liabilities</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount in your currency</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount in your currency</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -319,13 +320,13 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
               <FormItem>
                 <FormLabel>Total Long-Term Loans</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount in your currency</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount in your currency</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -340,13 +341,13 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
               <FormItem>
                 <FormLabel>Total Medium-Term Loans</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount in your currency</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount in your currency</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -361,13 +362,13 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
               <FormItem>
                 <FormLabel>Total Short-Term Loans</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Amount in your currency</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Amount in your currency</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -382,13 +383,13 @@ async function onSubmit(updatedData: LiabilitiesFormValues) {
               <FormItem>
                 <FormLabel>Percentage Debt of Total Assets</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>0.0x</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

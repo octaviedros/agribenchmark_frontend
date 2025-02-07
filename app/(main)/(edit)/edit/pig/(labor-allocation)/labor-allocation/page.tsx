@@ -32,16 +32,16 @@ import {
 const laborallocationFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
-  casual_labor_sow: z.coerce.number( {
+  casual_labor_sow: z.coerce.number({
     message: "Please enter Casual Labor Allocation for Sow Entperise.",
   }),
-  family_labor_sow: z.coerce.number( {
+  family_labor_sow: z.coerce.number({
     message: "Please enter Family Labor Allocation for Sow Entperise.",
   }),
-  casual_labor_finishing: z.coerce.number( {
+  casual_labor_finishing: z.coerce.number({
     message: "Please enter Casual Labor Allocation for Pig Finishing Entperise.",
   }),
-  family_labor_finishing: z.coerce.number( {
+  family_labor_finishing: z.coerce.number({
     message: "Please enter Family Labor Allocation for Pig Finishing Entperise.",
   }),
   year: z.number().int(),
@@ -83,7 +83,7 @@ export default function LaborAllocationPage() {
     mutate
   } = useFarmData("/laborallocsowfinishing/", general_id)
 
-const farmData = mergeData(data, general_id)
+  const farmData = mergeData(data, general_id)
 
   const form = useForm<LaborAllocationFormValues>({
     resolver: zodResolver(laborallocationFormSchema),
@@ -92,7 +92,7 @@ const farmData = mergeData(data, general_id)
     },
     mode: "onChange",
   })
-// 
+  // 
   useEffect(() => {
     form.reset({
       ...farmData
@@ -100,7 +100,7 @@ const farmData = mergeData(data, general_id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
 
-async function onSubmit(updatedData: LaborAllocationFormValues) {
+  async function onSubmit(updatedData: LaborAllocationFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
@@ -128,7 +128,7 @@ async function onSubmit(updatedData: LaborAllocationFormValues) {
       })
     }
   }
-  
+
   if (!general_id) {
     return (
       <div className="p-4">
@@ -160,13 +160,13 @@ async function onSubmit(updatedData: LaborAllocationFormValues) {
               <FormItem>
                 <FormLabel>Casual Labor Sow Enterprise</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>0,0x</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -181,13 +181,13 @@ async function onSubmit(updatedData: LaborAllocationFormValues) {
               <FormItem>
                 <FormLabel>Family Labor Sow Enterprise</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>0,0x</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -202,13 +202,13 @@ async function onSubmit(updatedData: LaborAllocationFormValues) {
               <FormItem>
                 <FormLabel>Casual Labor Pig Finishing Enterprise</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>0,0x</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -223,13 +223,13 @@ async function onSubmit(updatedData: LaborAllocationFormValues) {
               <FormItem>
                 <FormLabel>Family Labor Pig Finishing Enterprise</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>0,0x</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%, write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

@@ -83,7 +83,7 @@ const landuseTypes: { name: string; value: keyof LandUseFormValues["landusage"][
   {
     name: "Dry Matter",
     value: "dry_matter",
-    tooltip: "in 0,0x"
+    tooltip: "%, write 12,34% as 0,1234"
   },
   {
     name: "Price",
@@ -103,6 +103,21 @@ const landuseTypes: { name: string; value: keyof LandUseFormValues["landusage"][
   {
     name: "Enterprise codes",
     value: "enterprise_code",
+    tooltip: `1:Item used for all enterprises
+    2:Crop and Forage Production
+    3:Livestock Production general
+    4:Cash Crop Production only
+    5:Forage Production only
+    6:Dairy only
+    7:Cow calf only
+    8:Beef Finishing only
+    9:Sheep(ewe) only
+    10:Lamb Finishing only
+    11:Sow Production only
+    12:Pig Finishing only
+    13:Broiler only
+    14:Layers only
+    15:Other only`
   },
 ]
 
@@ -245,8 +260,12 @@ export default function LandUseFarmPage() {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>{tooltip}</p>
+                            <TooltipContent className="max-w-64 p-2">
+                              <ul className=" pl-4 space-y-1">
+                                {tooltip.split('\n').map((line, index) => (
+                                  <li key={index} className="text-sm">{line.trim()}</li>
+                                ))}
+                              </ul>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>

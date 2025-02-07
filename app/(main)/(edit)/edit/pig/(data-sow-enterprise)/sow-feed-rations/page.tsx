@@ -39,7 +39,7 @@ const sowfeedrationFormSchema = z.object({
       feed_ration_sows_id: z.string().uuid(),
       feeds_id: z.string().uuid(),
       crop_name: z.string(),
-      
+
       gestation_feed: z.coerce.number(),
       lactation_feed: z.coerce.number(),
       special_gilt_feed: z.coerce.number(),
@@ -57,7 +57,7 @@ const SowFeedRationDBSchema = z.object({
   general_id: z.string().uuid(),
   feeds_id: z.string().uuid(),
   year: z.number().int(),
-  
+
   crop_name: z.string(),  // In DB ENUM Gesattion, lactation,... but are in excel columns individually
   gestation_feed: z.number(),
   lactation_feed: z.number(),
@@ -83,36 +83,36 @@ interface FeedData {
 }
 
 const feedTypes: { name: string; value: string, tooltip?: string }[] = [
-  
+
   {
     name: "Gestation Feed",
     value: "gestation_feed",
-    tooltip: "Share",
+    tooltip: "%, write 12,34% as 0,1234",
   },
   {
     name: "Lactation Feed",
     value: "lactation_feed",
-    tooltip: "Share",
+    tooltip: "%, write 12,34% as 0,1234",
   },
   {
     name: "Special Gilt Feed",
     value: "special_gilt_feed",
-    tooltip: "Share",
+    tooltip: "%, write 12,34% as 0,1234",
   },
   {
     name: "Special Boar Feed",
     value: "special_boar_feed",
-    tooltip: "Share",
+    tooltip: "%, write 12,34% as 0,1234",
   },
   {
     name: "Piglet Feed 1",
     value: "piglet_feed_1",
-    tooltip: "Share",
+    tooltip: "%, write 12,34% as 0,1234",
   },
   {
     name: "Piglet Feed 2",
     value: "piglet_feed_2",
-    tooltip: "Share",
+    tooltip: "%, write 12,34% as 0,1234",
   },
 ]
 
@@ -170,7 +170,7 @@ export default function SowFeedRationPage() {
     error: feedError,
     isLoading: feedIsLoading
   } = useFarmData("/feeds", general_id)
-  
+
 
   const feedOptions: FeedOption[] = (feedData as FeedData[] | undefined)?.map((feed: FeedData) => ({
     value: feed.id,
@@ -179,7 +179,7 @@ export default function SowFeedRationPage() {
 
   const farmData = dbDataToForm(data, general_id)
 
- 
+
   const form = useForm<SowFeedRationFormValues>({
     resolver: zodResolver(sowfeedrationFormSchema),
     defaultValues: {
@@ -290,7 +290,7 @@ export default function SowFeedRationPage() {
                       render={({ field }) => {
                         // eslint-disable-next-line react-hooks/rules-of-hooks
                         const [feedValue, setfeedValue] = useState<string>(field.value)
-                        
+
                         // eslint-disable-next-line react-hooks/rules-of-hooks
                         useEffect(() => {
                           setfeedValue(field.value)
@@ -299,9 +299,9 @@ export default function SowFeedRationPage() {
                         // eslint-disable-next-line react-hooks/rules-of-hooks
                         useEffect(() => {
                           field.onChange(feedValue)
-                        // eslint-disable-next-line react-hooks/exhaustive-deps
+                          // eslint-disable-next-line react-hooks/exhaustive-deps
                         }, [feedValue])
-                        
+
                         return (
                           <FormItem>
                             <FormControl>

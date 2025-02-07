@@ -12,11 +12,17 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { useFarmData } from "@/hooks/use-farm-data"
 import { toast } from "@/hooks/use-toast"
 import { del, upsert } from "@/lib/api"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Trash2 } from "lucide-react"
+import { Info, Trash2 } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
@@ -69,6 +75,44 @@ const BuildingsDBSchema = z.object({
 
 type BuildingsFormValues = z.infer<typeof buildingsFormSchema>
 type BuildingsDBValues = z.infer<typeof BuildingsDBSchema>
+
+const costTypes: { name: string; value: keyof BuildingsFormValues["buildings"][number], tooltip?: string, type?: string }[] = [
+  {
+    name: "Purchase Year",
+    value: "purchase_year",
+  },
+  {
+    name: "Purchase Price",
+    value: "purchase_price",
+  },
+  {
+    name: "Utilization Period",
+    value: "utilization_period",
+  },
+  {
+    name: "Replacement Value",
+    value: "replacement_value",
+  },
+  {
+    name: "Enterprise Codes",
+    value: "enterprise_codes",
+    tooltip: `1:Item used for all enterprises
+    2:Crop and Forage Production
+    3:Livestock Production general
+    4:Cash Crop Production only
+    5:Forage Production only
+    6:Dairy only
+    7:Cow calf only
+    8:Beef Finishing only
+    9:Sheep(ewe) only
+    10:Lamb Finishing only
+    11:Sow Production only
+    12:Pig Finishing only
+    13:Broiler only
+    14:Layers only
+    15:Other only`
+  },
+]
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dbDataToForm(data: any, general_id: string) {
@@ -171,29 +215,6 @@ export default function BuildingsFarmPage() {
     }
   }
 
-  const costTypes: { name: string; value: keyof BuildingsFormValues["buildings"][number] }[] = [
-    {
-      name: "Purchase Year",
-      value: "purchase_year",
-    },
-    {
-      name: "Purchase Price",
-      value: "purchase_price",
-    },
-    {
-      name: "Utilization Period",
-      value: "utilization_period",
-    },
-    {
-      name: "Replacement Value",
-      value: "replacement_value",
-    },
-    {
-      name: "Enterprise Codes",
-      value: "enterprise_codes",
-    },
-  ]
-
   if (!general_id) {
     return (
       <div className="p-4">
@@ -215,6 +236,9 @@ export default function BuildingsFarmPage() {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-medium">Buildings and Facilities</h3>
+        <p className="text-sm text-muted-foreground">
+          You can enter annual values or specific values for each Building below.
+        </p>
       </div>
       <Separator />
       <Form {...form}>
@@ -255,9 +279,25 @@ export default function BuildingsFarmPage() {
             <thead>
               <tr>
                 <th className="font-medium min-w-[120px]">Building</th>
-                {costTypes.map(({ name }) => (
-                  <th key={name} className="p-1 font-medium min-w-[120px]">
-                    {name}
+                {costTypes.map(({ name, tooltip }) => (
+                  <th key={name} className="text-left pl-2 align-bottom">
+                    <FormLabel>
+                      {name}
+                      {tooltip &&
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent className="max-w-64 p-2">
+                              <ul className="pl-4 space-y-1">
+                                {tooltip.split('\n').map((line, index) => (
+                                  <li key={index} className="text-sm">{line.trim()}</li>
+                                ))}
+                              </ul>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      }
+                    </FormLabel>
                   </th>
                 ))}
               </tr>

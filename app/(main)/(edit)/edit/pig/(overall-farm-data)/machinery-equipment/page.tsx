@@ -1,16 +1,5 @@
 "use client"
 
-import { Separator } from "@/components/ui/separator"
-import { useFarmData } from "@/hooks/use-farm-data"
-import { del, upsert } from "@/lib/api"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Trash2 } from "lucide-react"
-import { useSearchParams } from "next/navigation"
-import { useEffect } from "react"
-import { useFieldArray, useForm } from "react-hook-form"
-import { v4 as uuidv4 } from "uuid"
-import { z } from "zod"
-
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -22,7 +11,23 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { useFarmData } from "@/hooks/use-farm-data"
 import { toast } from "@/hooks/use-toast"
+import { del, upsert } from "@/lib/api"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Info, Trash2 } from "lucide-react"
+import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { v4 as uuidv4 } from "uuid"
+import { z } from "zod"
 
 const machineryFormSchema = z.object({
   general_id: z.string().uuid(),
@@ -67,6 +72,44 @@ const MachinesDBSchema = z.object({
 
 type MachineryFormValues = z.infer<typeof machineryFormSchema>
 type MachinesDBValues = z.infer<typeof MachinesDBSchema>
+
+const costTypes: { name: string; value: keyof MachineryFormValues["tractors"][number], tooltip?: string, type?: string }[] = [
+  {
+    name: "Purchase Year",
+    value: "purchase_year",
+  },
+  {
+    name: "Purchase Price",
+    value: "purchase_price",
+  },
+  {
+    name: "Utilization Period",
+    value: "utilization_period",
+  },
+  {
+    name: "Replacement Value",
+    value: "replacement_value",
+  },
+  {
+    name: "Enterprise Codes",
+    value: "enterprise_code",
+    tooltip: `1:Item used for all enterprises
+    2:Crop and Forage Production
+    3:Livestock Production general
+    4:Cash Crop Production only
+    5:Forage Production only
+    6:Dairy only
+    7:Cow calf only
+    8:Beef Finishing only
+    9:Sheep(ewe) only
+    10:Lamb Finishing only
+    11:Sow Production only
+    12:Pig Finishing only
+    13:Broiler only
+    14:Layers only
+    15:Other only`
+  },
+]
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dbDataToForm(data: any, general_id: string) {
@@ -119,7 +162,7 @@ export default function MachineryFarmPage() {
   } = useFarmData("/machines", general_id)
 
   const farmData = dbDataToForm(data, general_id)
-  
+
   const form = useForm<MachineryFormValues>({
     resolver: zodResolver(machineryFormSchema),
     defaultValues: {
@@ -132,7 +175,7 @@ export default function MachineryFarmPage() {
     form.reset({
       ...farmData
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
 
 
@@ -171,29 +214,6 @@ export default function MachineryFarmPage() {
     }
   }
 
-  const costTypes: { name: string; value: keyof MachineryFormValues["tractors"][number] }[] = [
-    {
-      name: "Purchase Year",
-      value: "purchase_year",
-    },
-    {
-      name: "Purchase Price",
-      value: "purchase_price",
-    },
-    {
-      name: "Utilization Period",
-      value: "utilization_period",
-    },
-    {
-      name: "Replacement Value",
-      value: "replacement_value",
-    },
-    {
-      name: "Enterprise Codes",
-      value: "enterprise_code",
-    },
-  ]
-
   if (!general_id) {
     return (
       <div className="p-4">
@@ -214,6 +234,9 @@ export default function MachineryFarmPage() {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-medium">What kind of machinery and equipment do you use on your farm?</h3>
+        <p className="text-sm text-muted-foreground">
+          You can enter annual values or specific values for each machine below.
+        </p>
       </div>
       <Separator />
       <Form {...form}>
@@ -254,9 +277,25 @@ export default function MachineryFarmPage() {
             <thead>
               <tr>
                 <th className="font-medium min-w-[120px]">Machine</th>
-                {costTypes.map(({ name }) => (
-                  <th key={name} className="p-1 font-medium min-w-[120px]">
-                    {name}
+                {costTypes.map(({ name, tooltip }) => (
+                  <th key={name} className="text-left pl-2 align-bottom">
+                    <FormLabel>
+                      {name}
+                      {tooltip &&
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                            <TooltipContent className="max-w-64 p-2">
+                              <ul className="pl-4 space-y-1">
+                                {tooltip.split('\n').map((line, index) => (
+                                  <li key={index} className="text-sm">{line.trim()}</li>
+                                ))}
+                              </ul>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      }
+                    </FormLabel>
                   </th>
                 ))}
               </tr>
@@ -315,6 +354,6 @@ export default function MachineryFarmPage() {
           <Button type="submit">Submit</Button>
         </form>
       </Form>
-    </div>
+    </div >
   )
 }

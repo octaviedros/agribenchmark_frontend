@@ -59,9 +59,9 @@ const sowdataFormSchema = z.object({
   total_no_sows_gilts: z
     .coerce.number().int(),
   piglets_born_alive: z
-    .coerce.number().int(),
+    .coerce.number(),
   cycles_per_sow_year: z
-    .coerce.number().int(),
+    .coerce.number(),
   avg_gestation_period: z
     .coerce.number({
       required_error: "Please enter Average time of gestation period.",
@@ -322,8 +322,8 @@ export default function SowDataPage() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="system piglet sales (approx. 8kg)">System Piglet Sale(ca.8kg)</SelectItem>
-                    <SelectItem value="weaner sales (approx. 25-30kg)">Weaner Sales (approx.25-30kg)</SelectItem>
+                    <SelectItem value="weaner piglet sales">Weaner Piglet Sales</SelectItem>
+                    <SelectItem value="rearer piglet sales">Rearer Piglet Sales</SelectItem>
                     <SelectItem value="pure piglet rearing">Pure Piglet Rearing</SelectItem>
                     <SelectItem value="closed system">Closed System</SelectItem>
                   </SelectContent>
@@ -449,12 +449,12 @@ export default function SowDataPage() {
             name="piglets_born_alive"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Piglets born Alive</FormLabel>
+                <FormLabel>Piglets born alive</FormLabel>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                     <TooltipContent>
-                      <p>Number of heads</p>
+                      <p>Number of heads after 24h</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -470,12 +470,12 @@ export default function SowDataPage() {
             name="cycles_per_sow_year"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Cycles born per sow and year</FormLabel>
+                <FormLabel>Litters born</FormLabel>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                     <TooltipContent>
-                      <p>Number of heads</p>
+                      <p>per sow and year</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -559,7 +559,7 @@ export default function SowDataPage() {
                   <Tooltip>
                     <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                     <TooltipContent>
-                      <p>%; e.g. 12,34% is 0,1234</p>
+                      <p>%; write 12,34% as 0,1234</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -601,7 +601,7 @@ export default function SowDataPage() {
                   <Tooltip>
                     <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                     <TooltipContent>
-                      <p>%; e.g. 12,34% is 0,1234</p>
+                      <p>%; write 12,34% as 0,1234</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -622,7 +622,7 @@ export default function SowDataPage() {
                   <Tooltip>
                     <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                     <TooltipContent>
-                      <p>%; e.g. 12,34% is 0,1234</p>
+                      <p>%; write 12,34% as 0,1234</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -643,7 +643,7 @@ export default function SowDataPage() {
                   <Tooltip>
                     <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                     <TooltipContent>
-                      <p>%; e.g. 12,34% is 0,1234</p>
+                      <p>%; write 12,34% as 0,1234</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -664,7 +664,7 @@ export default function SowDataPage() {
                   <Tooltip>
                     <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                     <TooltipContent>
-                      <p>%; e.g. 12,34% is 0,1234</p>
+                      <p>%; write 12,34% as 0,1234</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -685,7 +685,7 @@ export default function SowDataPage() {
                   <Tooltip>
                     <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                     <TooltipContent>
-                      <p>%; e.g. 12,34% is 0,1234</p>
+                      <p>%; write 12,34% as 0,1234</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -703,13 +703,13 @@ export default function SowDataPage() {
               <FormItem>
                 <FormLabel>Piglet Mortality Weaning</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>%; e.g. 12,34% is 0,1234</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%; write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -724,13 +724,13 @@ export default function SowDataPage() {
               <FormItem>
                 <FormLabel>Piglet Mortality Rearing</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>%; e.g. 12,34% is 0,1234</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>%; write 12,34% as 0,1234</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -745,13 +745,13 @@ export default function SowDataPage() {
               <FormItem>
                 <FormLabel>Piglets Weaned</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Number of heads</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of heads</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -766,13 +766,13 @@ export default function SowDataPage() {
               <FormItem>
                 <FormLabel>Average Piglet Rearing</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -787,13 +787,13 @@ export default function SowDataPage() {
               <FormItem>
                 <FormLabel>Reared Piglets</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Number of heads</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of heads</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -810,13 +810,13 @@ export default function SowDataPage() {
               <FormItem>
                 <FormLabel>Sows</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg CW per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg CW per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -831,13 +831,13 @@ export default function SowDataPage() {
               <FormItem>
                 <FormLabel>Boars</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg CW per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg CW per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -852,13 +852,13 @@ export default function SowDataPage() {
               <FormItem>
                 <FormLabel>Weaning Piglets</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg CW per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg CW per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -873,13 +873,13 @@ export default function SowDataPage() {
               <FormItem>
                 <FormLabel>Rearing Piglets</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg CW per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg CW per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

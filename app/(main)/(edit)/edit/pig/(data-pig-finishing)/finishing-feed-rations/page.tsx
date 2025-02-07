@@ -80,17 +80,17 @@ const feedTypes: { name: string; value: string, tooltip?: string }[] = [
   {
     name: "Finishing Feed 1",
     value: "finishing_feed_1",
-    tooltip: "Share",
+    tooltip: "%, write 12,34% as 0,1234",
   },
   {
     name: "Finishing Feed 2",
     value: "finishing_feed_2",
-    tooltip: "Share",
+    tooltip: "%, write 12,34% as 0,1234",
   },
   {
     name: "Finishing Feed 3",
     value: "finishing_feed_3",
-    tooltip: "Share",
+    tooltip: "%, write 12,34% as 0,1234",
   },
 ]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -216,7 +216,7 @@ export default function FinishingFeedRationPage() {
   if (isLoading || feedIsLoading) {
     return <div className="p-4">Loading farm data…</div>
   }
-  if ((error && error.status !== 404 ) || (feedError && feedError.status !== 404)) {
+  if ((error && error.status !== 404) || (feedError && feedError.status !== 404)) {
     console.error(error)
     return <div className="p-4">Failed to load farm data.</div>
   }
@@ -273,7 +273,7 @@ export default function FinishingFeedRationPage() {
                         // eslint-disable-next-line react-hooks/rules-of-hooks
                         useEffect(() => {
                           field.onChange(feedValue)
-                        // eslint-disable-next-line react-hooks/exhaustive-deps
+                          // eslint-disable-next-line react-hooks/exhaustive-deps
                         }, [feedValue])
 
                         return (

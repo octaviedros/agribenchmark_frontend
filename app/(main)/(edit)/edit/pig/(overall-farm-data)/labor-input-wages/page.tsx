@@ -1,16 +1,5 @@
 "use client"
 
-import { Separator } from "@/components/ui/separator"
-import { useFarmData } from "@/hooks/use-farm-data"
-import { del, upsert } from "@/lib/api"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Info, Trash2 } from "lucide-react"
-import { useSearchParams } from "next/navigation"
-import { useEffect } from "react"
-import { useFieldArray, useForm } from "react-hook-form"
-import { v4 as uuidv4 } from "uuid"
-import { z } from "zod"
-
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -28,7 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
+import { useFarmData } from "@/hooks/use-farm-data"
 import { toast } from "@/hooks/use-toast"
+import { del, upsert } from "@/lib/api"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Info, Trash2 } from "lucide-react"
+import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { v4 as uuidv4 } from "uuid"
+import { z } from "zod"
 
 import {
   Tooltip,
@@ -228,6 +227,7 @@ export default function WagesFarmPage() {
     {
       name: "Workforce",
       value: "labor_units",
+      tooltip: "Number of Workers"
     },
     {
       name: "Hours",
@@ -242,6 +242,21 @@ export default function WagesFarmPage() {
     {
       name: "Enterprise Codes",
       value: "enterprise_code",
+      tooltip: `1:Item used for all enterprises
+      2:Crop and Forage Production
+      3:Livestock Production general
+      4:Cash Crop Production only
+      5:Forage Production only
+      6:Dairy only
+      7:Cow calf only
+      8:Beef Finishing only
+      9:Sheep(ewe) only
+      10:Lamb Finishing only
+      11:Sow Production only
+      12:Pig Finishing only
+      13:Broiler only
+      14:Layers only
+      15:Other only`
     },
   ]
 
@@ -284,8 +299,12 @@ export default function WagesFarmPage() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                              <TooltipContent>
-                                <p>{tooltip}</p>
+                              <TooltipContent className="max-w-64 p-2">
+                                <ul className="pl-4 space-y-1">
+                                  {tooltip.split('\n').map((line, index) => (
+                                    <li key={index} className="text-sm">{line.trim()}</li>
+                                  ))}
+                                </ul>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -298,7 +317,7 @@ export default function WagesFarmPage() {
               <tbody>
                 {permanentfields.map((field, index) => (
                   <tr key={field.id}>
-                    <td className="p-1 min-w-[120px]">
+                    <td className="p-1 min-w-[140px]">
                       {/* Permanent Worker */}
                       <FormField
                         control={form.control}
@@ -313,8 +332,8 @@ export default function WagesFarmPage() {
                               <SelectContent>
                                 <SelectItem value="Manager">Group 1: Manager</SelectItem>
                                 <SelectItem value="Executive Staff">Group 2: Executive Staff</SelectItem>
-                                <SelectItem value="Tractor Driver">Group 3: Tractor</SelectItem>
-                                <SelectItem value="Pigman">Group 4: Pigman</SelectItem>
+                                <SelectItem value="Machine Operator">Group 3: Machine Operator</SelectItem>
+                                <SelectItem value="Animal Caretaker">Group 4: Animal Caretaker</SelectItem>
                                 <SelectItem value="Other">Group 5: Other</SelectItem>
                               </SelectContent>
                             </Select>
@@ -324,7 +343,7 @@ export default function WagesFarmPage() {
                       />
                     </td>
                     {costTypes.map(({ value: permanentcostType }) => (
-                      <td key={permanentcostType} className="p-1 min-w-[120px]">
+                      <td key={permanentcostType} className="p-1 min-w-[150px]">
                         {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
                         <FormField
                           control={form.control}
@@ -371,7 +390,7 @@ export default function WagesFarmPage() {
           <table className="w-full my-4">
             <thead>
               <tr>
-                <th className="text-left pl-2 align-bottom"><FormLabel>Description</FormLabel></th>
+                <th className="text-left pl-2 align-bottom"><FormLabel>Name</FormLabel></th>
                 {costTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
                     <FormLabel>
@@ -380,8 +399,12 @@ export default function WagesFarmPage() {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>{tooltip}</p>
+                            <TooltipContent className="max-w-64 p-2">
+                              <ul className="pl-4 space-y-1">
+                                {tooltip.split('\n').map((line, index) => (
+                                  <li key={index} className="text-sm">{line.trim()}</li>
+                                ))}
+                              </ul>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -394,7 +417,7 @@ export default function WagesFarmPage() {
             <tbody>
               {casualfields.map((field, index) => (
                 <tr key={field.id}>
-                  <td className="p-1 min-w-[120px]">
+                  <td className="p-1 min-w-[140px]">
                     {/* Casual Worker */}
                     <FormField
                       control={form.control}
@@ -405,7 +428,7 @@ export default function WagesFarmPage() {
                     />
                   </td>
                   {costTypes.map(({ value: casualcostType }) => (
-                    <td key={casualcostType} className="p-1 min-w-[120px]">
+                    <td key={casualcostType} className="p-1 min-w-[150px]">
                       {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
                       <FormField
                         control={form.control}
@@ -449,7 +472,7 @@ export default function WagesFarmPage() {
             <thead>
               <tr>
                 <th className="text-left pl-2 align-bottom">
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Name</FormLabel>
                 </th>
                 {costTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
@@ -459,8 +482,12 @@ export default function WagesFarmPage() {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>{tooltip}</p>
+                            <TooltipContent className="max-w-64 p-2">
+                              <ul className="pl-4 space-y-1">
+                                {tooltip.split('\n').map((line, index) => (
+                                  <li key={index} className="text-sm">{line.trim()}</li>
+                                ))}
+                              </ul>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -473,7 +500,7 @@ export default function WagesFarmPage() {
             <tbody>
               {familyfields.map((field, index) => (
                 <tr key={field.id}>
-                  <td className="p-1 min-w-[120px]">
+                  <td className="p-1 min-w-[140px]">
                     {/* Family Worker */}
                     <FormField
                       control={form.control}
@@ -484,7 +511,7 @@ export default function WagesFarmPage() {
                     />
                   </td>
                   {costTypes.map(({ value: familycostType }) => (
-                    <td key={familycostType} className="p-1 min-w-[120px]">
+                    <td key={familycostType} className="p-1 min-w-[150px]">
                       {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
                       <FormField
                         control={form.control}
@@ -523,6 +550,7 @@ export default function WagesFarmPage() {
           <Button type="submit">Submit</Button>
         </form>
       </Form>
+
     </div>
   )
 }

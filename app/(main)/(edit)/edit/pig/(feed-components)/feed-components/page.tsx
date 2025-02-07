@@ -1,17 +1,7 @@
 "use client"
 
-import { Separator } from "@/components/ui/separator"
-import { useFarmData } from "@/hooks/use-farm-data"
-import { del, upsert } from "@/lib/api"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Info, Trash2 } from "lucide-react"
-import { useSearchParams } from "next/navigation"
-import { useEffect } from "react"
-import { useFieldArray, useForm } from "react-hook-form"
-import { v4 as uuidv4 } from "uuid"
-import { z } from "zod"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
     Form,
     FormControl,
@@ -28,7 +18,17 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
+import { useFarmData } from "@/hooks/use-farm-data"
 import { toast } from "@/hooks/use-toast"
+import { del, upsert } from "@/lib/api"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Info, Trash2 } from "lucide-react"
+import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { v4 as uuidv4 } from "uuid"
+import { z } from "zod"
 
 import {
     Tooltip,
@@ -44,7 +44,7 @@ const feedproductionFormSchema = z.object({
             id: z.string().uuid(),
             general_id: z.string().uuid(),
             production_type: z.string(), // Own Production or Bought Feed
-            crop_name: z.string(), 
+            crop_name: z.string(),
             dry_matter: z.coerce.number(),
             xp: z.coerce.number(),
             energy: z.coerce.number(),
@@ -284,7 +284,7 @@ export default function FeedProductionPage() {
                                                                     onCheckedChange={ff.onChange}
                                                                 />
                                                             </div> :
-                                                            <Input {...ff} className="w-full" type={permanentcostType === 'crop_name' ? 'text' : 'number'}  value={ff.value as number} />
+                                                            <Input {...ff} className="w-full" type={permanentcostType === 'crop_name' ? 'text' : 'number'} value={ff.value as number} />
                                                         )
                                                     )}
                                                 />
