@@ -503,9 +503,6 @@ export default function SowCostPage() {
               </FormItem>
             )}
           />
-          <div>
-            <h3 className="text-lg font-medium">Overhead Costs</h3>
-          </div>
           <FormField
             control={form.control}
             name="maintenance"
@@ -527,6 +524,9 @@ export default function SowCostPage() {
               </FormItem>
             )}
           />
+          <div>
+            <h3 className="text-lg font-medium">Overhead Costs</h3>
+          </div>
           <FormField
             control={form.control}
             name="feed_grinding_preparation"

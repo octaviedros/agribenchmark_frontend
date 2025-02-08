@@ -34,7 +34,7 @@ const finishingcostFormSchema = z.object({
   id: z.string().uuid(),
   general_id: z.string().uuid(),
   var_cost_fin_id: z.string().uuid(),
-  fix_cost_id: z.string().uuid(),
+  fix_cost_fin_id: z.string().uuid(),
   veterinary_medicine_supplies: z
     .coerce.number({
       required_error: "Please enter a number.",
@@ -97,7 +97,7 @@ function createDefaults(general_id: string): FinishingCostFormValues {
     id: uuidv4(),
     general_id: general_id,
     var_cost_fin_id: uuidv4(),
-    fix_cost_id: uuidv4(),
+    fix_cost_fin_id: uuidv4(),
     veterinary_medicine_supplies: 0,
     disinfection: 0,
     energy: 0,
@@ -141,7 +141,7 @@ export default function FinishingCostPage() {
     error: fixcosts_error,
     isLoading: fixcosts_isLoading,
     mutate: fixcosts_mutate
-  } = useFarmData("/fixcosts", general_id)
+  } = useFarmData("/fixcostsfinishing", general_id)
 
   const farmData = mergeData(data, fixcosts, general_id)
 
@@ -175,7 +175,7 @@ export default function FinishingCostPage() {
         populateCache: true,
         revalidate: true
       })
-      await fixcosts_mutate(upsert(`/fixcosts`, {
+      await fixcosts_mutate(upsert(`/fixcostsfinishing`, {
         ...mergedData,
         id: fixcosts?.[0]?.id || farmData.id
       }), {
