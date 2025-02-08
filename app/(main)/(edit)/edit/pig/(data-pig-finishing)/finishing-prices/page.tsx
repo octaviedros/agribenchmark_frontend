@@ -87,7 +87,7 @@ export default function FinishingPricePage() {
     mutate
   } = useFarmData("/pricesfinishing", general_id)
 
-const farmData = mergeData(data, general_id)
+  const farmData = mergeData(data, general_id)
 
   const form = useForm<FinishingPriceFormValues>({
     resolver: zodResolver(finishingpriceFormSchema),
@@ -96,7 +96,7 @@ const farmData = mergeData(data, general_id)
     },
     mode: "onChange",
   })
-// 
+  // 
   useEffect(() => {
     form.reset({
       ...farmData
@@ -104,13 +104,13 @@ const farmData = mergeData(data, general_id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
 
-async function onSubmit(updatedData: FinishingPriceFormValues) {
+  async function onSubmit(updatedData: FinishingPriceFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
       }
-      await mutate(upsert(`/pricesfinishing`,{
+      await mutate(upsert(`/pricesfinishing`, {
         ...mergedData,
         id: data?.[0]?.id || farmData.id
       }), {
@@ -132,7 +132,7 @@ async function onSubmit(updatedData: FinishingPriceFormValues) {
       })
     }
   }
-  
+
   if (!general_id) {
     return (
       <div className="p-4">
@@ -156,95 +156,95 @@ async function onSubmit(updatedData: FinishingPriceFormValues) {
       </div>
       <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, error =>console.error(error))} className="space-y-2 w-full">
+        <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-2 w-full">
           <h3 className="space-y- mt-4 text-lg font-medium">Buying Prices</h3>
-            <FormField
-              control={form.control}
-              name="buying_f_castpiglets"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Female & Castrate Piglets</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg per LW</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="buying_piglets_for_finishing"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Boars Piglets for Finishing</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg per LW</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          
+          <FormField
+            control={form.control}
+            name="buying_f_castpiglets"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Female & Castrate Piglets</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg per LW</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="buying_piglets_for_finishing"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Boars Piglets for Finishing</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg per LW</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <h3 className="space-y- mt-6 text-lg font-medium">Selling Prices</h3>
-            <FormField
-              control={form.control}
-              name="selling_finishing_pigs_gi_ba"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Finishing Pigs (Female & Castrates)
+          <FormField
+            control={form.control}
+            name="selling_finishing_pigs_gi_ba"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Finishing Pigs (Female & Castrates)
                   <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg per CW</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="selling_finishing_pigs_em_ic"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Finishing Pigs (Boars)</FormLabel>
-                  <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>kg per CW</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <Tooltip>
+                      <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                      <TooltipContent>
+                        <p>kg per CW</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </FormLabel>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="selling_finishing_pigs_em_ic"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Finishing Pigs (Boars)</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>kg per CW</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <Button type="submit">Submit</Button>
         </form>
       </Form>

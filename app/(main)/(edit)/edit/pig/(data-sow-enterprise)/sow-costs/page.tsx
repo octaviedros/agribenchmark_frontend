@@ -258,15 +258,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Veterinary and Medicine Supplies</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -279,15 +279,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Artificial Insemination Costs</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -300,15 +300,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Pregnancy Check</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -321,15 +321,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Disinfection</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -342,15 +342,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Energy</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -363,15 +363,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Water</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -384,15 +384,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Manure Costs</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -405,15 +405,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Transport Costs</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -426,15 +426,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Specialised Advisors</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -447,15 +447,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Animal Disease Levy</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -468,15 +468,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Carcass Disposal</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -489,15 +489,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Sow Planner</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -513,15 +513,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Maintenance</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -534,15 +534,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Feed Grinding & Preparation</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per enterprise</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per enterprise</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -555,15 +555,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Insurance</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per enterprise</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per enterprise</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -576,15 +576,15 @@ export default function SowCostPage() {
               <FormItem>
                 <FormLabel>Cleaning</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per enterprise</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per enterprise</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

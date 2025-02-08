@@ -818,7 +818,7 @@ export default function SowDataPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -839,7 +839,7 @@ export default function SowDataPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -860,7 +860,7 @@ export default function SowDataPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -881,7 +881,7 @@ export default function SowDataPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

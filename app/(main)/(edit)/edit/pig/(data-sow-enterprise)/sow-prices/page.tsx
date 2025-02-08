@@ -200,7 +200,7 @@ export default function SowPricePage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -221,7 +221,7 @@ export default function SowPricePage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -244,7 +244,7 @@ export default function SowPricePage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -265,7 +265,7 @@ export default function SowPricePage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -286,7 +286,7 @@ export default function SowPricePage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -307,7 +307,7 @@ export default function SowPricePage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -328,7 +328,7 @@ export default function SowPricePage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -349,7 +349,7 @@ export default function SowPricePage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

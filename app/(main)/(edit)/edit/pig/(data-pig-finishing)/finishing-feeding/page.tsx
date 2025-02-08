@@ -192,7 +192,7 @@ export default function FinishingFeedingPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -213,7 +213,7 @@ export default function FinishingFeedingPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -234,7 +234,7 @@ export default function FinishingFeedingPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -257,7 +257,7 @@ export default function FinishingFeedingPage() {
                     </Tooltip>
                   </TooltipProvider>
                   <FormControl>
-                    <Input {...field} />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -278,7 +278,7 @@ export default function FinishingFeedingPage() {
                     </Tooltip>
                   </TooltipProvider>
                   <FormControl>
-                    <Input {...field} />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -299,7 +299,7 @@ export default function FinishingFeedingPage() {
                     </Tooltip>
                   </TooltipProvider>
                   <FormControl>
-                    <Input {...field} />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -315,13 +315,13 @@ export default function FinishingFeedingPage() {
                     <Tooltip>
                       <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                       <TooltipContent>
-                        <p>kg per xear</p>
+                        <p>kg per year</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
 
                   <FormControl>
-                    <Input {...field} />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

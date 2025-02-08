@@ -201,7 +201,7 @@ export default function LiabilitiesFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -222,7 +222,7 @@ export default function LiabilitiesFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -243,7 +243,7 @@ export default function LiabilitiesFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -264,7 +264,7 @@ export default function LiabilitiesFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -285,7 +285,7 @@ export default function LiabilitiesFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -307,7 +307,7 @@ export default function LiabilitiesFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -328,7 +328,7 @@ export default function LiabilitiesFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -349,7 +349,7 @@ export default function LiabilitiesFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -370,7 +370,7 @@ export default function LiabilitiesFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -391,7 +391,7 @@ export default function LiabilitiesFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

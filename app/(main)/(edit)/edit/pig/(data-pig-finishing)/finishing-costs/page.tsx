@@ -142,8 +142,8 @@ export default function FinishingCostPage() {
     isLoading: fixcosts_isLoading,
     mutate: fixcosts_mutate
   } = useFarmData("/fixcosts", general_id)
- 
-const farmData = mergeData(data, fixcosts, general_id)
+
+  const farmData = mergeData(data, fixcosts, general_id)
 
   const form = useForm<FinishingCostFormValues>({
     resolver: zodResolver(finishingcostFormSchema),
@@ -224,7 +224,7 @@ const farmData = mergeData(data, fixcosts, general_id)
         <form onSubmit={form.handleSubmit(onSubmit, error => console.error(error))} className="space-y-4">
           <div>
             <h3 className="text-lg font-medium">Variable Costs</h3></div>
-            <FormDescription>All Costs accounted as Cost per Head</FormDescription>
+          <FormDescription>All Costs accounted as Cost per Head</FormDescription>
           <FormField
             control={form.control}
             name="veterinary_medicine_supplies"
@@ -232,15 +232,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Veterinary Medicine & Supplies</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -253,15 +253,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Disinfection</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -274,15 +274,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Energy</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -295,15 +295,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Water</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -316,15 +316,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Manure Costs</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -337,15 +337,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Transport Costs</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -358,15 +358,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Specialised Pig Advisors</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -379,15 +379,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Animal Disease Levy</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -400,15 +400,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Carcass Disposal</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -421,15 +421,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Maintenance</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per head</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per head</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -444,15 +444,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Feed Mixing & Preparation</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per enterprise</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per enterprise</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -465,15 +465,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Insurance</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per enterprise</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per enterprise</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -486,15 +486,15 @@ const farmData = mergeData(data, fixcosts, general_id)
               <FormItem>
                 <FormLabel>Cleaning</FormLabel>
                 <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
-                            <TooltipContent>
-                              <p>Cost per enterprise</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Cost per enterprise</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

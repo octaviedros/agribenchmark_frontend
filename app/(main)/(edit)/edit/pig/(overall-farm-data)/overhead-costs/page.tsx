@@ -227,7 +227,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -248,7 +248,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
 
                 <FormMessage />
@@ -270,7 +270,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
 
                 <FormMessage />
@@ -292,7 +292,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number"{...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -313,7 +313,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -334,7 +334,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -355,7 +355,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -376,7 +376,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -397,7 +397,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -418,7 +418,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -439,7 +439,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -460,7 +460,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
 
                 <FormMessage />
@@ -482,7 +482,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -503,7 +503,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
 
                 <FormMessage />
@@ -525,7 +525,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
 
                 <FormMessage />
@@ -547,7 +547,7 @@ export default function OverheadFarmPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
 
                 <FormMessage />
