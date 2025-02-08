@@ -252,7 +252,7 @@ export default function FinishingFeedingPage() {
                     <Tooltip>
                       <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                       <TooltipContent>
-                        <p>%, write 12,24% as 0,1234</p>
+                        <p>kg per year</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -273,7 +273,7 @@ export default function FinishingFeedingPage() {
                     <Tooltip>
                       <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                       <TooltipContent>
-                        <p>%, write 12,24% as 0,1234</p>
+                        <p>kg per year</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -294,7 +294,7 @@ export default function FinishingFeedingPage() {
                     <Tooltip>
                       <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                       <TooltipContent>
-                        <p>%, write 12,24% as 0,1234</p>
+                        <p>kg per year</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

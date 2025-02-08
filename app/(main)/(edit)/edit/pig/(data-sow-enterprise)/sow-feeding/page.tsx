@@ -271,7 +271,7 @@ export default function SowFeedingPage() {
                   <Tooltip>
                     <TooltipTrigger className="align-sub pl-1"><Info size={16} /></TooltipTrigger>
                     <TooltipContent>
-                      <p>kg per animal and year</p>
+                      <p>kg per animal and day</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
