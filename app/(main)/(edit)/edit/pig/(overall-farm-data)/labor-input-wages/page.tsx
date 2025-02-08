@@ -260,6 +260,43 @@ export default function WagesFarmPage() {
     },
   ]
 
+  const casualTypes: { name: string; value: keyof WagesFormValues["casualworker"][number], tooltip?: string }[] = [
+    {
+      name: "Workforce",
+      value: "labor_units",
+      tooltip: "Number of Workers"
+    },
+    {
+      name: "Hours",
+      value: "working_hours",
+      tooltip: "per Person per year"
+    },
+    {
+      name: "Wage",
+      value: "annual_wage_incl_sidecosts",
+      tooltip: "per hour per Person"
+    },
+    {
+      name: "Enterprise Codes",
+      value: "enterprise_code",
+      tooltip: `1:Item used for all enterprises
+      2:Crop and Forage Production
+      3:Livestock Production general
+      4:Cash Crop Production only
+      5:Forage Production only
+      6:Dairy only
+      7:Cow calf only
+      8:Beef Finishing only
+      9:Sheep(ewe) only
+      10:Lamb Finishing only
+      11:Sow Production only
+      12:Pig Finishing only
+      13:Broiler only
+      14:Layers only
+      15:Other only`
+    },
+  ]
+
   if (!general_id) {
     return (
       <div className="p-4">
@@ -391,7 +428,7 @@ export default function WagesFarmPage() {
             <thead>
               <tr>
                 <th className="text-left pl-2 align-bottom"><FormLabel>Name</FormLabel></th>
-                {costTypes.map(({ name, tooltip }) => (
+                {casualTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
                     <FormLabel>
                       {name}
@@ -427,7 +464,7 @@ export default function WagesFarmPage() {
                       )}
                     />
                   </td>
-                  {costTypes.map(({ value: casualcostType }) => (
+                  {casualTypes.map(({ value: casualcostType }) => (
                     <td key={casualcostType} className="p-1 min-w-[150px]">
                       {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
                       <FormField
@@ -474,7 +511,7 @@ export default function WagesFarmPage() {
                 <th className="text-left pl-2 align-bottom">
                   <FormLabel>Name</FormLabel>
                 </th>
-                {costTypes.map(({ name, tooltip }) => (
+                {casualTypes.map(({ name, tooltip }) => (
                   <th key={name} className="text-left pl-2 align-bottom">
                     <FormLabel>
                       {name}
@@ -510,7 +547,7 @@ export default function WagesFarmPage() {
                       )}
                     />
                   </td>
-                  {costTypes.map(({ value: familycostType }) => (
+                  {casualTypes.map(({ value: familycostType }) => (
                     <td key={familycostType} className="p-1 min-w-[150px]">
                       {/* costType might be something like 'purchase_price', 'purchase_year', etc. */}
                       <FormField
