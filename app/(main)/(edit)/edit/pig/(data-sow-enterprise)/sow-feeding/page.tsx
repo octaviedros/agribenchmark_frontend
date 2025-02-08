@@ -41,56 +41,24 @@ const sowfeedingFormSchema = z.object({
   feed_id: z.string().uuid(),
   sow_id: z.string().uuid(),
   finishing_id: z.string().uuid(),
-  sows_gestation_feed: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  sows_lactation_feed: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  sows_total_feed_daily: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  sows_total_feed_yearly: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
+  sows_gestation_feed: z.coerce.number(),
+  sows_lactation_feed: z.coerce.number(),
+  sows_total_feed_daily: z.coerce.number(),
+  sows_total_feed_yearly: z.coerce.number(),
   gilts_special_feed: z.string(),
-  gilts_share_gestation_feed: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  gilts_share_lactation_feed: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  gilts_feed_quantity_yearly: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  gilts_total_feed_yearly: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
+  gilts_share_gestation_feed: z.coerce.number(),
+  gilts_share_lactation_feed: z.coerce.number(),
+  gilts_feed_quantity_yearly: z.coerce.number(),
+  gilts_total_feed_yearly: z.coerce.number(),
   boars_special_feed: z.string(),
-  boars_share_gestation_feed: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  boars_share_lactation_feed: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  boars_feed_quantity_yearly: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  boars_total_feed_yearly: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  piglet_feed_1: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  piglet_feed_2: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  piglet_feed_quantity_yearly: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
-  piglet_total_feed_yearly: z.coerce.number().min(1, {
-    message: "Must be at least 1 characters.",
-  }),
+  boars_share_gestation_feed: z.coerce.number(),
+  boars_share_lactation_feed: z.coerce.number(),
+  boars_feed_quantity_yearly: z.coerce.number(),
+  boars_total_feed_yearly: z.coerce.number(),
+  piglet_feed_1: z.coerce.number(),
+  piglet_feed_2: z.coerce.number(),
+  piglet_feed_quantity_yearly: z.coerce.number(),
+  piglet_total_feed_yearly: z.coerce.number(),
   year: z.number().int(),
 })
 
@@ -127,11 +95,13 @@ function createDefaults(general_id: string): SowFeedingFormValues {
   }
 }
 
-function mergeData(data: Array<object>, general_id: string): SowFeedingFormValues {
-  if (data) {
+function mergeData(data: Array<object>, finishingData: Array<object>, sowData: Array<object>, general_id: string): SowFeedingFormValues {
+  if (data && finishingData) {
     // @ts-expect-error zod types are not correct
     return {
       ...data[0],
+      ...finishingData?.[0],
+      ...sowData?.[0]
     }
   }
   return createDefaults(general_id)
@@ -147,7 +117,19 @@ export default function SowFeedingPage() {
     mutate
   } = useFarmData("/feedsows", general_id)
 
-  const farmData = mergeData(data, general_id)
+  const {
+    data: finishingData,
+    error: finishingError,
+    isLoading: finishingIsLoading
+  } = useFarmData("/pigfinishing", general_id)
+
+  const {
+    data: sowData,
+    error: sowError,
+    isLoading: sowIsLoading
+  } = useFarmData("/sows", general_id)
+
+  const farmData = mergeData(data, finishingData, sowData, general_id)
 
   const form = useForm<SowFeedingFormValues>({
     resolver: zodResolver(sowfeedingFormSchema),
@@ -162,13 +144,15 @@ export default function SowFeedingPage() {
       ...farmData
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading])
+  }, [isLoading, finishingIsLoading, sowIsLoading])
 
   async function onSubmit(updatedData: SowFeedingFormValues) {
     try {
       const mergedData = {
         ...farmData, // overwrite the farmData with the new data
         ...updatedData,     //neuen Daten aus Formular; general_id und id wird nicht überschrieben
+        finishing_id: finishingData?.[0]?.id,
+        sow_id: sowData?.[0]?.id
       }
 
       await mutate(upsert(`/feedsows`, {
@@ -202,10 +186,11 @@ export default function SowFeedingPage() {
       </div>
     )
   }
-  if (isLoading) {
+  if (isLoading || finishingIsLoading || sowIsLoading) {
     return <div className="p-4">Loading farm data…</div>
   }
-  if (error && error.status !== 404) {
+
+  if ((error && error.status !== 404) || (finishingError && finishingError.status !== 404) || (sowError && sowError.status !== 404)) {
     console.error(error)
     return <div className="p-4">Failed to load farm data.</div>
   }
@@ -234,7 +219,7 @@ export default function SowFeedingPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input type="number" placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -255,7 +240,7 @@ export default function SowFeedingPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input type="number" placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -423,7 +408,7 @@ export default function SowFeedingPage() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Special boar feed">Special Boar Feed</SelectItem>
+                    <SelectItem value="Special Boar feed">Special Boar Feed</SelectItem>
                     <SelectItem value="Mix of gestation and lactation feed">A mix of Gestation and Lactation Feed</SelectItem>
                   </SelectContent>
                 </Select>

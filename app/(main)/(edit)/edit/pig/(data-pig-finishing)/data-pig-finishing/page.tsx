@@ -41,80 +41,26 @@ const pigfinishingdataFormSchema = z.object({
   general_id: z.string().uuid(),
   finishing_id: z.string().uuid(),
   performance_fin_id: z.string().uuid(),
-  production_system: z
-    .string({
-      required_error: "Please select a production system.",
-    }),
-  production_cycle: z
-    .string({
-      required_error: "Please select a production rhythm.",
-    }),
-  animal_places: z
-    .coerce.number().int(),
-  no_sold_pigs_gi_ba: z
-    .coerce.number().int(),
-  no_sold_em_ic: z
-    .coerce.number().int(),
-  share_gi_pigs: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  stalling_in_weight: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  stalling_in_weight_em_ic_piglets: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  avg_duration_finishing_period: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  cleaning_days_cycle: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  days_without_animals_instable: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  mortality: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  avg_selling_weight_gi_ba: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  carcass_yield_gi_ba: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  index_points_autofom_gi_ba: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  lean_meat_from_gi_ba: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  avg_selling_weight_em_ic: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  carcass_yield_em_ic: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  index_points_autofom_em_ic: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
-  avg_duration_finishing_period_em_ic: z
-    .coerce.number({
-      required_error: "Please enter a number.",
-    }),
+  production_system: z.string(),
+  production_cycle: z.string(),
+  animal_places: z.coerce.number().int(),
+  no_sold_pigs_gi_ba: z.coerce.number().int(),
+  no_sold_em_ic: z.coerce.number().int(),
+  share_gi_pigs: z.coerce.number(),
+  stalling_in_weight: z.coerce.number(),
+  stalling_in_weight_em_ic_piglets: z.coerce.number(),
+  avg_duration_finishing_period: z.coerce.number(),
+  cleaning_days_cycle: z.coerce.number(),
+  days_without_animals_instable: z.coerce.number(),
+  mortality: z.coerce.number(),
+  avg_selling_weight_gi_ba: z.coerce.number(),
+  carcass_yield_gi_ba: z.coerce.number(),
+  index_points_autofom_gi_ba: z.coerce.number(),
+  lean_meat_from_gi_ba: z.coerce.number(),
+  avg_selling_weight_em_ic: z.coerce.number(),
+  carcass_yield_em_ic: z.coerce.number(),
+  index_points_autofom_em_ic: z.coerce.number(),
+  avg_duration_finishing_period_em_ic: z.coerce.number(),
   year: z.number().int(),
 })
 

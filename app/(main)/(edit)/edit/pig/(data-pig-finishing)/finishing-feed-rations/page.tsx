@@ -5,6 +5,7 @@ import { Combobox } from "@/components/ui/combobox"
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -230,6 +231,7 @@ export default function FinishingFeedRationPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <h3 className="text-lg font-medium">Feed Rations</h3>
+          <FormDescription>Please enter your Feed on the page Feed Components </FormDescription>
           <table className="w-full my-4">
             <thead>
               <tr>
