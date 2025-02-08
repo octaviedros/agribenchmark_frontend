@@ -276,7 +276,7 @@ export default function SowFeedingPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input type="number" placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -297,7 +297,7 @@ export default function SowFeedingPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input type="number" placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -340,7 +340,7 @@ export default function SowFeedingPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input type="number" placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -361,7 +361,7 @@ export default function SowFeedingPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input type="number" placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -382,7 +382,7 @@ export default function SowFeedingPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input type="number" placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -403,7 +403,7 @@ export default function SowFeedingPage() {
                   </Tooltip>
                 </TooltipProvider>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input type="number" placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
